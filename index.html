@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JavaScript Memory Game</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>JavaScript Memory Game</h1>
+      <p class="subtitle">
+        Match all pairs using the fewest moves and time.
+      </p>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Rules section (static in v1) -->
+    <section class="panel">
+      <h2>How to Play</h2>
+      <ul>
+        <li>Flip two cards per turn.</li>
+        <li>Matching cards remain visible.</li>
+        <li>Unmatched cards flip back.</li>
+        <li>The game ends when all pairs are matched.</li>
+      </ul>
+    </section>
+
+    <!-- Game controls (form required by assessment) -->
+    <section class="panel">
+      <h2>Game Controls</h2>
+
+      <form id="gameForm" class="controls">
+        <label for="playerName">Player Name</label>
+        <input
+          type="text"
+          id="playerName"
+          name="playerName"
+          placeholder="Enter your name"
+        />
+
+        <label for="difficulty">Difficulty</label>
+        <select id="difficulty" name="difficulty">
+          <option value="">Select difficulty</option>
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+
+        <button type="submit">Start Game</button>
+      </form>
+    </section>
+
+    <!-- Status panel (static placeholders in v1) -->
+    <section class="panel">
+      <h2>Game Status</h2>
+      <div class="status">
+        <div><strong>Moves:</strong> 0</div>
+        <div><strong>Time:</strong> 00:00</div>
+        <div><strong>Pairs:</strong> 0</div>
+      </div>
+    </section>
+
+    <!-- Game board (empty placeholder in v1) -->
+    <section class="panel">
+      <h2>Game Board</h2>
+      <div id="board" class="board">
+        <!-- Cards will be generated here in later versions -->
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Hosted on GitHub Pages</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

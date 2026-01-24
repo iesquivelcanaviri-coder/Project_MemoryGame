@@ -1,0 +1,80 @@
+:root {
+  --bg: #0f172a;
+  --panel: #111c35;
+  --text: #e5e7eb;
+  --muted: #cbd5e1;
+  --border: rgba(255,255,255,0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.container {
+  width: min(1000px, 92%);
+  margin: 0 auto;
+}
+
+.site-header,
+.site-footer {
+  border-bottom: 1px solid var(--border);
+}
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  border-bottom: none;
+  margin-top: 24px;
+}
+
+.site-header .container,
+.site-footer .container {
+  padding: 20px 0;
+}
+
+.subtitle {
+  color: var(--muted);
+}
+
+.panel {
+  margin: 18px 0;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.controls {
+  display: grid;
+  gap: 10px;
+}
+
+.controls input,
+.controls select,
+.controls button {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+}
+
+.controls button {
+  cursor: pointer;
+}
+
+.status {
+  display: grid;
+  gap: 8px;
+}
+
+.board {
+  min-height: 120px;
+  border: 1px dashed var(--border);
+}
