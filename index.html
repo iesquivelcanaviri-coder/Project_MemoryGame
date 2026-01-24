@@ -12,25 +12,14 @@
     <div class="container">
       <h1>JavaScript Memory Game</h1>
       <p class="subtitle">
-        Match all pairs using the fewest moves and time.
+        Click a card to reveal it. Matching logic will be added in later versions.
       </p>
     </div>
   </header>
 
   <main class="container">
 
-    <!-- Rules section (static in v1) -->
-    <section class="panel">
-      <h2>How to Play</h2>
-      <ul>
-        <li>Flip two cards per turn.</li>
-        <li>Matching cards remain visible.</li>
-        <li>Unmatched cards flip back.</li>
-        <li>The game ends when all pairs are matched.</li>
-      </ul>
-    </section>
-
-    <!-- Game controls (form required by assessment) -->
+    <!-- Game Controls (form requirement introduced early) -->
     <section class="panel">
       <h2>Game Controls</h2>
 
@@ -39,38 +28,18 @@
         <input
           type="text"
           id="playerName"
-          name="playerName"
           placeholder="Enter your name"
         />
 
-        <label for="difficulty">Difficulty</label>
-        <select id="difficulty" name="difficulty">
-          <option value="">Select difficulty</option>
-          <option value="easy">Easy</option>
-          <option value="medium">Medium</option>
-          <option value="hard">Hard</option>
-        </select>
-
         <button type="submit">Start Game</button>
+        <p id="formFeedback" class="feedback"></p>
       </form>
     </section>
 
-    <!-- Status panel (static placeholders in v1) -->
-    <section class="panel">
-      <h2>Game Status</h2>
-      <div class="status">
-        <div><strong>Moves:</strong> 0</div>
-        <div><strong>Time:</strong> 00:00</div>
-        <div><strong>Pairs:</strong> 0</div>
-      </div>
-    </section>
-
-    <!-- Game board (empty placeholder in v1) -->
+    <!-- Game Board -->
     <section class="panel">
       <h2>Game Board</h2>
-      <div id="board" class="board">
-        <!-- Cards will be generated here in later versions -->
-      </div>
+      <div id="board" class="board"></div>
     </section>
 
   </main>
