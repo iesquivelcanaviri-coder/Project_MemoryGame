@@ -1,98 +1,216 @@
+"use strict";
+
 /* --------------------------------------------------
-   GLOBAL THEME VARIABLES
-   These custom properties store colors used everywhere.
-   Changing them updates the whole design.
+   SELECT HTML ELEMENTS
+   - These connect JavaScript to the HTML structure.
+   - We store them in variables so we can update them.
 -------------------------------------------------- */
-:root {
-  --bg: #0f172a;                     /* Main page background */
-  --panel: #111c35;                  /* Panel/card background */
-  --text: #e5e7eb;                   /* Main text color */
-  --muted: #cbd5e1;                  /* Lighter text for secondary info */
-  --border: rgba(255,255,255,0.15);  /* Soft translucent border */
+const boardEl = document.getElementById("board");
+const gameForm = document.getElementById("gameForm");
+const playerNameEl = document.getElementById("playerName");
+const difficultyEl = document.getElementById("difficulty");
+const restartBtn = document.getElementById("restartBtn");
+const feedbackEl = document.getElementById("formFeedback");
+
+const movesValueEl = document.getElementById("movesValue");
+const timeValueEl = document.getElementById("timeValue");
+const pairsValueEl = document.getElementById("pairsValue");
+
+/* --------------------------------------------------
+   GAME CONFIGURATION
+   - Defines board sizes for each difficulty.
+   - SYMBOLS is the list of characters used on cards.
+-------------------------------------------------- */
+const DIFFICULTY = {
+  easy:   { cols: 2, rows: 3 },
+  medium: { cols: 3, rows: 4 },
+  hard:   { cols: 4, rows: 4 }
+};
+
+// Split string into an array of single letters
+const SYMBOLS = "ABCDEFGHJKLMNPQRSTUVWXYZ".split();
+
+/* --------------------------------------------------
+   GAME STATE OBJECT
+   - Stores everything that changes during the game.
+   - This keeps the logic organised and easy to update.
+-------------------------------------------------- */
+let state = {
+  isRunning: false,
+  cards: [],          // Array of card objects
+  firstPick: null,    // First selected card
+  secondPick: null,   // Second selected card
+  moves: 0,
+  pairsFound: 0,
+  totalPairs: 0,
+  seconds: 0,
+  timer: null         // setInterval reference
+};
+
+/* --------------------------------------------------
+   HELPER FUNCTIONS
+   - Small reusable utilities
+-------------------------------------------------- */
+
+// Randomly shuffle an array (simple method)
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
+}
+
+// Convert seconds into mm:ss format
+function formatTime(seconds) {
+  const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const s = String(seconds % 60).padStart(2, "0");
+  return `${m}:${s}`;
 }
 
 /* --------------------------------------------------
-   GLOBAL RESET
-   Makes sizing predictable across all elements.
+   BUILD GAME BOARD
+   - Creates pairs of cards
+   - Shuffles them
+   - Renders them into the board
 -------------------------------------------------- */
-* {
-  box-sizing: border-box;
+
+// Create a deck with pairs of symbols
+function createDeck(totalCards) {
+  const values = SYMBOLS.slice(0, totalCards / 2); // Only take needed symbols
+  const deck = [];
+
+  values.forEach(value => {
+    deck.push({ value, matched: false }); // First copy
+    deck.push({ value, matched: false }); // Second copy
+  });
+
+  return shuffle(deck);
+}
+
+// Render card buttons into the board
+function renderBoard() {
+  boardEl.innerHTML = ""; // Clear previous board
+
+  state.cards.forEach((card, index) => {
+    const btn = document.createElement("button");
+    btn.className = "card";
+    btn.textContent = "Card"; // Hidden state
+
+    // When clicked, run game logic
+    btn.addEventListener("click", () => onCardClick(btn, card));
+
+    boardEl.appendChild(btn);
+  });
 }
 
 /* --------------------------------------------------
-   PAGE BASE STYLES
-   Sets default font, removes margin, applies theme.
+   GAME LOGIC
+   - Handles flipping cards
+   - Checks for matches
+   - Updates moves and pairs
 -------------------------------------------------- */
-body {
-  margin: 0;
-  font-family: system-ui, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
+function onCardClick(element, card) {
+  // Ignore clicks on already matched or flipped cards
+  if (card.matched || element.classList.contains("is-flipped")) return;
+
+  // Reveal card
+  element.textContent = card.value;
+  element.classList.add("is-flipped");
+
+  // First pick
+  if (!state.firstPick) {
+    state.firstPick = { element, card };
+  }
+  // Second pick
+  else {
+    state.secondPick = { element, card };
+    state.moves++;
+    updateStatus();
+    checkMatch();
+  }
+}
+
+// Compare the two selected cards
+function checkMatch() {
+  const first = state.firstPick;
+  const second = state.secondPick;
+
+  // If values match → mark as matched
+  if (first.card.value === second.card.value) {
+    first.card.matched = true;
+    second.card.matched = true;
+    state.pairsFound++;
+    resetPicks();
+  }
+  // If not a match → flip back after delay
+  else {
+    setTimeout(() => {
+      first.element.textContent = "Card";
+      second.element.textContent = "Card";
+      first.element.classList.remove("is-flipped");
+      second.element.classList.remove("is-flipped");
+      resetPicks();
+    }, 600);
+  }
+}
+
+// Clear selected cards
+function resetPicks() {
+  state.firstPick = null;
+  state.secondPick = null;
 }
 
 /* --------------------------------------------------
-   LAYOUT CONTAINER
-   Centers content and limits max width.
+   STATUS + TIMER
+   - Updates moves, pairs, and time on screen
+   - Timer increases every second
 -------------------------------------------------- */
-.container {
-  width: min(900px, 92%);  /* Responsive: max 900px or 92% of screen */
-  margin: 0 auto;          /* Center horizontally */
+function updateStatus() {
+  movesValueEl.textContent = state.moves;
+  pairsValueEl.textContent = state.pairsFound;
+  timeValueEl.textContent = formatTime(state.seconds);
+}
+
+function startTimer() {
+  state.timer = setInterval(() => {
+    state.seconds++;
+    updateStatus();
+  }, 1000);
 }
 
 /* --------------------------------------------------
-   PANEL / CARD BLOCKS
-   Reusable box with padding, rounded corners, and border.
+   START GAME (FORM SUBMISSION)
+   - Validates difficulty
+   - Builds deck
+   - Resets state
+   - Renders board
 -------------------------------------------------- */
-.panel {
-  margin: 18px 0;
-  padding: 16px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-}
+gameForm.addEventListener("submit", e => {
+  e.preventDefault(); // Stop page reload
 
-/* --------------------------------------------------
-   FORM CONTROLS WRAPPER
-   Uses CSS Grid to space inputs and buttons.
--------------------------------------------------- */
-.controls {
-  display: grid;
-  gap: 10px;   /* Space between items */
-}
+  const difficulty = difficultyEl.value;
 
-/* --------------------------------------------------
-   INPUTS & BUTTONS
-   Shared styling for form elements.
--------------------------------------------------- */
-.controls input,
-.controls button {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,0.05); /* Slightly visible background */
-  color: var(--text);
-}
+  // Basic validation
+  if (!difficulty) {
+    feedbackEl.textContent = "Please select a difficulty.";
+    return;
+  }
 
-/* --------------------------------------------------
-   GAME BOARD GRID
-   Creates a 4‑column grid layout for cards.
--------------------------------------------------- */
-.board {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
-  gap: 12px;                              /* Space between cards */
-}
+  // Get board size
+  const config = DIFFICULTY[difficulty];
+  const totalCards = config.cols * config.rows;
 
-/* --------------------------------------------------
-   INDIVIDUAL CARD STYLING
-   Visual style for each clickable card.
--------------------------------------------------- */
-.card {
-  height: 80px;
-  font-size: 1.6rem;
-  border-radius: 10px;
-  border: 2px solid var(--border);
-  background: rgba(255,255,255,0.08);
-  color: var(--text);
-  cursor: pointer;  /* Shows hand cursor on hover */
-}
+  // Reset game state
+  state.cards = createDeck(totalCards);
+  state.totalPairs = totalCards / 2;
+  state.moves = 0;
+  state.pairsFound = 0;
+  state.seconds = 0;
+
+  // Apply grid layout to board
+  boardEl.style.gridTemplateColumns = `repeat(${config.cols}, 1fr)`;
+
+  // Build UI
+  renderBoard();
+  startTimer();
+  updateStatus();
+
+  feedbackEl.textContent = "Game started!";
+});

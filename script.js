@@ -1,164 +1,173 @@
 "use strict";
 
-/* ------------------------------------------------------
-   DOM REFERENCES
-   These variables connect JavaScript to the HTML
-   ------------------------------------------------------ */
+/* --------------------------------------
+   SELECT HTML ELEMENTS
+   -------------------------------------- */
 const boardEl = document.getElementById("board");
 const gameForm = document.getElementById("gameForm");
 const playerNameEl = document.getElementById("playerName");
+const difficultyEl = document.getElementById("difficulty");
+const restartBtn = document.getElementById("restartBtn");
 const feedbackEl = document.getElementById("formFeedback");
 
-/* ------------------------------------------------------
-   GAME DATA (Arrays + Objects)
-   ------------------------------------------------------ */
+const movesValueEl = document.getElementById("movesValue");
+const timeValueEl = document.getElementById("timeValue");
+const pairsValueEl = document.getElementById("pairsValue");
 
-/*
-  Symbols array
-  - Each value appears twice (pair)
-  - Used to build the deck
-*/
-const symbols = ["A", "B", "C", "D", "A", "B", "C", "D"];
-
-/*
-  Central game state object
-  This mirrors lecture content on state management
-*/
-let state = {
-  isRunning: false,     // Is the game currently active?
-  cards: [],            // Array of card objects
-  firstPickId: null,    // ID of first selected card
-  secondPickId: null,   // ID of second selected card
-  lockBoard: false      // Prevents rapid clicking
+/* --------------------------------------
+   GAME CONFIGURATION
+   -------------------------------------- */
+const DIFFICULTY = {
+  easy: { cols: 2, rows: 3 },
+  medium: { cols: 3, rows: 4 },
+  hard: { cols: 4, rows: 4 }
 };
 
-/* ------------------------------------------------------
-   UTILITY FUNCTIONS
-   ------------------------------------------------------ */
+const SYMBOLS = "ABCDEFGHJKLMNPQRSTUVWXYZ".split("");
 
-/*
-  Shuffles an array using Fisher-Yates algorithm
-*/
+/* --------------------------------------
+   GAME STATE OBJECT
+   Stores all changing values
+   -------------------------------------- */
+let state = {
+  isRunning: false,
+  cards: [],
+  firstPick: null,
+  secondPick: null,
+  moves: 0,
+  pairsFound: 0,
+  totalPairs: 0,
+  seconds: 0,
+  timer: null
+};
+
+/* --------------------------------------
+   HELPER FUNCTIONS
+   -------------------------------------- */
 function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
+  return array.sort(() => Math.random() - 0.5);
 }
 
-/*
-  Displays feedback messages to the user
-*/
-function setFeedback(message) {
-  feedbackEl.textContent = message;
+function formatTime(seconds) {
+  const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const s = String(seconds % 60).padStart(2, "0");
+  return `${m}:${s}`;
 }
 
-/* ------------------------------------------------------
-   BOARD CREATION (DOM MANIPULATION)
-   ------------------------------------------------------ */
+/* --------------------------------------
+   BUILD GAME BOARD
+   -------------------------------------- */
+function createDeck(totalCards) {
+  const values = SYMBOLS.slice(0, totalCards / 2);
+  const deck = [];
 
-/*
-  Creates the card objects from the symbols array
-*/
-function createCards() {
-  state.cards = shuffle(
-    symbols.map((value, index) => ({
-      id: index,
-      value: value
-    }))
-  );
+  values.forEach(value => {
+    deck.push({ value, matched: false });
+    deck.push({ value, matched: false });
+  });
+
+  return shuffle(deck);
 }
 
-/*
-  Dynamically creates card buttons in the DOM
-*/
 function renderBoard() {
   boardEl.innerHTML = "";
 
-  state.cards.forEach(card => {
+  state.cards.forEach((card, index) => {
     const btn = document.createElement("button");
     btn.className = "card";
-    btn.textContent = "?";
-    btn.dataset.id = card.id;
+    btn.textContent = "Card";
 
-    // Event listener for user interaction
-    btn.addEventListener("click", onCardClick);
+    btn.addEventListener("click", () => onCardClick(btn, card));
 
     boardEl.appendChild(btn);
   });
 }
 
-/* ------------------------------------------------------
-   CARD INTERACTION LOGIC
-   ------------------------------------------------------ */
+/* --------------------------------------
+   GAME LOGIC
+   -------------------------------------- */
+function onCardClick(element, card) {
+  if (card.matched || element.classList.contains("is-flipped")) return;
 
-/*
-  Handles clicking on a card
-  Rules enforced here:
-  - Only two cards per turn
-  - No rapid clicking
-*/
-function onCardClick(e) {
-  if (!state.isRunning) return;
-  if (state.lockBoard) return;
+  element.textContent = card.value;
+  element.classList.add("is-flipped");
 
-  const cardId = Number(e.currentTarget.dataset.id);
-
-  // Prevent clicking the same card twice
-  if (state.firstPickId === cardId) return;
-
-  revealCard(e.currentTarget);
-
-  if (state.firstPickId === null) {
-    // First card in the turn
-    state.firstPickId = cardId;
-    return;
+  if (!state.firstPick) {
+    state.firstPick = { element, card };
+  } else {
+    state.secondPick = { element, card };
+    state.moves++;
+    updateStatus();
+    checkMatch();
   }
-
-  // Second card in the turn
-  state.secondPickId = cardId;
-  state.lockBoard = true;
-
-  // Temporary delay before reset (matching logic later)
-  setTimeout(resetTurn, 700);
 }
 
-/*
-  Reveals the card value visually
-*/
-function revealCard(cardEl) {
-  const cardId = Number(cardEl.dataset.id);
-  const card = state.cards.find(c => c.id === cardId);
-  cardEl.textContent = card.value;
+function checkMatch() {
+  const first = state.firstPick;
+  const second = state.secondPick;
+
+  if (first.card.value === second.card.value) {
+    first.card.matched = true;
+    second.card.matched = true;
+    state.pairsFound++;
+    resetPicks();
+  } else {
+    setTimeout(() => {
+      first.element.textContent = "Card";
+      second.element.textContent = "Card";
+      first.element.classList.remove("is-flipped");
+      second.element.classList.remove("is-flipped");
+      resetPicks();
+    }, 600);
+  }
 }
 
-/*
-  Resets turn state
-  (Matching logic added in Version 4)
-*/
-function resetTurn() {
-  state.firstPickId = null;
-  state.secondPickId = null;
-  state.lockBoard = false;
+function resetPicks() {
+  state.firstPick = null;
+  state.secondPick = null;
 }
 
-/* ------------------------------------------------------
-   GAME START (FORM PROCESSING)
-   ------------------------------------------------------ */
+/* --------------------------------------
+   STATUS + TIMER
+   -------------------------------------- */
+function updateStatus() {
+  movesValueEl.textContent = state.moves;
+  pairsValueEl.textContent = state.pairsFound;
+  timeValueEl.textContent = formatTime(state.seconds);
+}
 
+function startTimer() {
+  state.timer = setInterval(() => {
+    state.seconds++;
+    updateStatus();
+  }, 1000);
+}
+
+/* --------------------------------------
+   START GAME (FORM)
+   -------------------------------------- */
 gameForm.addEventListener("submit", e => {
   e.preventDefault();
 
-  const name = playerNameEl.value.trim();
-
-  if (!name) {
-    setFeedback("Please enter your name.");
+  const difficulty = difficultyEl.value;
+  if (!difficulty) {
+    feedbackEl.textContent = "Please select a difficulty.";
     return;
   }
 
-  state.isRunning = true;
-  createCards();
+  const config = DIFFICULTY[difficulty];
+  const totalCards = config.cols * config.rows;
+
+  state.cards = createDeck(totalCards);
+  state.totalPairs = totalCards / 2;
+  state.moves = 0;
+  state.pairsFound = 0;
+  state.seconds = 0;
+
+  boardEl.style.gridTemplateColumns = `repeat(${config.cols}, 1fr)`;
+
   renderBoard();
-  setFeedback(`Game started. Good luck, ${name}.`);
+  startTimer();
+  updateStatus();
+  feedbackEl.textContent = "Game started!";
 });
