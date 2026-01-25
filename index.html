@@ -3,53 +3,84 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- --------------------------------------------------
+       PAGE TITLE + CSS LINK: The title appears in the browser tab.
+       The stylesheet controls all visual styling.
+  -------------------------------------------------- -->
   <title>JavaScript Memory Game</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
+
+  <!-- --------------------------------------------------
+       SITE HEADER
+       Contains the main title and short description.
+  -------------------------------------------------- -->
   <header class="site-header">
     <div class="container">
       <h1>JavaScript Memory Game</h1>
       <p class="subtitle">
-        Click a card to reveal it. Matching logic will be added in later versions.
+        Flip two cards per turn. Matching logic will be added next.
       </p>
     </div>
   </header>
 
+  <!-- --------------------------------------------------
+       MAIN CONTENT AREA: Wrapped in a container for centered layout.
+  -------------------------------------------------- -->
   <main class="container">
 
-    <!-- Game Controls (form requirement introduced early) -->
+    <!-- --------------------------------------------------
+         GAME CONTROLS PANEL: Contains the form where the player enters their name.
+         This is a required feature introduced early.
+    -------------------------------------------------- -->
     <section class="panel">
       <h2>Game Controls</h2>
 
-      <form id="gameForm" class="controls">
-        <label for="playerName">Player Name</label>
-        <input
-          type="text"
-          id="playerName"
-          placeholder="Enter your name"
+      <form id="gameForm" class="controls">  <!-- FORM: Handles player name + start button -->
+
+        <label for="playerName">Player Name</label>      <!-- Label + Input for player name -->
+        <input 
+          type="text" 
+          id="playerName" 
+          placeholder="Enter your name" 
         />
 
-        <button type="submit">Start Game</button>
-        <p id="formFeedback" class="feedback"></p>
+        <button type="submit">Start Game</button>   <!-- Submit button starts the game -->
+
+        <p id="formFeedback" class="feedback"></p> <!-- Feedback message (e.g., validation errors) -->
       </form>
     </section>
 
-    <!-- Game Board -->
+    <!-- --------------------------------------------------
+         GAME BOARD PANEL
+         The grid of cards will be generated here by JS.
+    -------------------------------------------------- -->
     <section class="panel">
       <h2>Game Board</h2>
-      <div id="board" class="board"></div>
+
+      <div id="board" class="board"></div> <!-- Empty container; cards will be inserted dynamically -->
     </section>
 
   </main>
 
+  <!-- --------------------------------------------------
+       FOOTER
+       Simple footer with hosting info.
+  -------------------------------------------------- -->
   <footer class="site-footer">
     <div class="container">
       <p>Hosted on GitHub Pages</p>
     </div>
   </footer>
 
+  <!-- --------------------------------------------------
+       JAVASCRIPT FILE
+       Handles game logic, card creation, and interactions.
+  -------------------------------------------------- -->
   <script src="script.js"></script>
+
 </body>
 </html>

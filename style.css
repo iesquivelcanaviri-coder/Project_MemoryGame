@@ -1,15 +1,28 @@
+/* --------------------------------------------------
+   GLOBAL THEME VARIABLES
+   These custom properties store colors used everywhere.
+   Changing them updates the whole design.
+-------------------------------------------------- */
 :root {
-  --bg: #0f172a;
-  --panel: #111c35;
-  --text: #e5e7eb;
-  --muted: #cbd5e1;
-  --border: rgba(255,255,255,0.15);
+  --bg: #0f172a;                     /* Main page background */
+  --panel: #111c35;                  /* Panel/card background */
+  --text: #e5e7eb;                   /* Main text color */
+  --muted: #cbd5e1;                  /* Lighter text for secondary info */
+  --border: rgba(255,255,255,0.15);  /* Soft translucent border */
 }
 
+/* --------------------------------------------------
+   GLOBAL RESET
+   Makes sizing predictable across all elements.
+-------------------------------------------------- */
 * {
   box-sizing: border-box;
 }
 
+/* --------------------------------------------------
+   PAGE BASE STYLES
+   Sets default font, removes margin, applies theme.
+-------------------------------------------------- */
 body {
   margin: 0;
   font-family: system-ui, Arial, sans-serif;
@@ -17,31 +30,19 @@ body {
   color: var(--text);
 }
 
+/* --------------------------------------------------
+   LAYOUT CONTAINER
+   Centers content and limits max width.
+-------------------------------------------------- */
 .container {
-  width: min(900px, 92%);
-  margin: 0 auto;
+  width: min(900px, 92%);  /* Responsive: max 900px or 92% of screen */
+  margin: 0 auto;          /* Center horizontally */
 }
 
-.site-header,
-.site-footer {
-  border-bottom: 1px solid var(--border);
-}
-
-.site-footer {
-  border-top: 1px solid var(--border);
-  border-bottom: none;
-  margin-top: 24px;
-}
-
-.site-header .container,
-.site-footer .container {
-  padding: 20px 0;
-}
-
-.subtitle {
-  color: var(--muted);
-}
-
+/* --------------------------------------------------
+   PANEL / CARD BLOCKS
+   Reusable box with padding, rounded corners, and border.
+-------------------------------------------------- */
 .panel {
   margin: 18px 0;
   padding: 16px;
@@ -50,31 +51,42 @@ body {
   border-radius: 12px;
 }
 
+/* --------------------------------------------------
+   FORM CONTROLS WRAPPER
+   Uses CSS Grid to space inputs and buttons.
+-------------------------------------------------- */
 .controls {
   display: grid;
-  gap: 10px;
+  gap: 10px;   /* Space between items */
 }
 
+/* --------------------------------------------------
+   INPUTS & BUTTONS
+   Shared styling for form elements.
+-------------------------------------------------- */
 .controls input,
 .controls button {
   padding: 10px;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.05); /* Slightly visible background */
   color: var(--text);
 }
 
-.feedback {
-  color: var(--muted);
-}
-
-/* Game Board */
+/* --------------------------------------------------
+   GAME BOARD GRID
+   Creates a 4‑column grid layout for cards.
+-------------------------------------------------- */
 .board {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
+  gap: 12px;                              /* Space between cards */
 }
 
+/* --------------------------------------------------
+   INDIVIDUAL CARD STYLING
+   Visual style for each clickable card.
+-------------------------------------------------- */
 .card {
   height: 80px;
   font-size: 1.6rem;
@@ -82,5 +94,5 @@ body {
   border: 2px solid var(--border);
   background: rgba(255,255,255,0.08);
   color: var(--text);
-  cursor: pointer;
+  cursor: pointer;  /* Shows hand cursor on hover */
 }
