@@ -24,3 +24,14 @@ This version focuses on:
 
 ## Hosting
 This project is hosted using GitHub Pages.
+
+
+## Folder Structure
+Project_MemoryGame/
+│
+├── assets/
+│     └── memorygame-wireframe_v1.png
+|           ![Memory Game Wireframe](./assets/memorygame-wireframe_v1.png)
+|
+│
+└── README.md
