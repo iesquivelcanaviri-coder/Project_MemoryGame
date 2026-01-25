@@ -33,4 +33,4 @@ Project_MemoryGame/
 ├── README.md
 
 ## Wireframe Preview
-![Memory Game Wireframe](../assets/memorygame-wireframe_v1.png)
+![Memory Game Wireframe](./assets/memorygame-wireframe_v1.png)
