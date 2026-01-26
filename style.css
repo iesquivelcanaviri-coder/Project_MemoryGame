@@ -1,216 +1,135 @@
-"use strict";
-
 /* --------------------------------------------------
-   SELECT HTML ELEMENTS
-   - These connect JavaScript to the HTML structure.
-   - We store them in variables so we can update them.
+   BASIC COLOUR VARIABLES
+   - These custom properties store all theme colours.
+   - Changing a value here updates the whole site.
 -------------------------------------------------- */
-const boardEl = document.getElementById("board");
-const gameForm = document.getElementById("gameForm");
-const playerNameEl = document.getElementById("playerName");
-const difficultyEl = document.getElementById("difficulty");
-const restartBtn = document.getElementById("restartBtn");
-const feedbackEl = document.getElementById("formFeedback");
-
-const movesValueEl = document.getElementById("movesValue");
-const timeValueEl = document.getElementById("timeValue");
-const pairsValueEl = document.getElementById("pairsValue");
-
-/* --------------------------------------------------
-   GAME CONFIGURATION
-   - Defines board sizes for each difficulty.
-   - SYMBOLS is the list of characters used on cards.
--------------------------------------------------- */
-const DIFFICULTY = {
-  easy:   { cols: 2, rows: 3 },
-  medium: { cols: 3, rows: 4 },
-  hard:   { cols: 4, rows: 4 }
-};
-
-// Split string into an array of single letters
-const SYMBOLS = "ABCDEFGHJKLMNPQRSTUVWXYZ".split();
-
-/* --------------------------------------------------
-   GAME STATE OBJECT
-   - Stores everything that changes during the game.
-   - This keeps the logic organised and easy to update.
--------------------------------------------------- */
-let state = {
-  isRunning: false,
-  cards: [],          // Array of card objects
-  firstPick: null,    // First selected card
-  secondPick: null,   // Second selected card
-  moves: 0,
-  pairsFound: 0,
-  totalPairs: 0,
-  seconds: 0,
-  timer: null         // setInterval reference
-};
-
-/* --------------------------------------------------
-   HELPER FUNCTIONS
-   - Small reusable utilities
--------------------------------------------------- */
-
-// Randomly shuffle an array (simple method)
-function shuffle(array) {
-  return array.sort(() => Math.random() - 0.5);
-}
-
-// Convert seconds into mm:ss format
-function formatTime(seconds) {
-  const m = String(Math.floor(seconds / 60)).padStart(2, "0");
-  const s = String(seconds % 60).padStart(2, "0");
-  return `${m}:${s}`;
+:root {
+  --bg: #0f172a;                       /* Main page background */
+  --panel: #111c35;                    /* Panel/card background */
+  --text: #e5e7eb;                     /* Main text colour */
+  --muted: #cbd5e1;                    /* Softer text for subtitles */
+  --border: rgba(255,255,255,0.14);    /* Light, subtle border */
+  --highlight: #facc15;                /* Yellow highlight for flipped cards */
 }
 
 /* --------------------------------------------------
-   BUILD GAME BOARD
-   - Creates pairs of cards
-   - Shuffles them
-   - Renders them into the board
+   GLOBAL RESET
+   - Ensures consistent sizing across all elements.
+   - border-box makes width/height easier to control.
 -------------------------------------------------- */
-
-// Create a deck with pairs of symbols
-function createDeck(totalCards) {
-  const values = SYMBOLS.slice(0, totalCards / 2); // Only take needed symbols
-  const deck = [];
-
-  values.forEach(value => {
-    deck.push({ value, matched: false }); // First copy
-    deck.push({ value, matched: false }); // Second copy
-  });
-
-  return shuffle(deck);
-}
-
-// Render card buttons into the board
-function renderBoard() {
-  boardEl.innerHTML = ""; // Clear previous board
-
-  state.cards.forEach((card, index) => {
-    const btn = document.createElement("button");
-    btn.className = "card";
-    btn.textContent = "Card"; // Hidden state
-
-    // When clicked, run game logic
-    btn.addEventListener("click", () => onCardClick(btn, card));
-
-    boardEl.appendChild(btn);
-  });
+* {
+  box-sizing: border-box;
 }
 
 /* --------------------------------------------------
-   GAME LOGIC
-   - Handles flipping cards
-   - Checks for matches
-   - Updates moves and pairs
+   PAGE LAYOUT
+   - Sets the default font, background, and text colour.
+   - .container keeps content centered and readable.
 -------------------------------------------------- */
-function onCardClick(element, card) {
-  // Ignore clicks on already matched or flipped cards
-  if (card.matched || element.classList.contains("is-flipped")) return;
-
-  // Reveal card
-  element.textContent = card.value;
-  element.classList.add("is-flipped");
-
-  // First pick
-  if (!state.firstPick) {
-    state.firstPick = { element, card };
-  }
-  // Second pick
-  else {
-    state.secondPick = { element, card };
-    state.moves++;
-    updateStatus();
-    checkMatch();
-  }
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
-// Compare the two selected cards
-function checkMatch() {
-  const first = state.firstPick;
-  const second = state.secondPick;
-
-  // If values match → mark as matched
-  if (first.card.value === second.card.value) {
-    first.card.matched = true;
-    second.card.matched = true;
-    state.pairsFound++;
-    resetPicks();
-  }
-  // If not a match → flip back after delay
-  else {
-    setTimeout(() => {
-      first.element.textContent = "Card";
-      second.element.textContent = "Card";
-      first.element.classList.remove("is-flipped");
-      second.element.classList.remove("is-flipped");
-      resetPicks();
-    }, 600);
-  }
-}
-
-// Clear selected cards
-function resetPicks() {
-  state.firstPick = null;
-  state.secondPick = null;
+.container {
+  width: min(1000px, 92%);   /* Responsive max width */
+  margin: auto;              /* Centers the content */
 }
 
 /* --------------------------------------------------
-   STATUS + TIMER
-   - Updates moves, pairs, and time on screen
-   - Timer increases every second
+   HEADER & FOOTER
+   - Simple borders to visually separate sections.
+   - Subtitle uses a muted colour for softer emphasis.
 -------------------------------------------------- */
-function updateStatus() {
-  movesValueEl.textContent = state.moves;
-  pairsValueEl.textContent = state.pairsFound;
-  timeValueEl.textContent = formatTime(state.seconds);
+.site-header,
+.site-footer {
+  border-bottom: 1px solid var(--border);
 }
 
-function startTimer() {
-  state.timer = setInterval(() => {
-    state.seconds++;
-    updateStatus();
-  }, 1000);
+.site-footer {
+  border-top: 1px solid var(--border);
+  margin-top: 24px;
+}
+
+.subtitle {
+  color: var(--muted);
 }
 
 /* --------------------------------------------------
-   START GAME (FORM SUBMISSION)
-   - Validates difficulty
-   - Builds deck
-   - Resets state
-   - Renders board
+   PANELS
+   - Reusable box style for rules, controls, board, etc.
+   - Rounded corners + subtle border for a clean UI.
 -------------------------------------------------- */
-gameForm.addEventListener("submit", e => {
-  e.preventDefault(); // Stop page reload
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  margin: 18px 0;
+}
 
-  const difficulty = difficultyEl.value;
+/* --------------------------------------------------
+   FORM CONTROLS
+   - Grid layout stacks inputs with spacing.
+   - Shared styling for input, select, and button.
+-------------------------------------------------- */
+.controls {
+  display: grid;
+  gap: 12px;
+}
 
-  // Basic validation
-  if (!difficulty) {
-    feedbackEl.textContent = "Please select a difficulty.";
-    return;
-  }
+.controls input,
+.controls select,
+.controls button {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.05);  /* Slight transparent background */
+  color: var(--text);
+}
 
-  // Get board size
-  const config = DIFFICULTY[difficulty];
-  const totalCards = config.cols * config.rows;
+/* --------------------------------------------------
+   STATUS PANEL
+   - Displays moves, time, and pairs in 3 equal columns.
+-------------------------------------------------- */
+.status {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
 
-  // Reset game state
-  state.cards = createDeck(totalCards);
-  state.totalPairs = totalCards / 2;
-  state.moves = 0;
-  state.pairsFound = 0;
-  state.seconds = 0;
+/* --------------------------------------------------
+   GAME BOARD
+   - Grid layout for the cards.
+   - Number of columns is set dynamically in JS.
+-------------------------------------------------- */
+.board {
+  display: grid;
+  gap: 12px;
+}
 
-  // Apply grid layout to board
-  boardEl.style.gridTemplateColumns = `repeat(${config.cols}, 1fr)`;
+/* --------------------------------------------------
+   CARD STYLING
+   - Default appearance of each card.
+   - Cards are clickable and flip using JS.
+-------------------------------------------------- */
+.card {
+  height: 90px;
+  border-radius: 14px;
+  border: 2px solid var(--border);
+  background: rgba(255,255,255,0.05);
+  cursor: pointer;
+}
 
-  // Build UI
-  renderBoard();
-  startTimer();
-  updateStatus();
-
-  feedbackEl.textContent = "Game started!";
-});
+/* --------------------------------------------------
+   FLIPPED CARD STATE
+   - Applied when JS adds the .is-flipped class.
+   - Highlight colour shows the card is active.
+-------------------------------------------------- */
+.card.is-flipped {
+  border-color: var(--highlight);
+  background: var(--highlight);
+  color: #000;   /* Dark text for contrast */
+}
