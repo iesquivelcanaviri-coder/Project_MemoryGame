@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
   <!-- --------------------------------------------------
-       BASIC DOCUMENT SETUP
-       - Sets character encoding
-       - Ensures mobile-friendly scaling
-       - Loads the external CSS file
+       DOCUMENT SETUP
+       - Character encoding
+       - Responsive scaling for mobile
+       - Page title
+       - External CSS file
   -------------------------------------------------- -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,33 +18,32 @@
 <body>
 
   <!-- --------------------------------------------------
-       HEADER SECTION
-       - Displays the main title and subtitle
-       - Wrapped in a container for centered layout
+       HEADER
+       - Displays the title and short description
+       - Uses container for centered layout
   -------------------------------------------------- -->
   <header class="site-header">
     <div class="container">
       <h1>JavaScript Memory Game</h1>
       <p class="subtitle">
-        A simple memory matching game built to practise HTML, CSS and JavaScript.
+        A beginner-friendly memory game built to learn HTML, CSS and JavaScript.
       </p>
     </div>
   </header>
 
-  <!-- Main content area -->
   <main class="container">
 
     <!-- --------------------------------------------------
-         GAME RULES
-         - Purely informational
-         - Helps the player understand how the game works
+         GAME RULES (INFORMATION ONLY)
+         - Explains how the game works
+         - No JavaScript interaction here
     -------------------------------------------------- -->
     <section class="panel rules">
       <h2>How to Play</h2>
       <ul>
         <li>You may flip <strong>two cards per turn</strong>.</li>
-        <li>Matched cards stay face-up.</li>
-        <li>Unmatched cards flip back automatically.</li>
+        <li>Cards that match stay face-up.</li>
+        <li>Cards that do not match flip back automatically.</li>
         <li>Each pair of flips counts as <strong>one move</strong>.</li>
         <li>The timer stops when all pairs are matched.</li>
       </ul>
@@ -51,9 +51,9 @@
 
     <!-- --------------------------------------------------
          GAME CONTROLS (FORM)
-         - Required for the assessment
-         - JavaScript reads the form values to start the game
-         - novalidate prevents browser default validation
+         - Required by assessment
+         - JavaScript reads values from this form
+         - novalidate disables browser validation
     -------------------------------------------------- -->
     <section class="panel">
       <h2>Game Controls</h2>
@@ -68,7 +68,7 @@
           placeholder="Enter your name"
           maxlength="20">
 
-        <!-- Difficulty dropdown -->
+        <!-- Difficulty selection -->
         <label for="difficulty">Difficulty</label>
         <select id="difficulty">
           <option value="" disabled selected>Select difficulty</option>
@@ -77,21 +77,19 @@
           <option value="hard">Hard (4 x 4)</option>
         </select>
 
-        <!-- Buttons:
-             - Start Game submits the form
-             - Restart is controlled by JavaScript -->
+        <!-- Action buttons -->
         <button type="submit">Start Game</button>
         <button type="button" id="restartBtn" disabled>Restart</button>
 
-        <!-- Feedback area for validation messages -->
+        <!-- Feedback text written by JavaScript -->
         <p id="formFeedback" class="feedback"></p>
       </form>
     </section>
 
     <!-- --------------------------------------------------
-         STATUS PANEL
-         - Displays live game stats updated by JavaScript
-         - Moves, time, and matched pairs
+         GAME STATUS
+         - Updated live by JavaScript
+         - Shows moves, time and matched pairs
     -------------------------------------------------- -->
     <section class="panel">
       <h2>Game Status</h2>
@@ -104,14 +102,11 @@
 
     <!-- --------------------------------------------------
          GAME BOARD
-         - Empty at first
-         - JavaScript generates cards inside this div
-         - CSS Grid arranges the cards
+         - Starts empty
+         - Cards are inserted dynamically by JavaScript
     -------------------------------------------------- -->
     <section class="panel">
       <h2>Game Board</h2>
-
-      <!-- Cards will be inserted here dynamically -->
       <div id="board" class="board"></div>
     </section>
 
@@ -119,7 +114,6 @@
 
   <!-- --------------------------------------------------
        FOOTER
-       - Simple footer with hosting info
   -------------------------------------------------- -->
   <footer class="site-footer">
     <div class="container">
@@ -128,8 +122,7 @@
   </footer>
 
   <!-- --------------------------------------------------
-       EXTERNAL JAVASCRIPT
-       - Contains all game logic and DOM manipulation
+       EXTERNAL JAVASCRIPT FILE
   -------------------------------------------------- -->
   <script src="script.js"></script>
 </body>

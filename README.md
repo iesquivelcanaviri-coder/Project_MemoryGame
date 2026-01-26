@@ -4,23 +4,25 @@ This is Version 4 of a memory matching game created as part of a JavaScript modu
 
 ## Purpose
 This version focuses on:
-- Writing beginner-friendly code
-- Adding clear comments
-- Understanding how HTML, CSS, and JavaScript work together
+- Beginner-friendly code
+- Very detailed comments
+- Clear separation between HTML, CSS, and JavaScript
+- Understanding game logic step by step
 
 ## Features
 - Card matching logic
 - Move counter
 - Timer
 - Difficulty selection
-- Dynamic DOM manipulation
+- Dynamic board creation using JavaScript
 
 ## Learning Focus
-- DOM selection and events
+- DOM selection and manipulation
+- Event listeners
 - Arrays and objects
 - Game state management
-- CSS Grid layout
 - JavaScript functions and conditions
+- CSS Grid layout
 
 ## Hosting
 This project is hosted using GitHub Pages.
