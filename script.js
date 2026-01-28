@@ -1,10 +1,85 @@
 "use strict";
-
 /* --------------------------------------------------
    SELECT HTML ELEMENTS
-   - These variables connect JavaScript to HTML
-   - We use getElementById to access elements
--------------------------------------------------- */
+   These are called:
+   “DOM (Document Object Model) element references”
+   because each variable stores a reference to an element
+   from the HTML page.
+--------------------------------------------------
+const - JavaScript keyword.
+      - Creates a constant variable.
+      - The *name* of the variable cannot change later.
+      - The *contents* (the HTML element) CAN still be modified.
+
+boardEl   (THIS IS THE VARIABLE NAME YOU CREATED)
+      - A name you chose yourself. “El” means “Element”.
+      - This variable will store the HTML element once it is found.
+      - This name does NOT come from HTML — you invented it.
+
+= - Assignment operator.
+  - Means: “store the value on the right into the variable on the left”.
+
+document - A built‑in JavaScript object.
+        - Represents the entire HTML page.
+        - Created automatically by the browser.
+        - Gives access to the DOM (the browser’s internal structure of your HTML).
+
+.  - Dot operator. Used to access a method or property of an object.
+    - Here it means: “use the getElementById method that belongs to document”.
+
+getElementById - A DOM method (a function inside document). Searches the HTML for an element with a matching id.
+                - Returns that element if found.
+
+(   - Opens the method’s argument list.
+
+"board" (STRING IN JS → MATCHES ID element IN HTML)
+        - A STRING because it is inside quotes.
+        - Also an ARGUMENT passed into getElementById().
+        - Must match exactly the HTML id:
+              <div id="board">
+        - This tells JavaScript which element to search for.
+)  - Closes the argument list.
+;  - Ends the JavaScript statement.
+
+--------------------------------------------------
+2. DEEP LOGIC — WHAT ACTUALLY HAPPENS
+--------------------------------------------------
+Step 1:   The browser loads your HTML and builds the DOM tree.
+Step 2:  JavaScript runs document.getElementById("board").
+Step 3:  The browser searches the DOM for:
+      <div id="board">...</div>
+Step 4:  When found, the method RETURNS that HTML element.
+Step 5:  The = operator stores the returned element inside:
+      boardEl (your variable)
+Step 6:  Now boardEl is a REFERENCE to the real HTML element.
+  You can use boardEl later to update or modify the board.
+--------------------------------------------------
+FINAL SUMMARY
+--------------------------------------------------
+- "board" → STRING in JavaScript.
+- id="board" → ELEMENT ID in HTML.
+- boardEl → VARIABLE NAME YOU CREATED to store the element.
+- document.getElementById("board") → searches HTML and returns the element.
+- boardEl receives and stores that element for later use.
+
+renderBoard() is the function that draws the entire game board.
+The renderBoard() function uses boardEl as the gateway between the game’s
+internal logic and what the player sees on the screen.
+1. boardEl.innerHTML = ""
+   → Completely clears the board before drawing new cards.
+2. For each card in the game state:
+   → JavaScript creates a button element in memory.
+   → The card is invisible until it is added to the board.
+3. boardEl.appendChild(btn)
+   → Inserts each card button into the <div id="board"> element.
+   → This is the moment the card becomes visible to the player.
+Without boardEl:
+- The board could not be cleared.
+- The layout could not be updated.
+- Cards could not be added to the screen.
+- The game would run internally but remain completely invisible.
+*/
+
 const boardEl = document.getElementById("board");
 const gameForm = document.getElementById("gameForm");
 const playerNameEl = document.getElementById("playerName");
@@ -17,8 +92,10 @@ const timeValueEl = document.getElementById("timeValue");
 const pairsValueEl = document.getElementById("pairsValue");
 
 /* --------------------------------------------------
-   GAME CONFIGURATION
-   - Defines board sizes for each difficulty
+   Game CONFIGURATION OBJECT:  Defines board size for each difficulty
+   -Later in the script, the selected difficulty is used to look up these values, 
+   - which determine the board layout, the number of cards to generate, 
+   -and how the board is rendered on the screen.”
 -------------------------------------------------- */
 const DIFFICULTY = {
   easy:   { cols: 2, rows: 3 },
@@ -26,12 +103,12 @@ const DIFFICULTY = {
   hard:   { cols: 4, rows: 4 }
 };
 
-/* Letters used on the cards */
+/* constant containing an ARRAY OF SYMBOLS  */
 const SYMBOLS = "ABCDEFGHJKLMNPQRSTUVWXYZ".split("");
 
 /* --------------------------------------------------
    GAME STATE OBJECT
-   - Stores all changing values during the game
+   - Stores everything that changes during the game
 -------------------------------------------------- */
 let state = {
   isRunning: false,
@@ -49,12 +126,12 @@ let state = {
    HELPER FUNCTIONS
 -------------------------------------------------- */
 
-// Shuffle an array randomly
+// Shuffle array randomly
 function shuffle(array) {
   return array.sort(() => Math.random() - 0.5);
 }
 
-// Convert seconds into mm:ss format
+// Convert seconds to mm:ss format
 function formatTime(seconds) {
   const m = String(Math.floor(seconds / 60)).padStart(2, "0");
   const s = String(seconds % 60).padStart(2, "0");
@@ -62,10 +139,8 @@ function formatTime(seconds) {
 }
 
 /* --------------------------------------------------
-   CREATE AND RENDER GAME BOARD
+   CREATE GAME DECK
 -------------------------------------------------- */
-
-// Create card pairs
 function createDeck(totalCards) {
   const values = SYMBOLS.slice(0, totalCards / 2);
   const deck = [];
@@ -78,11 +153,13 @@ function createDeck(totalCards) {
   return shuffle(deck);
 }
 
-// Render cards into the board
+/* --------------------------------------------------
+   RENDER GAME BOARD
+-------------------------------------------------- */
 function renderBoard() {
   boardEl.innerHTML = "";
 
-  state.cards.forEach((card) => {
+  state.cards.forEach(card => {
     const btn = document.createElement("button");
     btn.className = "card";
     btn.textContent = "Card";
@@ -93,9 +170,8 @@ function renderBoard() {
 }
 
 /* --------------------------------------------------
-   GAME LOGIC
+   CARD INTERACTION LOGIC
 -------------------------------------------------- */
-
 function onCardClick(element, card) {
   if (card.matched || element.classList.contains("is-flipped")) return;
 
@@ -112,6 +188,9 @@ function onCardClick(element, card) {
   }
 }
 
+/* --------------------------------------------------
+   MATCH CHECKING
+-------------------------------------------------- */
 function checkMatch() {
   const first = state.firstPick;
   const second = state.secondPick;
@@ -132,6 +211,9 @@ function checkMatch() {
   }
 }
 
+/* --------------------------------------------------
+   RESET CARD PICKS
+-------------------------------------------------- */
 function resetPicks() {
   state.firstPick = null;
   state.secondPick = null;
@@ -140,7 +222,6 @@ function resetPicks() {
 /* --------------------------------------------------
    STATUS AND TIMER
 -------------------------------------------------- */
-
 function updateStatus() {
   movesValueEl.textContent = state.moves;
   pairsValueEl.textContent = state.pairsFound;
@@ -155,7 +236,7 @@ function startTimer() {
 }
 
 /* --------------------------------------------------
-   FORM SUBMISSION (START GAME)
+   START GAME (FORM SUBMISSION)
 -------------------------------------------------- */
 gameForm.addEventListener("submit", e => {
   e.preventDefault();

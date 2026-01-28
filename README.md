@@ -1,19 +1,17 @@
-# JavaScript Memory Game
-
-This is Version 4 of a memory matching game created as part of a JavaScript module.
+# JavaScript Memory Game — Version 6
 
 ## Purpose
-This version focuses on:
-- Beginner-friendly code
-- Very detailed comments
-- Clear separation between HTML, CSS, and JavaScript
+Version 6 focuses on:
+- Very clear beginner-friendly comments
+- Clean separation of HTML, CSS, and JavaScript
 - Understanding game logic step by step
+- Preparing the project for assessment marking
 
 ## Features
-- Card matching logic
+- Memory card matching game
+- Difficulty selection
 - Move counter
 - Timer
-- Difficulty selection
 - Dynamic board creation using JavaScript
 
 ## Learning Focus
@@ -21,11 +19,15 @@ This version focuses on:
 - Event listeners
 - Arrays and objects
 - Game state management
-- JavaScript functions and conditions
 - CSS Grid layout
+- JavaScript functions and conditions
 
 ## Hosting
-This project is hosted using GitHub Pages.
+This project is hosted using **GitHub Pages**.
+
+## Progression
+This version improves readability, structure, and commenting compared to earlier versions, showing clear learning progression.
+
 
 
 ## Folder Structure

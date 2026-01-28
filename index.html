@@ -4,7 +4,7 @@
   <!-- --------------------------------------------------
        DOCUMENT SETUP
        - Character encoding
-       - Responsive scaling for mobile
+       - Responsive scaling for mobile devices
        - Page title
        - External CSS file
   -------------------------------------------------- -->
@@ -19,31 +19,34 @@
 
   <!-- --------------------------------------------------
        HEADER
-       - Displays the title and short description
-       - Uses container for centered layout
+       - Displays the game title and short description
+       - Uses a container for consistent alignment
   -------------------------------------------------- -->
   <header class="site-header">
     <div class="container">
       <h1>JavaScript Memory Game</h1>
       <p class="subtitle">
-        A beginner-friendly memory game built to learn HTML, CSS and JavaScript.
+        A beginner-friendly memory game built to practise HTML, CSS and JavaScript.
       </p>
     </div>
   </header>
 
+  <!-- --------------------------------------------------
+       MAIN CONTENT
+  -------------------------------------------------- -->
   <main class="container">
 
     <!-- --------------------------------------------------
          GAME RULES (INFORMATION ONLY)
          - Explains how the game works
-         - No JavaScript interaction here
+         - No JavaScript interaction in this section
     -------------------------------------------------- -->
     <section class="panel rules">
       <h2>How to Play</h2>
       <ul>
         <li>You may flip <strong>two cards per turn</strong>.</li>
-        <li>Cards that match stay face-up.</li>
-        <li>Cards that do not match flip back automatically.</li>
+        <li>Matched cards stay face-up.</li>
+        <li>Unmatched cards flip back automatically.</li>
         <li>Each pair of flips counts as <strong>one move</strong>.</li>
         <li>The timer stops when all pairs are matched.</li>
       </ul>
@@ -72,16 +75,16 @@
         <label for="difficulty">Difficulty</label>
         <select id="difficulty">
           <option value="" disabled selected>Select difficulty</option>
-          <option value="easy">Easy (2 x 3)</option>
-          <option value="medium">Medium (3 x 4)</option>
-          <option value="hard">Hard (4 x 4)</option>
+          <option value="easy">Easy (2 × 3)</option>
+          <option value="medium">Medium (3 × 4)</option>
+          <option value="hard">Hard (4 × 4)</option>
         </select>
 
-        <!-- Action buttons -->
+        <!-- Buttons -->
         <button type="submit">Start Game</button>
         <button type="button" id="restartBtn" disabled>Restart</button>
 
-        <!-- Feedback text written by JavaScript -->
+        <!-- Feedback message written by JavaScript -->
         <p id="formFeedback" class="feedback"></p>
       </form>
     </section>
@@ -89,7 +92,7 @@
     <!-- --------------------------------------------------
          GAME STATUS
          - Updated live by JavaScript
-         - Shows moves, time and matched pairs
+         - Displays moves, time, and matched pairs
     -------------------------------------------------- -->
     <section class="panel">
       <h2>Game Status</h2>
@@ -102,8 +105,8 @@
 
     <!-- --------------------------------------------------
          GAME BOARD
-         - Starts empty
-         - Cards are inserted dynamically by JavaScript
+         - Cards are created dynamically by JavaScript
+         - CSS Grid controls layout
     -------------------------------------------------- -->
     <section class="panel">
       <h2>Game Board</h2>
