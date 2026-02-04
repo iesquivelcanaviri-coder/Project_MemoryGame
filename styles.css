@@ -22,6 +22,7 @@
   --muted: #cbd5e1;
   --border: rgba(255,255,255,0.14);
   --highlight: #facc15;
+  --focus: rgba(250, 204, 21, 0.35);
 }
 
 /* --------------------------------------------------
@@ -56,11 +57,18 @@ body {
 
 .site-footer {
   border-top: 1px solid var(--border);
+  border-bottom: none;
   margin-top: 24px;
+}
+
+.site-header .container,
+.site-footer .container {
+  padding: 18px 0;
 }
 
 .subtitle {
   color: var(--muted);
+  line-height: 1.5;
 }
 
 /* --------------------------------------------------
@@ -80,6 +88,13 @@ body {
 .controls {
   display: grid;
   gap: 12px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.controls label {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 0.95rem;
 }
 
 .controls input,
@@ -92,6 +107,30 @@ body {
   color: var(--text);
 }
 
+.controls button {
+  cursor: pointer;
+}
+
+.controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Keyboard focus (accessibility) */
+.controls input:focus-visible,
+.controls select:focus-visible,
+.controls button:focus-visible {
+  outline: none;
+  border-color: var(--highlight);
+  box-shadow: 0 0 0 3px var(--focus);
+}
+
+.feedback {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  min-height: 1.2em;
+}
+
 /* --------------------------------------------------
    STATUS PANEL
 -------------------------------------------------- */
@@ -101,12 +140,20 @@ body {
   gap: 12px;
 }
 
+.status div {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  background: rgba(255,255,255,0.03);
+}
+
 /* --------------------------------------------------
    GAME BOARD
 -------------------------------------------------- */
 .board {
   display: grid;
   gap: 12px;
+  margin-top: 10px;
 }
 
 /* --------------------------------------------------
@@ -118,10 +165,49 @@ body {
   border: 2px solid var(--border);
   background: rgba(255,255,255,0.05);
   cursor: pointer;
+  font-size: 1.5rem;
+  color: var(--text);
+  transition: transform 120ms ease, border-color 120ms ease;
 }
 
+.card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(250,204,21,0.6);
+}
+
+/* Keyboard focus on cards */
+.card:focus-visible {
+  outline: none;
+  border-color: var(--highlight);
+  box-shadow: 0 0 0 3px var(--focus);
+}
+
+/* Flipped card state */
 .card.is-flipped {
   background: var(--highlight);
   border-color: var(--highlight);
   color: #000;
+}
+
+/* Matched card state */
+.card.is-matched {
+  opacity: 0.65;
+  cursor: default;
+}
+
+/* --------------------------------------------------
+   RESPONSIVE
+-------------------------------------------------- */
+@media (max-width: 700px) {
+  .controls {
+    grid-template-columns: 1fr;
+  }
+
+  .status {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    height: 82px;
+  }
 }
