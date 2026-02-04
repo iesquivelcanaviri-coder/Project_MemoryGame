@@ -1,5 +1,4 @@
 ## Purpose
-Version 7 focuses on:
 - Extremely detailed beginner-friendly comments
 - Deep understanding of JavaScript logic
 - Clear explanation of DOM interaction
