@@ -1,5 +1,19 @@
 /* --------------------------------------------------
-   COLOUR VARIABLES
+   COLOUR VARIABLES (CSS CUSTOM PROPERTIES)
+   :root { ... }  ->  :root -> The top‑level element in CSS (the HTML root).
+                - Variables defined here are available everywhere.
+           { } -> Block containing all custom CSS variables.
+   --bg: #0f172a;  ->  --bg -> Custom CSS variable name.
+         : -> Assigns a value to the variable.
+         #0f172a -> Dark blue background color.
+         ; -> Ends the declaration.
+   --panel: #111c35;  ->  --panel -> Background color for panels.
+         #111c35 -> Deep navy tone.
+   --text: #e5e7eb;   ->     --text -> Main text color.
+         #e5e7eb -> Light gray.
+   --muted: #cbd5e1;  ->     --muted -> Subtle, secondary text color.
+   --border: rgba(255,255,255,0.14); ->   --border -> Semi‑transparent white border color.
+   --highlight: #facc15;  ->    --highlight -> Bright yellow used for flipped cards.
 -------------------------------------------------- */
 :root {
   --bg: #0f172a;

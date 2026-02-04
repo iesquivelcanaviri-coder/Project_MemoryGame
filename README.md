@@ -1,40 +1,42 @@
-# JavaScript Memory Game — Version 6
-
 ## Purpose
-Version 6 focuses on:
-- Very clear beginner-friendly comments
-- Clean separation of HTML, CSS, and JavaScript
-- Understanding game logic step by step
-- Preparing the project for assessment marking
+Version 7 focuses on:
+- Extremely detailed beginner-friendly comments
+- Deep understanding of JavaScript logic
+- Clear explanation of DOM interaction
+- Demonstrating learning progression for assessment
 
 ## Features
 - Memory card matching game
 - Difficulty selection
 - Move counter
 - Timer
-- Dynamic board creation using JavaScript
+- Dynamic board rendering with JavaScript
 
 ## Learning Focus
-- DOM selection and manipulation
+- DOM element references
 - Event listeners
 - Arrays and objects
 - Game state management
+- Conditional logic
 - CSS Grid layout
-- JavaScript functions and conditions
 
 ## Hosting
 This project is hosted using **GitHub Pages**.
 
 ## Progression
-This version improves readability, structure, and commenting compared to earlier versions, showing clear learning progression.
-
-
+This version builds on Version 6 by:
+- Adding deep, line-by-line JavaScript explanations
+- Clarifying data flow and logic pipelines
+- Making every step understandable for beginners and examiners
 
 ## Folder Structure
-Project_MemoryGame
-├── assets/
-│   └── memorygame-wireframe_v1.png
-├── README.md
+Project_MemoryGame  
+├── index.html  
+├── styles.css  
+├── script.js  
+├── assets/  
+│   └── memorygame-wireframe_v1.png  
+└── README.md  
 
 ## Wireframe Preview
 ![Memory Game Wireframe](./assets/memorygame-wireframe_v1.png)
