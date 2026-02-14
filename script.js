@@ -1206,9 +1206,8 @@ restartBtn.addEventListener("click", () => {
 
 /* --------------------------------------------------
    INITIAL UI STATE — SETS UP THE SCREEN BEFORE GAME STARTS
-   FUNCTION INVOCATIONS — SHORT EXPLANATION
+   FUNCTION INVOCATIONS
    A function invocation is a command that EXECUTES a function defined earlier.
-   What is a function?
      • Function declaration — standard function defined with "function name()".
      • Function expression — function stored in a variable.
      • Arrow function — shorter syntax using () => {}.
