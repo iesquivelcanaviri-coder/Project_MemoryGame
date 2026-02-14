@@ -126,9 +126,9 @@ const pairsValueEl = document.getElementById("pairsValue");
          Layout -> CSS grid uses cols and rows to size the board.
 -------------------------------------------------- */
 const DIFFICULTY = {
-  easy:   { cols: 2, rows: 3 },
+  easy: { cols: 2, rows: 3 },
   medium: { cols: 3, rows: 4 },
-  hard:   { cols: 4, rows: 4 }
+  hard: { cols: 4, rows: 4 }
 };
 
 /* --------------------------------------------------
@@ -242,231 +242,146 @@ let state = {
 };
 
 /* --------------------------------------------------
-   HELPER FUNCTIONS — SHUFFLE ARRAY RANDOMLY
+   HELPER FUNCTIONS
+--------------------------------------------------
    function shuffle(array) { ... }
-         function -> Declares a reusable function.
-         shuffle -> Name I created. Describes what the function does: shuffles an array.
-         (array) -> Parameter name I chose. “array” represents whatever array is passed into the function.
-                - It is NOT a keyword — just a variable name.
-         { } -> Starts the function body (the code that runs when called).
-
+         function -> Declares a reusable block of code.
+         shuffle -> Function name YOU created; randomizes an array.
+         (array) -> Parameter; the array of items to shuffle.
+         { } -> Function body.
    return array.sort(() => Math.random() - 0.5);
-         return -> Keyword that sends a value OUT of the function.
-                - Whatever follows return becomes the function’s output.
-         array -> The parameter passed into shuffle(). Represents the list of items you want to shuffle.
-         . -> Dot operator.
-         sort(...) -> Built‑in Array method. Rearranges items in the array.
-                - Normally sorts alphabetically.
-                - When given a comparison function, it sorts based on that function.
-         ( ) -> Parentheses for passing a function into .sort().
-         () => ... -> Arrow function. A short way to write a function with no name.
-                - It returns whatever expression is on the right side.
-         Math.random() -> Returns a random number between 0 and 1.
-         Math.random() - 0.5 -> Produces a positive or negative number.
-                - Positive → swap items.
-                - Negative → keep order.
-                - This randomness creates a shuffled array.
-
-   INPUT — WHAT FEEDS INTO shuffle()
-         array -> The deck of card values created in createDeck().
-                - Example: shuffle(["A","A","B","B","C","C"])
-
-   WHERE shuffle() FEEDS INTO (OUTPUT FLOW)
-         1) createDeck(totalCards)
-                - calls shuffle(deck)
-                - receives the shuffled deck back
-         2) state.cards = createDeck(totalCards)
-                - the shuffled deck is stored in the game state
-         3) renderBoard()
-                - reads state.cards
-                - draws the cards in their shuffled order
-
+         return -> Sends the shuffled array back to the caller.
+         array.sort(...) -> Built‑in JS method that reorders items.
+         () => Math.random() - 0.5
+                - Arrow function used as a random comparator.
+                - Math.random() returns a number between 0 and 1.
+                - Subtracting 0.5 gives positive/negative values.
+                - This randomness shuffles the array.
+         ; -> Ends the statement.
+--------------------------------------------------
+   function formatTime(seconds) { ... }
+         function -> Declares a reusable block of code.
+         formatTime -> Converts raw seconds into "mm:ss" format.
+         (seconds) -> Total elapsed time in seconds.
+         { } -> Function body.
+   const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+         Math.floor(seconds / 60) -> Converts seconds to whole minutes.
+         String(...) -> Converts number to string.
+         .padStart(2, "0") -> Ensures 2‑digit formatting (e.g., "03").
+   const s = String(seconds % 60).padStart(2, "0");
+         seconds % 60 -> Remaining seconds after removing full minutes.
+         padStart -> Ensures seconds also have 2 digits.
+   return `${m}:${s}`;
+         Template literal combining minutes + seconds.
+         Produces final time string like "04:27".
+         ; -> Ends the statement.
+--------------------------------------------------
+   function setFeedback(message) { ... }
+         function -> Declares a reusable block of code.
+         setFeedback -> Updates the feedback area on the screen.
+         (message) -> The text to display to the player.
+         { } -> Function body.
+   feedbackEl.textContent = message;
+         feedbackEl -> DOM element where messages appear.
+         .textContent -> Sets the visible text inside that element.
+         message -> The string passed into the function.
+         ; -> Ends the statement.
+--------------------------------------------------
+   WHAT FEEDS INTO THESE FUNCTIONS
+         shuffle() -> Called by createDeck() to randomize cards.
+         formatTime() -> Called by updateStatus() to display timer.
+         setFeedback() -> Called by form submit, endGame(), errors.
+   WHERE THESE FUNCTIONS FEED INTO
+         shuffle() -> Feeds randomized deck into state.cards.
+         formatTime() -> Feeds formatted time into the UI.
+         setFeedback() -> Feeds messages into the feedback display.
    FULL PIPELINE
-         SYMBOLS
-         slice() -> choose symbols
-         duplicate -> create pairs
-         shuffle() -> randomize order
-         createDeck() -> build card objects
-         state.cards -> store shuffled deck
-         renderBoard() -> draw cards on screen
+         createDeck() builds card pairs
+         shuffle() randomizes them
+         startTimer() increments seconds
+         updateStatus() calls formatTime()
+         setFeedback() displays instructions + results
 -------------------------------------------------- */
 function shuffle(array) {
   return array.sort(() => Math.random() - 0.5);
 }
 
-/* --------------------------------------------------
-      HELPER FUNCTION — FORMAT TIME (mm:ss) — CONVERTS SECONDS TO "mm:ss"
-   function formatTime(seconds) { ... }
-         function -> declares reusable code.
-         formatTime -> name I created; formats time.
-         (seconds) -> parameter receiving total elapsed seconds.
-         { } -> function body.
-   const m = String(Math.floor(seconds / 60)).padStart(2, "0");
-         const -> creates a constant variable (name cannot change).
-         m -> Variable name I created. Stores the formatted minutes string.
-         = -> Assignment operator. “Store the value on the right into the variable on the left.”
-         String(...) -> Converts whatever is inside the parentheses into a STRING.
-                - Ensures the result can use string methods like padStart().
-         Math.floor(...) -> Built‑in JS function. Rounds a number DOWN to the nearest whole integer.
-         seconds / 60 -> Division operator. Converts total seconds into minutes.
-                - Example: 125 / 60 → 2.0833 minutes.
-         Math.floor(seconds / 60) -> Takes the whole minutes only.
-                - Example: 2.0833 → 2.
-         String(Math.floor(seconds / 60)) -> Converts the number 2 into the string "2".
-         .padStart(2, "0") -> String method. Pads the start of the string with extra characters.
-                - Ensures the string has at least 2 characters.
-                - If too short, adds "0" at the START.
-                - Example: pad to length 2 using "0".
-                - Final result: m becomes a 2‑digit minute string.
-                - Example: seconds = 125 → m = "02".
-   const s = String(seconds % 60).padStart(2, "0");
-         const -> Declares a constant variable (name cannot be reassigned).
-         s -> Variable name YOU created. Stores the formatted seconds string.
-         = -> Assignment operator (“store right side into left side”).
-         String(...) -> Converts the value inside into a STRING.
-         seconds % 60 -> % = modulo operator.
-                - Gives the remainder after dividing by 60.
-                - Extracts leftover seconds after full minutes.
-                - Example: 125 % 60 → 5.
-         String(seconds % 60) -> Converts the remainder (e.g., 5) into "5".
-         .padStart(2, "0") -> Ensures the string has 2 characters.
-                - Adds a leading "0" if needed. "5" → "05".
-         Final result: s becomes a 2‑digit seconds string (e.g., "05").
-   return `${m}:${s}`;
-         return -> Sends a value OUT of the function.
-         `${m}:${s}` -> Template literal (backticks). Embeds variables directly into a string.
-                - ${m} -> minutes string (e.g., "02").
-                - ${s} -> seconds string (e.g., "05").
-                - ":" -> separator between minutes and seconds.
-         Final output -> "02:05" (always in "mm:ss" format).
-   WHAT FEEDS INTO formatTime()
-         state.seconds -> updated every second by startTimer()
-         updateStatus() -> calls formatTime(state.seconds)
-   WHERE formatTime() FEEDS INTO
-         timeValueEl.textContent = formatTime(state.seconds)
-         - updates the on‑screen timer ("mm:ss")
-   FULL PIPELINE
-         startTimer()
-         state.seconds++
-         updateStatus()
-         formatTime(state.seconds)
-         "mm:ss"
-         timeValueEl.textContent
-         timer updates on screen
-   formatTime() converts raw seconds into "mm:ss" using division, modulo, rounding, string conversion, and padding. It is fed by
-   state.seconds and feeds into the UI timer display.
--------------------------------------------------- */
 function formatTime(seconds) {
   const m = String(Math.floor(seconds / 60)).padStart(2, "0");
   const s = String(seconds % 60).padStart(2, "0");
   return `${m}:${s}`;
 }
 
-/* --------------------------------------------------
-   UI HELPER — FEEDBACK MESSAGE
-   function setFeedback(message) { ... }
-         function -> Declares a reusable block of code.
-         setFeedback -> Function name YOU created. Updates the feedback text shown to the user.
-         (message) -> Parameter name YOU chose; contains the text to display.
-         { } -> Function body; contains all instructions executed when called.
-
-   feedbackEl.textContent = message;
-         feedbackEl -> DOM element that displays feedback messages to the user.
-                - Typically used to show errors, confirmations, or instructions.
-         . -> Dot operator.
-         textContent -> DOM property that sets the visible text inside the element.
-         = -> Assignment operator.
-         message -> The string passed into setFeedback(); becomes the displayed text.
-         ; -> Ends the statement.
-
-   WHAT FEEDS INTO setFeedback()
-         message -> Any string passed by the caller.
-                - Example: "Game started!"
-                - Example: "Please select a difficulty."
-                - Example: "Invalid move."
-
-   WHERE setFeedback() FEEDS INTO
-         feedbackEl -> Updates the on‑screen feedback area.
-         UI messaging -> Provides real‑time communication to the player.
-
-   FULL PIPELINE
-         Some event occurs (form submit, error, success)
-         setFeedback("Your message")
-         feedbackEl.textContent updates
-         Player sees the new message immediately
--------------------------------------------------- */
 function setFeedback(message) {
   feedbackEl.textContent = message;
 }
 
 /* --------------------------------------------------
-   CREATE GAME DECK
+   CREATE DECK — BUILDS ALL CARD OBJECTS FOR THE GAME
+         - Dynamically generates card pairs based on difficulty.
+         - Ensures each symbol appears exactly twice.
+         - Returns a fully shuffled deck ready for rendering.
+--------------------------------------------------
    function createDeck(totalCards) { ... }
          function -> Declares a reusable block of code.
-         createDeck -> Function name YOU created. Builds the full deck of cards for the game.
-         (totalCards) -> Parameter representing how many cards the board should contain.
-         { } -> Function body; contains all instructions executed when the function is called.
+         createDeck -> Function name YOU created; builds the card deck.
+         (totalCards) -> Number of cards required for the chosen difficulty.
+         { } -> Function body containing all instructions.
 
    const values = SYMBOLS.slice(0, totalCards / 2);
-         const -> Declares a constant variable (cannot be reassigned).
-         values -> Variable name YOU created; stores the selected card symbols.
-         = -> Assignment operator.
-         SYMBOLS -> Array of all possible card symbols (A, B, C, ...).
-         . -> Dot operator used to access a method on the SYMBOLS array.
-         slice(0, totalCards / 2) -> Array method that extracts part of the array.
-                - 0 -> Starting index.
-                - totalCards / 2 -> Number of unique symbols needed (because each symbol appears twice).
-                - Returns an array of the first N symbols.
+         const -> Declares a constant (cannot be reassigned).
+         values -> Array of unique symbols used for this game.
+         SYMBOLS -> Master list of all possible card symbols.
+         .slice(0, totalCards / 2)
+                - Extracts only the number of symbols needed.
+                - Example: 12 cards → 6 unique symbols.
+         ; -> Ends the statement.
 
    const deck = [];
-         const -> Declares a constant variable.
-         deck -> Variable name YOU created; will store the full deck of card objects.
-         = -> Assignment operator.
-         [] -> Empty array literal; deck starts empty.
+         deck -> Empty array that will store all card objects.
+         [] -> Empty array literal.
+         ; -> Ends the statement.
 
    values.forEach(value => { ... });
-         values -> Array of selected symbols.
-         . -> Dot operator.
-         forEach(...) -> Array method; loops through each symbol in values.
-         value -> Parameter name YOU chose; represents the current symbol in the loop.
-         => -> Arrow function syntax.
-         { } -> Code block executed for each symbol.
+         values -> Array of unique symbols.
+         .forEach(...) -> Loops through each symbol.
+         value -> Current symbol in the loop.
+         => -> Arrow function.
 
       deck.push({ value, matched: false });
-         deck -> The array storing all card objects.
-         . -> Dot operator.
-         push(...) -> Array method; adds a new item to the end of the array.
-         { value, matched: false } -> Object literal representing a single card.
-                - value -> The card’s symbol (A, B, C, etc.).
-                - matched: false -> Indicates the card is not yet matched.
+             deck.push -> Adds a new card object to the deck.
+             { value, matched: false }
+                    - value -> The symbol shown when flipped.
+                    - matched: false -> Card starts unmatched.
 
       deck.push({ value, matched: false });
-         deck -> Same array.
-         . -> Dot operator.
-         push(...) -> Adds the second copy of the card.
-         { value, matched: false } -> Creates the matching pair for the symbol.
+             Adds the second copy of the same symbol.
+             Ensures each symbol appears exactly twice.
 
    return shuffle(deck);
-         return -> Sends a value OUT of the function.
-         shuffle(deck) -> Calls the shuffle() function to randomize card order.
-                - deck -> The full list of card objects (pairs included).
+         return -> Sends the final deck back to the caller.
+         shuffle(deck) -> Randomizes card order.
          ; -> Ends the statement.
 
    WHAT FEEDS INTO createDeck()
-         SYMBOLS -> Source of all possible card symbols.
-         totalCards -> Determines how many symbols to slice and how many pairs to create.
+         • Difficulty selection -> Determines totalCards.
+         • SYMBOLS -> Provides the available card values.
 
    WHERE createDeck() FEEDS INTO
-         state.cards -> Receives the shuffled deck.
-         renderBoard() -> Uses state.cards to draw the cards on screen.
+         • state.cards -> Stores the full deck.
+         • renderBoard() -> Uses the deck to draw the grid.
+         • checkMatch() -> Reads card.value for comparisons.
 
    FULL PIPELINE
-       SYMBOLS
-       slice() -> select needed symbols
-       forEach() -> duplicate symbols into pairs
-       push() -> build card objects
-       shuffle() -> randomize deck
-       return deck -> stored in state.cards
+         User selects difficulty
+         totalCards = cols * rows
+         createDeck(totalCards)
+         → Generate unique values
+         → Duplicate each value
+         → Build card objects
+         → Shuffle deck
+         state.cards = shuffled deck
+         renderBoard() draws the cards
 -------------------------------------------------- */
 function createDeck(totalCards) {
   const values = SYMBOLS.slice(0, totalCards / 2);
@@ -481,203 +396,485 @@ function createDeck(totalCards) {
 }
 
 /* --------------------------------------------------
-   RENDER GAME BOARD: DRAWS ALL CARDS ON THE SCREEN.  Creates card buttons dynamically.
+   RENDER BOARD — DRAWS ALL CARD BUTTONS ON SCREEN
+         - Fully dynamic board creation based on difficulty.
+         - Clears old board before rendering a new one.
+         - Attaches click handlers to every card button.
+--------------------------------------------------
    function renderBoard() { ... }
-         function     -declares a reusable block of code.
-         renderBoard    -Function name YOU created.  Describes its purpose: render (draw) the game board.
-         ()    -Empty parameter list; this function receives no inputs directly.
-         { }   -Function body; contains all instructions that run when called.
+         function -> Declares a reusable block of code.
+         renderBoard -> Function name YOU created; builds the visual board.
+         { } -> Function body containing all instructions.
+
    boardEl.innerHTML = "";
-       boardEl   -Variable storing the <div id="board"> element.
-       .     -Dot operator; accesses a property of the element.
-       innerHTML   -Property that controls the HTML *inside* the element.
-       =     -Assignment operator.
-       ""    -Empty string; clears all existing content.
-       ;     -Ends the statement.
+         boardEl -> DOM element representing the game board grid.
+         .innerHTML -> Property that controls the element’s HTML content.
+         = "" -> Clears all previous cards from the board.
+         ; -> Ends the statement.
 
-   state.cards.forEach(card => { ... });
-        state.cards    -Array of card objects created by createDeck().
-        .     Access operator.
-        forEach(...)    Array method; loops through each item in the array.
-        card      Parameter name YOU chose. Represents the current card object in the loop.
-        =>     Arrow function syntax.
-        { }    Code to run for each card.
-    const btn = document.createElement("button");
-          const    -Declares a constant variable.
-          btn     -Variable name YOU created; stores the new button.
-          =      -Assignment operator.
-          document     -Built‑in JS object representing the entire HTML page.
-          .       -Access operator    
-          createElement("button")    -DOM method; creates a <button> element in memory.
-          "button"     -String specifying the type of element to create.
-    btn.className = "card";
-          btn   -The button element you just created.
-          .     -Access operator.
-          className     -Property that sets the element’s CSS class.
-        =       Assignment operator.
-        "card"      String; CSS class name applied to the button.
-    btn.textContent = "Card";
-        btn   -The button element you just created.
-        textContent     -Sets the visible text inside the button.
-        "Card"     - Placeholder text until the card is flipped.
+   state.cards.forEach((card, index) => { ... });
+         state -> Game state object.
+         .cards -> Array of card objects created by createDeck().
+         .forEach(...) -> Loops through each card in the deck.
+         (card, index) -> card = card object, index = card position.
+         => -> Arrow function.
 
-     btn.dataset.index = String(index);
-            btn.dataset     -Access to all data-* attributes on the element.
-            .index          -Creates data-index="..." on the button.
-            =               -Assigns a value.
-            String(index)   -Converts index to a string.
-                              This stores the card’s position in the deck
-                              so you can identify which card was clicked
-                              without relying on DOM order.
+      const btn = document.createElement("button");
+             const -> Declares a constant variable.
+             btn -> New button element representing a single card.
+             document.createElement("button")
+                    - Creates a <button> element in the DOM.
 
-    btn.addEventListener("click", () => onCardClick(btn, card));
-       addEventListener      -DOM method; attaches an event listener.
-       "click"          -Event type; triggers when the button is clicked.
-       () => onCardClick(btn, card)    -Arrow function.   Calls onCardClick() with:
-                                          btn  → the button element
-                                          card → the card object from state.cards
-    boardEl.appendChild(btn);
-          appendChild     -DOM method; inserts the button into the board.
-          btn         -The button element becomes visible on the page.
+      btn.className = "card";
+             .className -> Sets the CSS class for styling.
+             "card" -> Base class used for all card buttons.
+
+      btn.textContent = "Card";
+             .textContent -> Sets visible text inside the button.
+             "Card" -> Placeholder text until flipped.
+
+      btn.dataset.index = index;
+             .dataset -> Stores custom data attributes.
+             .index -> Custom attribute used to track card position.
+             index -> The card’s index in state.cards.
+
+      btn.addEventListener("click", () => onCardClick(btn, index));
+             addEventListener -> Attaches an event listener.
+             "click" -> Event type.
+             () => onCardClick(btn, index)
+                    - Arrow function calling your click handler.
+                    - Passes the button + index to onCardClick().
+
+      boardEl.appendChild(btn);
+             appendChild -> Adds the button to the game board.
+             btn -> The card button created above.
+
+--------------------------------------------------
    WHAT FEEDS INTO renderBoard()
-          state.cards   -The shuffled deck created by createDeck().
-          boardEl     -The HTML container where cards are drawn.
+         • state.cards -> Contains all card objects.
+         • createDeck() -> Generates the deck.
+         • Difficulty selection -> Determines board size.
+
    WHERE renderBoard() FEEDS INTO
-       The visible game board on the screen.
-       Called after:
-           - Game start
-           - Restart
-           - Difficulty change
-       It updates the DOM so the player sees the cards.
+         • onCardClick() -> Handles card flipping.
+         • CSS Grid -> Uses gridTemplateColumns for layout.
+         • Game UI -> Displays all cards to the player.
+
    FULL PIPELINE
-       createDeck()
-       state.cards = shuffled deck
+         resetGame()
+         createDeck(totalCards)
+         state.cards = shuffled deck
+         renderBoard()
+         → Clear old board
+         → Create button for each card
+         → Attach click listeners
+         → Display grid on screen
 -------------------------------------------------- */
 function renderBoard() {
   boardEl.innerHTML = "";
 
-  state.cards.forEach(card => {
+  state.cards.forEach((card, index) => {
     const btn = document.createElement("button");
     btn.className = "card";
     btn.textContent = "Card";
-    btn.dataset.index = String(index);
+    btn.dataset.index = index;
 
-    btn.addEventListener("click", () => onCardClick(btn, card));
+    btn.addEventListener("click", () => onCardClick(btn, index));
+
     boardEl.appendChild(btn);
   });
 }
 
-
 /* --------------------------------------------------
-   UPDATE STATUS — REFRESHES UI VALUES
-   function updateStatus() { ... }
+   CARD CLICK HANDLER — PROCESSES EACH CARD FLIP
+         - Prevents invalid clicks (same card, matched card, rapid clicks).
+         - Stores first and second picks for match checking.
+         - Updates move counter automatically.
+--------------------------------------------------
+   function onCardClick(element, index) { ... }
          function -> Declares a reusable block of code.
-         updateStatus -> Function name YOU created; updates all visible status values.
-         { } -> Function body; contains all instructions executed when called.
+         onCardClick -> Function name YOU created; handles card flipping.
+         (element, index) -> element = clicked button, index = card position.
+         { } -> Function body containing all instructions.
 
-   movesValueEl.textContent = String(state.moves);
-         movesValueEl -> DOM element that displays the number of moves.
-         . -> Dot operator.
-         textContent -> Sets the visible text inside the element.
-         = -> Assignment operator.
-         String(...) -> Converts the value into a STRING.
-                - Ensures consistent text output.
-         state -> Main game state object.
-         . -> Dot operator.
-         moves -> Number of turns taken by the player.
-         ; -> Ends the statement.
+   if (!state.isRunning) return;
+         state -> Game state object.
+         .isRunning -> Boolean controlling whether gameplay is active.
+         !state.isRunning -> If game has not started, ignore clicks.
+         return -> Exits the function immediately.
 
-   pairsValueEl.textContent = String(state.pairsFound);
-         pairsValueEl -> DOM element showing how many pairs have been matched.
-         . -> Dot operator.
-         textContent -> Updates the visible text.
-         = -> Assignment operator.
-         String(...) -> Converts the number into a STRING.
-         state.pairsFound -> Total matched pairs so far.
-         ; -> Ends the statement.
+   if (state.lockBoard) return;
+         state.lockBoard -> Prevents clicks during mismatch animation.
+         return -> Stops further processing.
 
-   timeValueEl.textContent = formatTime(state.seconds);
-         timeValueEl -> DOM element showing the formatted timer.
-         . -> Dot operator.
-         textContent -> Updates the visible text.
-         = -> Assignment operator.
-         formatTime(...) -> Converts raw seconds into "mm:ss".
-         state.seconds -> Total elapsed seconds.
-         ; -> Ends the statement.
+   const card = state.cards[index];
+         const -> Declares a constant variable.
+         card -> The card object at the clicked index.
+         state.cards -> Array of all card objects.
+         [index] -> Retrieves the specific card.
 
-   WHAT FEEDS INTO updateStatus()
-         state.moves -> Updated by onCardClick().
-         state.pairsFound -> Updated by checkMatch().
-         state.seconds -> Updated by startTimer().
-         formatTime() -> Converts seconds to readable time.
+   if (card.matched) return;
+         Prevents flipping a card that is already matched.
 
-   WHERE updateStatus() FEEDS INTO
-         movesValueEl -> Move counter display.
-         pairsValueEl -> Matched pairs display.
-         timeValueEl -> Timer display.
+   if (state.firstPick && state.firstPick.index === index) return;
+         Prevents clicking the SAME card twice in one turn.
+         state.firstPick -> First selected card.
+         .index -> Position of that card.
+
+   element.textContent = card.value;
+         element -> The button representing the card.
+         .textContent -> Shows the card’s symbol.
+         card.value -> The symbol stored in the card object.
+
+   element.classList.add("is-flipped");
+         .classList -> List of CSS classes on the element.
+         .add("is-flipped") -> Applies flipped styling.
+
+   if (!state.firstPick) {
+         Checks if this is the FIRST card of the turn.
+
+      state.firstPick = { element, index, card };
+             Stores the first selected card’s:
+                - element (button)
+                - index (position)
+                - card (data object)
+      return;
+             Ends function; waits for second card.
+   }
+
+   state.secondPick = { element, index, card };
+         Stores the second selected card.
+
+   state.moves++;
+         state.moves -> Move counter.
+         ++ -> Increment operator; adds 1 move.
+
+   updateStatus();
+         updateStatus -> Refreshes UI (moves, pairs, time).
+
+   checkMatch();
+         checkMatch -> Compares firstPick and secondPick.
+         Determines match or mismatch.
+--------------------------------------------------
+   WHAT FEEDS INTO onCardClick()
+         • renderBoard() -> Creates the clickable buttons.
+         • state.cards -> Provides card data.
+         • state.isRunning -> Ensures game has started.
+         • state.lockBoard -> Prevents rapid clicking.
+
+   WHERE onCardClick() FEEDS INTO
+         • state.firstPick / state.secondPick -> Stores selections.
+         • updateStatus() -> Updates move counter.
+         • checkMatch() -> Determines match logic.
+         • UI -> Flips cards visually.
 
    FULL PIPELINE
-         Game state changes (moves, pairsFound, seconds)
-         updateStatus()
-         UI instantly refreshes to show new values
+         Player clicks a card
+         onCardClick() runs
+         → Validate click
+         → Flip card visually
+         → Store firstPick or secondPick
+         If secondPick:
+             moves++
+             updateStatus()
+             checkMatch()
 -------------------------------------------------- */
-function updateStatus() {
-  movesValueEl.textContent = String(state.moves);
-  pairsValueEl.textContent = String(state.pairsFound);
-  timeValueEl.textContent = formatTime(state.seconds);
+function onCardClick(element, index) {
+  if (!state.isRunning) return;
+  if (state.lockBoard) return;
+
+  const card = state.cards[index];
+
+  if (card.matched) return;
+  if (state.firstPick && state.firstPick.index === index) return;
+
+  element.textContent = card.value;
+  element.classList.add("is-flipped");
+
+  if (!state.firstPick) {
+    state.firstPick = { element, index, card };
+    return;
+  }
+
+  state.secondPick = { element, index, card };
+  state.moves++;
+  updateStatus();
+  checkMatch();
 }
 
 /* --------------------------------------------------
-   START TIMER — BEGINS THE GAME CLOCK
-   NEW IN V8:
-         - Always clears the old timer first to avoid double timers.
-         - Prevents multiple intervals from running at the same time.
+   MATCH CHECKING — COMPARES THE TWO SELECTED CARDS
+         - Handles both match and mismatch logic.
+         - Locks the board during animations to prevent rapid clicking.
+         - Updates pairsFound and triggers endGame() when complete.
+--------------------------------------------------
+   function checkMatch() { ... }
+         function -> Declares a reusable block of code.
+         checkMatch -> Function name YOU created; evaluates card matches.
+         { } -> Function body containing all instructions.
+
+   const first = state.firstPick;
+   const second = state.secondPick;
+         const -> Declares read‑only variables.
+         first / second -> Objects storing:
+                - element (button)
+                - index (position)
+                - card (data object)
+         state.firstPick / state.secondPick -> Values set in onCardClick().
+
+   if (!first || !second) return;
+         Guard clause:
+                - If either pick is missing, exit early.
+                - Prevents errors if function is called too soon.
+         return -> Stops execution.
+
+   if (first.card.value === second.card.value) {
+         Compares the symbols of both selected cards.
+         If equal → MATCH FOUND.
+
+      first.card.matched = true;
+      second.card.matched = true;
+             Marks both card objects as permanently matched.
+
+      first.element.classList.add("is-matched");
+      second.element.classList.add("is-matched");
+             Adds matched styling to both card buttons.
+
+      state.pairsFound++;
+             Increments number of matched pairs.
+
+      updateStatus();
+             Refreshes UI (pairs, moves, time).
+
+      resetPicks();
+             Clears firstPick and secondPick for next turn.
+
+      if (state.pairsFound === state.totalPairs) {
+             Checks if all pairs are matched.
+             If yes → Game is finished.
+         endGame();
+      }
+
+      return;
+             Ends function after handling match.
+   }
+
+   state.lockBoard = true;
+         No match → Temporarily disable clicking.
+         Prevents flipping more cards during animation.
+
+   setTimeout(() => {
+         setTimeout -> Delays execution for mismatch animation.
+         600 -> Delay in milliseconds (0.6 seconds).
+
+      first.element.textContent = "Card";
+      second.element.textContent = "Card";
+             Resets card text back to placeholder.
+
+      first.element.classList.remove("is-flipped");
+      second.element.classList.remove("is-flipped");
+             Removes flipped styling.
+
+      resetPicks();
+             Clears stored selections.
+
+      state.lockBoard = false;
+             Re‑enables clicking after animation.
+   }, 600);
+
+--------------------------------------------------
+   WHAT FEEDS INTO checkMatch()
+         • onCardClick() -> Sets firstPick and secondPick.
+         • state.cards -> Provides card values.
+         • state.lockBoard -> Prevents premature clicks.
+
+   WHERE checkMatch() FEEDS INTO
+         • state.pairsFound -> Increases on match.
+         • updateStatus() -> Updates UI.
+         • endGame() -> Called when all pairs are matched.
+         • resetPicks() -> Clears selections for next turn.
+
+   FULL PIPELINE
+         Player selects two cards
+         onCardClick() stores firstPick + secondPick
+         checkMatch()
+         → If match:
+               mark matched
+               updateStatus()
+               resetPicks()
+               if all pairs found → endGame()
+         → If mismatch:
+               lockBoard = true
+               flip cards back after delay
+               resetPicks()
+               lockBoard = false
+-------------------------------------------------- */
+function checkMatch() {
+  const first = state.firstPick;
+  const second = state.secondPick;
+
+  if (!first || !second) return;
+
+  if (first.card.value === second.card.value) {
+    first.card.matched = true;
+    second.card.matched = true;
+
+    first.element.classList.add("is-matched");
+    second.element.classList.add("is-matched");
+
+    state.pairsFound++;
+    updateStatus();
+    resetPicks();
+
+    if (state.pairsFound === state.totalPairs) {
+      endGame();
+    }
+
+    return;
+  }
+
+  state.lockBoard = true;
+
+  setTimeout(() => {
+    first.element.textContent = "Card";
+    second.element.textContent = "Card";
+    first.element.classList.remove("is-flipped");
+    second.element.classList.remove("is-flipped");
+
+    resetPicks();
+    state.lockBoard = false;
+  }, 600);
+}
+
+/* --------------------------------------------------
+    resetPicks() — FUNCTION DECLARATION + INTERNAL ACTIONS
+       • resetPicks() is a function declaration.
+       • Inside it are two assignments that clear temporary selection data.
+--------------------------------------------------
+   function resetPicks() { ... }
+         function -> Declares a reusable block of code.
+         resetPicks -> Function name YOU created; clears stored selections.
+         { } -> Function body containing all instructions.
+
+   state.firstPick = null;
+         state -> Game state object.
+         .firstPick -> Stores the first selected card of the turn.
+         = -> Assignment operator.
+         null -> Removes the stored card reference.
+                 Means “no first card selected”.
+         ; -> Ends the statement.
+
+   state.secondPick = null;
+         .secondPick -> Stores the second selected card of the turn.
+         null -> Clears the second selection.
+         ; -> Ends the statement.
+
+   WHY resetPicks() IS NEEDED
+         • Prevents leftover card data from previous turns.
+         • Ensures checkMatch() always works with fresh values.
+         • Allows the next pair of flips to be processed correctly.
+
+   WHAT FEEDS INTO resetPicks()
+         • checkMatch() -> Calls resetPicks() after match or mismatch.
+         • onCardClick() -> Relies on cleared picks for next turn.
+
+   WHERE resetPicks() FEEDS INTO
+         • onCardClick() -> Allows new firstPick to be set.
+         • checkMatch() -> Ensures no stale data remains.
+         • Game flow -> Resets turn cycle.
+
+   FULL PIPELINE
+         Player flips two cards
+         checkMatch() runs
+         → If match: mark matched, update UI, resetPicks()
+         → If mismatch: flip back, resetPicks()
+         Next turn begins with clean state
+-------------------------------------------------- */
+function resetPicks() {
+  state.firstPick = null;
+  state.secondPick = null;
+}
+
+/* --------------------------------------------------
+   STATUS + TIMER — UPDATES UI + CONTROLS GAME CLOCK
+     • All three are function declarations.
+     • Inside them are assignments, DOM updates, and function invocations.
+     • No objects are created here — only state updates and timer control.
+--------------------------------------------------
+   function updateStatus() { ... }
+         function -> Declares a reusable block of code.
+         updateStatus -> Function name YOU created; refreshes UI values.
+         { } -> Function body containing all instructions.
+   movesValueEl.textContent = state.moves;
+         movesValueEl -> DOM element showing number of moves.
+         .textContent -> Updates visible text.
+         state.moves -> Current move count.
+   pairsValueEl.textContent = state.pairsFound;
+         pairsValueEl -> DOM element showing matched pairs.
+         state.pairsFound -> Number of pairs found so far.
+   timeValueEl.textContent = formatTime(state.seconds);
+         timeValueEl -> DOM element showing formatted time.
+         formatTime(...) -> Converts seconds to "mm:ss".
+         state.seconds -> Total elapsed time.
 --------------------------------------------------
    function startTimer() { ... }
          function -> Declares a reusable block of code.
          startTimer -> Function name YOU created; starts the game timer.
-         { } -> Function body; contains all instructions executed when called.
+         { } -> Function body.
    clearInterval(state.timer);
-         clearInterval -> Built‑in JS function that stops a running interval.
-                - Prevents duplicate timers from stacking.
-         (state.timer) -> The interval ID stored in state.timer.
-         ; -> Ends the statement.
-
+         clearInterval -> Stops any existing interval.
+         state.timer -> Interval ID stored in game state.
+         Prevents multiple timers from stacking.
    state.timer = setInterval(() => { ... }, 1000);
          state -> Game state object.
-         . -> Dot operator.
-         timer -> Property that stores the interval ID.
+         .timer -> Stores the new interval ID.
          = -> Assignment operator.
-         setInterval(...) -> Built‑in JS function that repeats code every X ms.
-                - Returns an interval ID (stored in state.timer).
+         setInterval(...) -> Runs code repeatedly every X ms.
          () => { ... } -> Arrow function executed every second.
-         1000 -> Delay time in milliseconds (1 second).
-         ; -> Ends the statement.
+         1000 -> Delay in milliseconds (1 second).
       state.seconds++;
-             state -> Game state object.
-             . -> Dot operator.
-             seconds -> Tracks elapsed time.
-             ++ -> Increment operator; adds 1 each second.
-      updateStatus(); 
-             updateStatus -> Function that refreshes the UI.
-             () -> Calls the function.
-   WHAT FEEDS INTO startTimer()
-         Game start -> Called when a new game begins.
-         state.timer -> Cleared before starting a new interval.
-         state.seconds -> Starts at 0.
-   WHERE startTimer() FEEDS INTO
-         state.seconds -> Increases every second.
-         updateStatus() -> Refreshes UI each second.
-         Timer display -> Shows updated "mm:ss".
+             state.seconds -> Tracks elapsed time.
+             ++ -> Adds 1 second each tick.
+      updateStatus();
+             Refreshes UI so timer display updates live.
+--------------------------------------------------
+   function stopTimer() { ... }
+         function -> Declares a reusable block of code.
+         stopTimer -> Function name YOU created; stops the timer.
+         { } -> Function body.
+   clearInterval(state.timer);
+         Stops the active interval immediately.
+   state.timer = null;
+         Clears the stored interval ID.
+         null -> Indicates “no active timer”.
+         Ensures startTimer() can safely create a new one.
+--------------------------------------------------
+   WHAT FEEDS INTO THESE FUNCTIONS
+         • startTimer() -> Called when game begins.
+         • stopTimer() -> Called when game ends or resets.
+         • updateStatus() -> Called after moves, pairs, or seconds change.
+   WHERE THESE FUNCTIONS FEED INTO
+         • UI updates -> Moves, pairs, and time display.
+         • Game flow -> Timer increments drive the clock.
+         • endGame() -> Uses final time from state.seconds.
    FULL PIPELINE
          startTimer()
-         clearInterval(oldTimer)
-         new setInterval begins
+         → clearInterval(oldTimer)
+         → create new setInterval
          Every 1 second:
              state.seconds++
              updateStatus()
-             timeValueEl.textContent updates
+             timeValueEl updates
+         stopTimer()
+         → clearInterval(state.timer)
+         → state.timer = null
 -------------------------------------------------- */
+function updateStatus() {
+  movesValueEl.textContent = state.moves;
+  pairsValueEl.textContent = state.pairsFound;
+  timeValueEl.textContent = formatTime(state.seconds);
+}
+
 function startTimer() {
   clearInterval(state.timer);
   state.timer = setInterval(() => {
@@ -686,543 +883,123 @@ function startTimer() {
   }, 1000);
 }
 
-/* --------------------------------------------------
-   STOP TIMER — HALTS THE GAME CLOCK
-   NEW IN V8:
-         - Cleanly stops the running interval.
-         - Resets state.timer so a new timer can start safely.
---------------------------------------------------
-   function stopTimer() { ... }
-         function -> Declares a reusable block of code.
-         stopTimer -> Function name YOU created; stops the game timer.
-         { } -> Function body; contains all instructions executed when called.
-   clearInterval(state.timer);
-         clearInterval -> Built‑in JS function that stops a running interval.
-                - Immediately halts the ticking of the timer.
-         (state.timer) -> The interval ID currently stored in state.timer.
-         ; -> Ends the statement.
-   state.timer = null;
-         state -> Game state object.
-         . -> Dot operator.
-         timer -> Property storing the interval ID.
-         = -> Assignment operator.
-         null -> Explicitly clears the timer reference.
-                - Indicates “no active timer”.
-                - Ensures startTimer() can create a fresh interval later.
-         ; -> Ends the statement.
-   WHAT FEEDS INTO stopTimer()
-         • state.timer -> Must contain a valid interval ID.
-         • Called when:
-              - Game ends
-              - Player wins
-              - Game resets
-              - Difficulty changes
-   WHERE stopTimer() FEEDS INTO
-         • Prevents further time increments.
-         • Freezes the timer display at the final time.
-         • Ensures startTimer() won’t stack multiple intervals.
-   FULL PIPELINE
-         stopTimer()
-         clearInterval(state.timer)
-         state.timer = null
-         Timer fully stops
-         No more state.seconds++ updates
--------------------------------------------------- */
 function stopTimer() {
   clearInterval(state.timer);
   state.timer = null;
 }
 
 /* --------------------------------------------------
-   CARD INTERACTION LOGIC
-   NEW IN V8:
-         - lockBoard prevents rapid clicking and flipping > 2 cards.
-         - Prevents clicking matched cards.
-         - Prevents clicking the same card twice in the same turn.
---------------------------------------------------
-   function onCardClick(element, index) { ... }
-         function -> Declares a reusable block of code.
-         onCardClick -> Function name I created; handles all card click behavior.
-         (element, index) -> Parameters:
-                - element -> The <button> DOM element representing the card.
-                - index -> The card’s position inside state.cards.
-         { } -> Function body; contains all instructions executed when a card is clicked.
-   if (!state.isRunning) return;
-         if -> Conditional statement.
-         ( !state.isRunning ) -> Checks if the game is not active.
-         ! -> Logical NOT operator.
-         state.isRunning -> Boolean controlling whether clicks are allowed.
-         return -> Exits the function immediately.
-         ; -> Ends the statement.
-   if (state.lockBoard) return;
-         state -> Game state object.
-         . -> Dot operator.
-         lockBoard -> Boolean that temporarily disables clicking.
-                - Used during animations or match checking.
-         return -> Prevents further card interaction.
-         ; -> Ends the statement.
-   const card = state.cards[index];
-         const -> Declares a constant variable.
-         card -> Stores the card object at the clicked index.
-         = -> Assignment operator.
-         state.cards -> Array of all card objects.
-         [index] -> Retrieves the card at the clicked position.
-         ; -> Ends the statement.
-   if (card.matched) return;
-         card -> The selected card object.
-         . -> Dot operator.
-         matched -> Boolean indicating if the card is already matched.
-         return -> Prevents interacting with already matched cards.
-         ; -> Ends the statement.
-   if (state.firstPick && state.firstPick.index === index) return;
-         state.firstPick -> The first selected card of the turn.
-         && -> Logical AND operator.
-         state.firstPick.index -> Index of the first selected card.
-         === -> Strict equality operator.
-         index -> Index of the card just clicked.
-         return -> Prevents clicking the same card twice.
-         ; -> Ends the statement.
-   element.textContent = card.value;
-         element -> The <button> DOM element.
-         . -> Dot operator.
-         textContent -> Sets the visible text inside the button.
-         = -> Assignment operator.
-         card.value -> The symbol/letter of the card.
-         ; -> Ends the statement.
-   element.classList.add("is-flipped");
-         element.classList -> List of CSS classes on the card element.
-         . -> Dot operator.
-         add -> Adds a CSS class.
-         ("is-flipped") -> Applies flipped styling.
-         ; -> Ends the statement.
-   if (!state.firstPick) { ... }
-         if -> Conditional statement.
-         ( !state.firstPick ) -> Checks if this is the first card of the turn.
-         { } -> Code block executed when true.
-      state.firstPick = { element, index, card };
-              state -> Game state object.
-              . -> Dot operator.
-              firstPick -> Stores the first selected card.
-              = -> Assignment operator.
-              { element, index, card } -> Object containing:
-                      - element -> DOM element
-                      - index -> Card index
-                      - card -> Card data object
-              ; -> Ends the statement.
-       return;
-             return -> Ends function; waits for second card.
-             ; -> Ends the statement.
-   state.secondPick = { element, index, card };
-         state -> Game state object.
-         . -> Dot operator.
-         secondPick -> Stores the second selected card.
-         = -> Assignment operator.
-         { element, index, card } -> Object containing second card info.
-         ; -> Ends the statement.
-   state.moves++;
-         state -> Game state object.
-         . -> Dot operator.
-         moves -> Move counter.
-         ++ -> Increment operator; adds 1.
-         ; -> Ends the statement.
-   updateStatus();
-         updateStatus -> Function that refreshes UI values.
-         () -> Calls the function.
-         ; -> Ends the statement.
-   checkMatch();
-         checkMatch -> Function that determines match/mismatch.
-         () -> Calls the function.
-         ; -> Ends the statement.
+   endGame() — FUNCTION DECLARATION + INTERNAL ACTIONS
 
-   WHAT FEEDS INTO onCardClick()
-         element -> The clicked DOM element.
-         index -> Position of the card in state.cards.
-         state.isRunning -> Controls whether clicks are allowed.
-         state.lockBoard -> Prevents rapid clicking.
-         state.firstPick / state.secondPick -> Track selections.
-         card.matched -> Prevents interacting with matched cards.
-   WHERE onCardClick() FEEDS INTO
-         state.firstPick -> Set on first click.
-         state.secondPick -> Set on second click.
-         state.moves -> Incremented after second pick.
-         updateStatus() -> UI refresh.
-         checkMatch() -> Match logic triggered.
-   FULL PIPELINE
-         User clicks card
-         onCardClick()
-         Validate: game running, board unlocked, card not matched, not same card
-         Flip card visually
-         If firstPick empty -> store firstPick and exit
-         Else -> store secondPick
-         moves++
-         updateStatus()
-         checkMatch()
--------------------------------------------------- */
-function onCardClick(element, index) {
-  if (!state.isRunning) return;
-  if (state.lockBoard) return; 
-  const card = state.cards[index];
-  if (card.matched) return;  /* Prevent clicking already matched cards */
-  if (state.firstPick && state.firstPick.index === index) return;  /* Prevent clicking the same card twice in the same turn */
-  element.textContent = card.value;
-  element.classList.add("is-flipped");
-  if (!state.firstPick) {
-    state.firstPick = { element, index, card };
-    return;
-  }
-  state.secondPick = { element, index, card };
-  state.moves++;
-  updateStatus();
-  checkMatch();
-}
+   • function endGame() { ... }
+       - Type: Function declaration — defines a reusable function named endGame.
+       - Role: Stops the game and shows the final results to the player.
 
-/* --------------------------------------------------
-   MATCH CHECKING LOGIC
-   function checkMatch() { ... }
-         function -> Declares a reusable block of code.
-         checkMatch -> Function name I created; determines match/mismatch.
-         { } -> Function body; contains all instructions executed when called.
-   const first = state.firstPick;
-         const -> Declares a constant variable.
-         first -> Stores the first selected card.
-         = -> Assignment operator.
-         state -> Main game state object.
-         . -> Dot operator.
-         firstPick -> Object containing { element, index, card }.
-         ; -> Ends the statement.
-   const second = state.secondPick;
-         const -> Declares a constant variable.
-         second -> Stores the second selected card.
-         = -> Assignment operator.
-         state.secondPick -> Object containing second card info.
-         ; -> Ends the statement.
-   if (!first || !second) return;
-         if -> Conditional statement.
-         ( !first || !second ) -> Ensures both picks exist.
-                - !first -> No first card selected.
-                - || -> Logical OR.
-                - !second -> No second card selected.
-         return -> Exits early if either is missing.
-         ; -> Ends the statement.
-   if (first.card.value === second.card.value) {
-          if -> Conditional statement.
-            ( first.card.value === second.card.value ) -> Checks if symbols match.
-                    - first.card.value -> Symbol of first card.
-                    - === -> Strict equality operator.
-                    - second.card.value -> Symbol of second card.
-            { } -> Code block executed when cards MATCH.
-          first.card.matched = true;
-                first.card -> Card data object.
-                .matched -> Boolean marking card as permanently matched.
-                = true -> Marks as matched.
-          second.card.matched = true;
-                second.card -> Card data object.
-                .matched -> Marks second card as matched.
-                = true -> Sets matched state.
-          first.element.classList.add("is-matched");
-                first.element -> DOM element for first card.
-                .classList -> List of CSS classes.
-                .add("is-matched") -> Adds matched styling.
-          second.element.classList.add("is-matched");
-                second.element -> DOM element for second card.
-                .classList.add -> Adds matched styling.
-          state.pairsFound++;
-                state.pairsFound -> Counter of matched pairs.
-                ++ -> Increment operator.
-      
-          updateStatus();  -> Calls the function that refreshes all on‑screen game stats.  
-                   - Updates the UI elements for:  
-                       • movesValueEl → shows current move count  
-                       • pairsValueEl → shows number of matched pairs  
-                       • timeValueEl  → shows formatted timer ("mm:ss")  
-                   -> Reads values from state (state.moves, state.pairsFound, state.seconds). Ensures the player sees the latest game information immediately after a card click or timer tick.
+   • Inside the { ... } block:
+       - state.isRunning = false — assignment; marks the game as no longer active.
+       - stopTimer() — function call; stops the timer immediately.
+       - setFeedback(...) — function call; displays a final message including:
+            • player name (state.playerName)
+            • total moves (state.moves)
+            • formatted time (formatTime(state.seconds))
+       - All inner lines are assignments or function invocations, not objects.
 
-          resetPicks();
-                resetPicks -> Clears firstPick and secondPick.
-                () -> Calls the function.
-
-    if (state.pairsFound === state.totalPairs) {
-          if -> Conditional statement.
-            ( state.pairsFound === state.totalPairs ) -> All pairs found.
-          endGame(); }  -> endGame -> Function that stops timer + shows win message.
-                    () -> Calls the function.
-      return;
-             return -> Ends function after successful match.
-   
-   state.lockBoard = true;
-         state -> Game state object.
-         .lockBoard -> Boolean preventing further clicks.
-         = true -> Locks board until mismatch animation completes.
-
-   setTimeout(() => { ... }, 600);
-          setTimeout -> Built‑in JS function delaying execution.
-          () => { ... } -> Arrow function executed after delay.
-          600 -> Delay in milliseconds (0.6 seconds).
-          first.element.textContent = "Card";
-                first.element -> DOM element for first card.
-                .textContent -> Visible text inside the card.
-                = "Card" -> Resets card face.
-          second.element.textContent = "Card";
-                second.element -> DOM element for second card.
-                .textContent -> Resets card face.
-          first.element.classList.remove("is-flipped");
-                first.element -> DOM element for first card.
-                .classList.remove -> Removes flipped styling.
-          second.element.classList.remove("is-flipped");
-                second.element -> DOM element for second card.
-                .classList.remove -> Removes flipped styling.
-    resetPicks();  -> resetPicks -> Clears both picks for next turn.
-               () -> Calls the function.
-          state.lockBoard = false; -> state.lockBoard -> Unlocks board.
-                           = false -> Allows clicking again.
-   WHAT FEEDS INTO checkMatch()
-         state.firstPick -> First selected card.
-         state.secondPick -> Second selected card.
-         onCardClick() -> Calls checkMatch() after second pick.
-   WHERE checkMatch() FEEDS INTO
-         state.pairsFound -> Updated when match occurs.
-         card.matched -> Marks cards as permanently matched.
-         .is-matched -> CSS class applied to matched cards.
-         state.lockBoard -> Controls clickability during mismatch.
-         endGame() -> Triggered when all pairs are found.
-   FULL PIPELINE
-         User selects two cards
-         onCardClick() sets firstPick + secondPick
-         checkMatch()
-             If match:
-                 mark matched
-                 add .is-matched
-                 pairsFound++
-                 resetPicks()
-                 if all pairs found -> endGame()
-             If mismatch:
-                 lockBoard = true
-                 wait 600ms
-                 flip cards back
-                 resetPicks()
-                 lockBoard = false
--------------------------------------------------- */
-function checkMatch() {
-  const first = state.firstPick;
-  const second = state.secondPick;
-  if (!first || !second) return;
-  if (first.card.value === second.card.value) {
-      first.card.matched = true;
-      second.card.matched = true;
-      first.element.classList.add("is-matched");
-      second.element.classList.add("is-matched");
-      state.pairsFound++;
-      updateStatus();
-      resetPicks();
-      if (state.pairsFound === state.totalPairs) {
-        endGame();
-      }
-      return;
-  }
-
-  state.lockBoard = true;
-  setTimeout(() => {
-    first.element.textContent = "Card";
-    second.element.textContent = "Card";
-    first.element.classList.remove("is-flipped");
-    second.element.classList.remove("is-flipped");
-    resetPicks();
-    state.lockBoard = false;
-  }, 600);
-}
-
-/* --------------------------------------------------
-   RESET CARD PICKS
-   function resetPicks() { ... }
-         function -> Declares a reusable block of code.
-         resetPicks -> Function name I created. Clears the selected cards.
-         { } -> Function body; contains all instructions executed when called.
-   state.firstPick = null;
-         state -> The main game state object storing all live game data.
-         . -> Dot operator used to access a property inside the state object.
-         firstPick -> Stores the first selected card of the current turn.
-         = -> Assignment operator.
-         null -> Resets the value. Means “no card selected”.
-   state.secondPick = null;
-         state -> Game state object.
-         . -> Dot operator.
-         secondPick -> Stores the second selected card of the current turn.
-         = -> Assignment operator.
-         null -> Clears the second selection.
-   WHAT FEEDS INTO resetPicks()
-         checkMatch() -> Calls resetPicks() after match or mismatch.
-         onCardClick() -> Relies on resetPicks() to prepare for next turn.
-   WHERE resetPicks() FEEDS INTO
-         state.firstPick -> Cleared for next turn.
-         state.secondPick -> Cleared for next turn.
-         Game flow -> Allows new card selections without interference.
-   FULL PIPELINE
-         User selects two cards
-         checkMatch() runs
-         resetPicks()
-         firstPick = null
-         secondPick = null
-         Next turn begins cleanly
--------------------------------------------------- */
-function resetPicks() {
-  state.firstPick = null;
-  state.secondPick = null;
-}
-
-/* --------------------------------------------------
-   END GAME LOGIC
-   function endGame() { ... }
-         function -> Declares a reusable block of code.
-         endGame -> Function name I created; finalises the game state.
-         { } -> Function body; contains all instructions executed when called.
-
-   state.isRunning = false;
-         state -> Main game state object.
-         . -> Dot operator.
-         isRunning -> Boolean controlling whether gameplay is active.
-         = -> Assignment operator.
-         false -> Marks the game as no longer running.
-         ; -> Ends the statement.
-
-   stopTimer();
-         stopTimer -> Function that halts the active timer interval.
-         () -> Calls the function.
-         ; -> Ends the statement.
-
-   setFeedback(` Well done, ${state.playerName}! I finished in ${state.moves} moves and ${formatTime(state.seconds)}.`);
-         setFeedback -> Function that updates the UI feedback/message area.
-         ( ` ... ` ) -> Template literal for dynamic text.
-         Well done -> Static congratulatory message.
-         ${state.playerName} -> Inserts the player's name.
-                - state -> Game state object.
-                - .playerName -> Name entered by the player.
-         ${state.moves} -> Inserts total number of moves.
-                - state.moves -> Move counter.
-         ${formatTime(state.seconds)} -> Inserts formatted time.
-                - formatTime -> Converts seconds to mm:ss.
-                - state.seconds -> Total elapsed seconds.
-         ; -> Ends the statement.
-
-   WHAT FEEDS INTO endGame()
-         state.isRunning -> Determines if game should stop.
-         stopTimer() -> Ensures timer halts.
-         state.playerName -> Used in personalised message.
-         state.moves -> Used in final score message.
-         state.seconds -> Used to calculate final time.
-
-   WHERE endGame() FEEDS INTO
-         state.isRunning -> Game becomes inactive.
-         Timer display -> Stops updating.
-         Feedback UI -> Shows personalised completion message.
-
-   FULL PIPELINE
-         All pairs matched
-         checkMatch() triggers endGame()
-         endGame():
-             isRunning = false
-             stopTimer()
-             setFeedback() shows personalised message
+   SUMMARY:
+       • endGame() is a function declaration.
+       • Inside it: one assignment + two function calls.
+       • Purpose: cleanly stop the game and show the final score.
 -------------------------------------------------- */
 function endGame() {
   state.isRunning = false;
   stopTimer();
-  setFeedback(` Well done, ${state.playerName}! You finished in ${state.moves} moves and ${formatTime(state.seconds)}.`);
+  setFeedback(`Well done, ${state.playerName}! You finished in ${state.moves} moves and ${formatTime(state.seconds)}.`);
 }
 
-
 /* --------------------------------------------------
-   RESET GAME LOGIC
+     resetGame() — FUNCTION DECLARATION + INTERNAL ACTIONS
+         • resetGame() is a function declaration.
+       • Inside it are assignments (changing state values) and function calls.
+       • Nothing inside is an object — they are state updates + invocations.
+--------------------------------------------------
    function resetGame() { ... }
          function -> Declares a reusable block of code.
-         resetGame -> Function name I created; restores game to initial state.
-         { } -> Function body; contains all instructions executed when called.
+         resetGame -> Function name YOU created; resets the entire game.
+         { } -> Function body containing all instructions.
 
    stopTimer();
-         stopTimer -> Function that halts the active timer interval.
-         () -> Calls the function.
-         ; -> Ends the statement.
+         stopTimer -> Halts the active timer interval.
+         Ensures no time continues counting during reset.
 
    state.isRunning = false;
-         state -> Main game state object.
-         .isRunning -> Boolean controlling whether gameplay is active.
-         = false -> Marks the game as not running.
-         ; -> Ends the statement.
+         state -> Game state object.
+         .isRunning -> Controls whether gameplay is active.
+         false -> Game is not currently running.
 
    state.lockBoard = false;
-         .lockBoard -> Prevents or allows card clicking.
-         = false -> Ensures board is unlocked at reset.
-         ; -> Ends the statement.
+         .lockBoard -> Prevents clicks during animations.
+         false -> Re‑enables clicking for the next game.
 
    state.cards = [];
-         .cards -> Array holding all card objects.
-         = [] -> Clears the deck completely.
-         ; -> Ends the statement.
+         .cards -> Array storing all card objects.
+         [] -> Clears the deck completely.
 
    state.firstPick = null;
-         .firstPick -> Stores first selected card.
-         = null -> Clears selection.
-         ; -> Ends the statement.
+         .firstPick -> First selected card.
+         null -> No card selected.
 
    state.secondPick = null;
-         .secondPick -> Stores second selected card.
-         = null -> Clears selection.
-         ; -> Ends the statement.
+         .secondPick -> Second selected card.
+         null -> Clears second selection.
 
    state.moves = 0;
-         .moves -> Counter of total moves.
-         = 0 -> Resets to zero.
-         ; -> Ends the statement.
+         .moves -> Move counter.
+         0 -> Reset to zero.
 
    state.pairsFound = 0;
-         .pairsFound -> Counter of matched pairs.
-         = 0 -> Resets to zero.
-         ; -> Ends the statement.
+         .pairsFound -> Number of matched pairs.
+         0 -> Reset to zero.
 
    state.totalPairs = 0;
-         .totalPairs -> Total number of pairs in the deck.
-         = 0 -> Reset until new deck is created.
-         ; -> Ends the statement.
+         .totalPairs -> Set later based on difficulty.
+         0 -> Placeholder until new game starts.
 
    state.seconds = 0;
-         .seconds -> Timer counter in seconds.
-         = 0 -> Resets timer.
-         ; -> Ends the statement.
+         .seconds -> Timer value.
+         0 -> Timer resets to zero.
 
    boardEl.innerHTML = "";
-         boardEl -> DOM element containing the card grid.
-         .innerHTML -> Controls the element’s HTML content.
-         = "" -> Clears all card elements from the board.
-         ; -> Ends the statement.
+         boardEl -> DOM element for the game board.
+         .innerHTML = "" -> Removes all card buttons from the UI.
 
    updateStatus();
-         updateStatus -> Function that refreshes UI values.
-         () -> Calls the function.
-         ; -> Ends the statement.
+         updateStatus -> Refreshes UI elements:
+                - moves
+                - pairs
+                - time
+         Ensures the screen shows a clean reset state.
 
+--------------------------------------------------
    WHAT FEEDS INTO resetGame()
-         stopTimer() -> Ensures timer is cleared.
-         state.* -> All game state properties reset to defaults.
-         boardEl -> Board container cleared.
-         updateStatus() -> UI refreshed after reset.
+         • stopTimer() -> Ensures timer is not running.
+         • Difficulty selection -> New values applied after reset.
+         • Form submit -> Calls resetGame() before starting new game.
 
    WHERE resetGame() FEEDS INTO
-         Game start flow -> Prepares state for a new game.
-         UI -> Clears board + resets counters.
-         Timer -> Fully reset to zero.
-         state.isRunning -> Game remains inactive until startGame() is called.
+         • startTimer() -> Starts fresh after reset.
+         • renderBoard() -> Draws a new board.
+         • state -> All values reset for a clean game.
 
    FULL PIPELINE
-         Player triggers reset
-         resetGame():
-             stopTimer()
-             clear all state values
-             clear board HTML
-             updateStatus()
-         Game returns to initial blank state
+         Player starts a new game
+         resetGame()
+         → stopTimer()
+         → clear all state values
+         → clear board UI
+         → updateStatus()
+         New game begins with fresh state
 -------------------------------------------------- */
 function resetGame() {
   stopTimer();
-
   state.isRunning = false;
   state.lockBoard = false;
   state.cards = [];
@@ -1238,303 +1015,118 @@ function resetGame() {
 }
 
 /* --------------------------------------------------
-   START GAME (FORM SUBMISSION)
-   function gameForm.addEventListener("submit", e => { ... })
-         gameForm -> The <form> element that starts the game.
-         .addEventListener -> Attaches an event listener to the form.
-         ("submit", ...) -> Listens for the submit event.
-         e => { ... } -> Arrow function executed when the form is submitted.
+An event listener with an anonymous callback function
+  START GAME (FORM SUBMIT) — INITIALIZES A NEW GAME
+   1. gameForm.addEventListener("submit", ...)
+      • Type: Event listener — watches for the "submit" event on the form.
+      • Meaning: “When the form is submitted, run the callback function.”
+
+   2. e => { ... }
+      • Type: Anonymous arrow function — a function with no name.
+      • Role: Callback function — executed automatically when the event fires.
+      • Not an object, not a method, not a function declaration.
+
+   3. Inside the { ... } block (the callback body)
+      • e.preventDefault() — function call; stops page reload.
+      • resetGame() — function call; clears previous game state.
+      • renderBoard() — function call; draws the cards.
+      • startTimer() — function call; starts the timer.
+      • setFeedback(...) — function call; updates the message.
+      • All of these are function invocations (executing functions), not objects.
+
+   SUMMARY OF THE STRUCTURE:
+      Event Listener
+         → contains an Arrow Function (callback)
+             → contains Function Calls + Logic
+--------------------------------------------------
+   gameForm.addEventListener("submit", e => { ... })
+         gameForm -> The <form> element containing name + difficulty.
+         .addEventListener -> Listens for a specific event.
+         "submit" -> Triggered when the form is submitted.
          e -> Event object representing the form submission.
-         { } -> Function body; contains all instructions executed on submit.
+         => -> Arrow function handling the event.
+         { } -> Function body containing all instructions.
    e.preventDefault();
-         e -> Event object.
-         .preventDefault -> Stops the browser’s default form submission.
-         () -> Calls the method.
-         ; -> Ends the statement.
+         preventDefault -> Stops the form from reloading the page.
+         Allows full control using JavaScript instead.
    const name = playerNameEl.value.trim();
          const -> Declares a constant variable.
-         name -> Stores the cleaned player name.
-         = -> Assignment operator.
-         playerNameEl -> Input field for player name.
-         .value -> Raw text entered by the user.
-         .trim() -> Removes leading/trailing whitespace.
-         ; -> Ends the statement.
+         name -> Stores the player's name.
+         playerNameEl -> Input field for the player's name.
+         .value -> Gets the text typed by the user.
+         .trim() -> Removes extra spaces.
    const difficulty = difficultyEl.value;
-         const -> Declares a constant variable.
-         difficulty -> Stores selected difficulty level.
-         = -> Assignment operator.
          difficultyEl -> <select> element for difficulty.
          .value -> The chosen difficulty option.
-         ; -> Ends the statement.
    if (!name || !difficulty) {
-          if -> Conditional statement.
-          ( !name || !difficulty ) -> Validates required fields.
-                  - !name -> Name field is empty.
-                  - || -> Logical OR.
-                  - !difficulty -> Difficulty not selected.
-          { } -> Code block executed when validation fails.
-
-        setFeedback("Please enter your name and select a difficulty.");
-              setFeedback -> Function that updates the UI feedback area.
-              ( "Please enter..." ) -> Error message shown to user.
-              ; -> Ends the statement.
-
-        return;
-              return -> Stops execution; game does not start.
-              ; -> Ends the statement.
+         Guard clause:
+              - If name is empty OR difficulty not selected,
+                show error and stop.
+      setFeedback("Please enter your name and select a difficulty.");
+      return;
    }
-   state.playerName = name;
-         state -> Main game state object.
-         .playerName -> Stores the player's name.
-         = name -> Saves validated name.
-         ; -> Ends the statement.
    const config = DIFFICULTY[difficulty];
-         const -> Declares a constant variable.
-         config -> Stores difficulty configuration.
-         = -> Assignment operator.
-         DIFFICULTY -> Object containing difficulty presets.
-         [difficulty] -> Selects config for chosen difficulty.
-         ; -> Ends the statement.
+         DIFFICULTY -> Object storing rows/cols for each difficulty.
+         [difficulty] -> Accesses the chosen difficulty settings.
+         config -> Contains { rows, cols }.
    const totalCards = config.cols * config.rows;
-         const -> Declares a constant variable.
-         totalCards -> Total number of cards for the board.
-         = -> Assignment operator.
-         config.cols -> Number of columns.
-         * -> Multiplication operator.
-         config.rows -> Number of rows.
-         ; -> Ends the statement.
+         Calculates total number of cards for the board.
    resetGame();
-         resetGame -> Function that clears all game state.
-         () -> Calls the function.
-         ; -> Ends the statement.
+         Fully clears previous game state.
+         Ensures a clean start.
+   state.playerName = name;
+         Stores player name in game state.
    state.cards = createDeck(totalCards);
-         state.cards -> Array that will hold all card objects.
-         = -> Assignment operator.
-         createDeck(totalCards) -> Generates a shuffled deck.
-         ; -> Ends the statement.
+         createDeck -> Generates + shuffles card objects.
+         state.cards -> Stores the full deck.
    state.totalPairs = totalCards / 2;
-         .totalPairs -> Total number of matching pairs.
-         = -> Assignment operator.
-         totalCards / 2 -> Calculates number of pairs.
-         ; -> Ends the statement.
+         Calculates how many pairs must be matched.
    state.isRunning = true;
-         .isRunning -> Boolean controlling whether gameplay is active.
-         = true -> Marks game as running.
-         ; -> Ends the statement.
+         Enables gameplay.
+         Allows card clicks to be processed.
    boardEl.style.gridTemplateColumns = `repeat(${config.cols}, 1fr)`;
-         boardEl -> DOM element containing the card grid.
-         .style -> Inline style object.
-         .gridTemplateColumns -> CSS grid column definition.
-         = -> Assignment operator.
-         `repeat(${config.cols}, 1fr)` -> Sets number of columns dynamically.
-         ; -> Ends the statement.
+         boardEl -> DOM element for the game board.
+         .style.gridTemplateColumns -> Sets number of columns.
+         Makes board layout match difficulty.
    renderBoard();
-         renderBoard -> Function that draws the cards on the board.
-         () -> Calls the function.
-         ; -> Ends the statement.
-   updateStatus();
-         updateStatus -> Function that refreshes UI values.
-         () -> Calls the function.
-         ; -> Ends the statement.
+         Dynamically creates card buttons on the screen.
    startTimer();
-         startTimer -> Function that begins the game timer.
-         () -> Calls the function.
-         ; -> Ends the statement.
+         Begins the game clock.
    restartBtn.disabled = false;
-         restartBtn -> Restart button element.
-         .disabled -> Boolean controlling button usability.
-         = false -> Enables restart button now that game is running.
-         ; -> Ends the statement.
+         Enables restart button once game begins.
    setFeedback(`Game started! Good luck, ${name}.`);
-         setFeedback -> Function that updates the UI feedback area.
-         ( `Game started!...` ) -> Personalized start message.
-         ${name} -> Inserts player's name.
-         ; -> Ends the statement.
-   WHAT FEEDS INTO THIS HANDLER
-         gameForm -> Triggers submit event.
-         playerNameEl.value -> User-entered name.
-         difficultyEl.value -> Selected difficulty.
-         DIFFICULTY -> Provides grid configuration.
-         resetGame() -> Clears previous game state.
-         createDeck() -> Generates new deck.
-   WHERE THIS HANDLER FEEDS INTO
-         state.playerName -> Stores player identity.
-         state.cards -> Holds new deck.
-         state.totalPairs -> Sets win condition.
-         state.isRunning -> Enables gameplay.
-         boardEl -> Updates grid layout.
-         renderBoard() -> Draws cards.
-         updateStatus() -> Refreshes UI.
-         startTimer() -> Begins timer.
-         restartBtn -> Becomes enabled.
-         setFeedback() -> Shows start message.
+         Displays a friendly start message to the player.
+--------------------------------------------------
+   WHAT FEEDS INTO THIS EVENT
+         • Form inputs (name + difficulty)
+         • DIFFICULTY config object
+         • resetGame() -> Clears old state
+         • createDeck() -> Builds new deck
+   WHERE THIS EVENT FEEDS INTO
+         • state -> Updates playerName, cards, totalPairs, isRunning
+         • renderBoard() -> Draws the board
+         • startTimer() -> Starts the clock
+         • UI -> Updates layout + feedback message
    FULL PIPELINE
          User submits form
-         preventDefault() stops page reload
+         preventDefault()
          Validate name + difficulty
-         If invalid:
-             show feedback
-             stop execution
-         If valid:
-             save player name
-             load difficulty config
-             calculate total cards
-             resetGame()
-             create deck
-             set totalPairs
-             mark game as running
-             configure grid layout
-             render board
-             update UI
-             start timer
-             enable restart button
-             show start message
+         Load difficulty config
+         totalCards = rows * cols
+         resetGame()
+         state.playerName = name
+         state.cards = createDeck(totalCards)
+         state.totalPairs = totalCards / 2
+         state.isRunning = true
+         Set board layout
+         renderBoard()
+         startTimer()
+         Enable restart button
+         Show “Game started!” message
 -------------------------------------------------- */
 gameForm.addEventListener("submit", e => {
   e.preventDefault();
-  const name = playerNameEl.value.trim();
-  const difficulty = difficultyEl.value;
-  if (!name || !difficulty) {
-      setFeedback("Please enter your name and select a difficulty.");
-      return;
-  }
-  state.playerName = name;
-  const config = DIFFICULTY[difficulty];
-  const totalCards = config.cols * config.rows;
-  resetGame();
-  state.cards = createDeck(totalCards);
-  state.totalPairs = totalCards / 2;
-  state.isRunning = true;
-  boardEl.style.gridTemplateColumns = `repeat(${config.cols}, 1fr)`;
-  renderBoard();
-  updateStatus();
-  startTimer();
-  restartBtn.disabled = false;
-  setFeedback(`Game started! Good luck, ${name}.`);
-});
 
-/* --------------------------------------------------
-   RESTART BUTTON LOGIC
-   restartBtn.addEventListener("click", () => { ... })
-         restartBtn -> The Restart button element.
-         .addEventListener -> Attaches an event listener.
-         ("click", ...) -> Listens for click events.
-         () => { ... } -> Arrow function executed when clicked.
-         { } -> Function body; contains all instructions executed on restart.
-   const difficulty = difficultyEl.value;
-         const -> Declares a constant variable.
-         difficulty -> Stores selected difficulty level.
-         = -> Assignment operator.
-         difficultyEl -> <select> element for difficulty.
-         .value -> The chosen difficulty option.
-   const name = playerNameEl.value.trim();
-         const -> Declares a constant variable.
-         name -> Stores the cleaned player name.
-         = -> Assignment operator.
-         playerNameEl -> Input field for player name.
-         .value -> Raw text entered by the user.
-         .trim() -> Removes leading/trailing whitespace.
-   if (!name || !difficulty) {
-            if -> Conditional statement.
-            ( !name || !difficulty ) -> Validates required fields.
-                    - !name -> Name field is empty.
-                    - || -> Logical OR.
-                    - !difficulty -> Difficulty not selected.
-            { } -> Code block executed when validation fails.
-      setFeedback("Please enter your name and select a difficulty.");
-             setFeedback -> Function that updates the UI feedback area.
-             ( "Please enter..." ) -> Error message shown to user.
-      return;  -> return -> Stops execution; restart does not proceed.
-
-   state.playerName = name;
-         state -> Main game state object.
-         .playerName -> Stores the player's name.
-         = name -> Saves validated name.
-   const config = DIFFICULTY[difficulty];
-         const -> Declares a constant variable.
-         config -> Stores difficulty configuration.
-         = -> Assignment operator.
-         DIFFICULTY -> Object containing difficulty presets.
-         [difficulty] -> Selects config for chosen difficulty.
-   const totalCards = config.cols * config.rows;
-         const -> Declares a constant variable.
-         totalCards -> Total number of cards for the board.
-         = -> Assignment operator.
-         config.cols -> Number of columns.
-         * -> Multiplication operator.
-         config.rows -> Number of rows..
-   resetGame();
-         resetGame -> Function that clears all game state.
-         () -> Calls the function.
-   state.cards = createDeck(totalCards);
-         state.cards -> Array that will hold all card objects.
-         = -> Assignment operator.
-         createDeck(totalCards) -> Generates a shuffled deck.
-   state.totalPairs = totalCards / 2;
-         .totalPairs -> Total number of matching pairs.
-         = -> Assignment operator.
-         totalCards / 2 -> Calculates number of pairs.
-   state.isRunning = true;
-         .isRunning -> Boolean controlling whether gameplay is active.
-         = true -> Marks game as running.
-   boardEl.style.gridTemplateColumns = `repeat(${config.cols}, 1fr)`;
-         boardEl -> DOM element containing the card grid.
-         .style -> Inline style object.
-         .gridTemplateColumns -> CSS grid column definition.
-         = -> Assignment operator.
-         `repeat(${config.cols}, 1fr)` -> Sets number of columns dynamically.
-   renderBoard();
-         renderBoard -> Function that draws the cards on the board.
-         () -> Calls the function.
-   updateStatus();
-         updateStatus -> Function that refreshes UI values.
-         () -> Calls the function.
-   startTimer();
-         startTimer -> Function that begins the game timer.
-         () -> Calls the function.
-   setFeedback(`Restarted! Good luck, ${name}.`);
-         setFeedback -> Function that updates the UI feedback area.
-         ( `Restarted!...` ) -> Personalized restart message.
-         ${name} -> Inserts player's name.
-
-   WHAT FEEDS INTO THIS HANDLER
-         restartBtn -> Triggers click event.
-         playerNameEl.value -> User-entered name.
-         difficultyEl.value -> Selected difficulty.
-         DIFFICULTY -> Provides grid configuration.
-         resetGame() -> Clears previous game state.
-         createDeck() -> Generates new deck.
-   WHERE THIS HANDLER FEEDS INTO
-         state.playerName -> Stores player identity.
-         state.cards -> Holds new deck.
-         state.totalPairs -> Sets win condition.
-         state.isRunning -> Enables gameplay.
-         boardEl -> Updates grid layout.
-         renderBoard() -> Draws cards.
-         updateStatus() -> Refreshes UI.
-         startTimer() -> Begins timer.
-         setFeedback() -> Shows restart message.
-   FULL PIPELINE
-         User clicks Restart
-         Validate name + difficulty
-         If invalid:
-             show feedback
-             stop execution
-         If valid:
-             save player name
-             load difficulty config
-             calculate total cards
-             resetGame()
-             create deck
-             set totalPairs
-             mark game as running
-             configure grid layout
-             render board
-             update UI
-             start timer
-             show restart message
--------------------------------------------------- */
-restartBtn.addEventListener("click", () => {
   const name = playerNameEl.value.trim();
   const difficulty = difficultyEl.value;
 
@@ -1543,13 +1135,12 @@ restartBtn.addEventListener("click", () => {
     return;
   }
 
-  state.playerName = name;
-  
   const config = DIFFICULTY[difficulty];
   const totalCards = config.cols * config.rows;
 
   resetGame();
 
+  state.playerName = name;
   state.cards = createDeck(totalCards);
   state.totalPairs = totalCards / 2;
   state.isRunning = true;
@@ -1557,36 +1148,120 @@ restartBtn.addEventListener("click", () => {
   boardEl.style.gridTemplateColumns = `repeat(${config.cols}, 1fr)`;
 
   renderBoard();
-  updateStatus();
   startTimer();
-  
-  setFeedback(`Restarted! Good luck, ${name}.`);
+  restartBtn.disabled = false;
+
+  setFeedback(`Game started! Good luck, ${name}.`);
 });
+
 /* --------------------------------------------------
-   INITIAL UI STATE
+   RESTART BUTTON —  RESTART BUTTON — FUNCTION INVOCATION VIA EVENT LISTENER
+         - Uses form submission logic to rebuild the game cleanly.
+         - Ensures restart behaves EXACTLY like starting a new game.
+         - Avoids duplicated logic by reusing the existing submit handler.
+--------------------------------------------------
+   restartBtn.addEventListener("click", () => { ... })
+         restartBtn -> The Restart button element in the UI.
+         .addEventListener -> listens for a click on the restart button.
+         "click" -> Triggered when the user presses the Restart button.
+         () => { ... } -> Arrow function executed when the button is clicked.
+         { } -> Function body containing all instructions.
+   gameForm.dispatchEvent(new Event("submit"));  manually triggers the form's submit event.
+         gameForm -> The form that normally starts the game.
+         .dispatchEvent(...) -> Manually triggers an event.
+         new Event("submit") -> creates a synthetic submit event identical to a real form submission.
+                - Creates a synthetic "submit" event.
+                - Behaves exactly like the user submitted the form.
+         This reuses:
+                • Validation
+                • Deck creation
+                • Board rendering
+                • Timer start
+                • State reset
+         Ensures restart is consistent with starting a new game.
+--------------------------------------------------
+   WHAT FEEDS INTO THE RESTART BUTTON
+         • gameForm submit handler -> Contains all start logic.
+         • Difficulty + name already entered.
+         • resetGame() -> Called automatically via submit.
+   WHERE THE RESTART BUTTON FEEDS INTO
+         • Full game initialization pipeline.
+         • startTimer() -> Starts fresh timer.
+         • renderBoard() -> Draws new board.
+         • state -> Fully refreshed values.
+   FULL PIPELINE
+         User clicks Restart
+         restartBtn listener fires
+         → dispatchEvent("submit")
+         → Form submit handler runs
+         → resetGame()
+         → createDeck()
+         → renderBoard()
+         → startTimer()
+         → Show “Game started!” message
+-------------------------------------------------- */
+restartBtn.addEventListener("click", () => {
+  gameForm.dispatchEvent(new Event("submit"));
+});
+
+/* --------------------------------------------------
+   INITIAL UI STATE — SETS UP THE SCREEN BEFORE GAME STARTS
+   FUNCTION INVOCATIONS — SHORT EXPLANATION
+   A function invocation is a command that EXECUTES a function defined earlier.
+   What is a function?
+     • Function declaration — standard function defined with "function name()".
+     • Function expression — function stored in a variable.
+     • Arrow function — shorter syntax using () => {}.
+     • Method — function stored inside an object.
+     • Constructor function — used with "new" to create objects.
+     • Callback function — passed into another function to be run later.
+     • Async function — handles asynchronous operations with await.
+     • Generator function — produces values one at a time using yield.
+   Why these are "invocation statements":
+     • Ends with a semicolon — makes it a complete statement.
+     • Executes a function — runs the code inside it.
+     • Technically a "call expression statement" — a function call used as a standalone instruction.
+   Types of statements in JavaScript:
+     • Variable declarations — let/const/var create variables.
+     • Assignment statements — x = 5 assigns a value.
+     • Return statements — return sends a value back.
+     • Conditional statements — if/else control logic.
+     • Loop statements — for/while repeat actions.
+     • Expression statements — any expression used as a statement.
+     • Call expression statements — specifically a function call as a statement.
+--------------------------------------------------
+
    updateStatus();
-         updateStatus -> Function that refreshes all UI indicators.
-         () -> Calls the function immediately on page load.
-         ; -> Ends the statement.
+         updateStatus -> Refreshes all UI counters:
+                • moves (starts at 0)
+                • pairs found (starts at 0)
+                • time (00:00)
+         Ensures the interface shows a clean, neutral state.
 
    setFeedback("Enter your name and select a difficulty to start.");
-         setFeedback -> Function that updates the feedback/message area.
-         ( "Enter your name..." ) -> Initial instruction shown to the user.
-         ; -> Ends the statement.
+         setFeedback -> Updates the feedback message area.
+         "Enter your name and select a difficulty to start."
+                - Instruction shown when the page first loads.
+                - Guides the player on what to do next.
+         Helps create a clear starting point for the user.
 
-   WHAT FEEDS INTO THIS BLOCK
-         updateStatus() -> Reads current state values (all zeroed at load).
-         setFeedback() -> Displays initial guidance message.
+--------------------------------------------------
+   WHAT FEEDS INTO INITIAL UI STATE
+         • Page load -> This runs immediately when script loads.
+         • updateStatus() -> Uses default state values.
+         • setFeedback() -> Displays initial instructions.
 
-   WHERE THIS BLOCK FEEDS INTO
-         UI -> Shows default counters and instructions.
-         Game flow -> Prepares user for form submission.
+   WHERE INITIAL UI STATE FEEDS INTO
+         • Form submission -> Player enters name + difficulty.
+         • Game start -> Once form is submitted, UI updates again.
+         • User experience -> Provides clarity before gameplay.
 
    FULL PIPELINE
          Page loads
-         updateStatus() sets UI counters to default
-         setFeedback() shows initial instructions
-         User is prompted to enter name + difficulty
+         updateStatus() sets moves/pairs/time to 0
+         setFeedback() shows starting instructions
+         User enters name + difficulty
+         Game begins
 -------------------------------------------------- */
 updateStatus();
 setFeedback("Enter your name and select a difficulty to start.");

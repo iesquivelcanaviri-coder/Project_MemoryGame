@@ -1,5 +1,8 @@
+# JavaScript Memory Game — Version 9
+
 ## Purpose
 This version focuses on:
+
 - Extremely detailed beginner-friendly comments  
 - Deep understanding of JavaScript logic and data flow  
 - Clear explanation of DOM interaction  
@@ -8,11 +11,30 @@ This version focuses on:
 ---
 
 ## Why I Chose This Project
-I chose to build a Memory Matching Game because it allows me to demonstrate a wide range of core web development skills within a single, cohesive project. The game naturally requires DOM manipulation, event handling, state management, timers, user input validation, and dynamic rendering — all of which showcase my understanding of JavaScript functionality. It also provides opportunities for creative UI design, responsive layout planning, and interactive user experience. Most importantly, the project is simple enough to be approachable yet complex enough to show real problem‑solving, making it an ideal way to demonstrate my learning progression in HTML, CSS, and JavaScript.
+
+I chose to build a Memory Matching Game because it allows me to demonstrate a wide range of core web development skills within a single, cohesive project.
+
+The game naturally requires:
+
+- DOM manipulation  
+- Event handling  
+- State management  
+- Timers  
+- User input validation  
+- Dynamic rendering  
+
+It also provides opportunities for:
+
+- Creative UI design  
+- Responsive layout planning  
+- Interactive user experience  
+
+Most importantly, the project is simple enough to be approachable yet complex enough to demonstrate real problem-solving, making it an ideal way to show learning progression in HTML, CSS, and JavaScript.
 
 ---
 
 ## Features
+
 - Memory card matching game  
 - Player name validation (required input)  
 - Difficulty selection (easy / medium / hard)  
@@ -42,6 +64,7 @@ I chose to build a Memory Matching Game because it allows me to demonstrate a wi
 ---
 
 ## Learning Focus
+
 - DOM element references (`document.getElementById`)
 - Event listeners (`submit`, `click`)
 - Arrays and objects (deck + game state)
@@ -58,16 +81,21 @@ I chose to build a Memory Matching Game because it allows me to demonstrate a wi
 ---
 
 ## Technical Architecture
-JavaScript Modules
-renderBoard() → draws the cards
-onCardClick() → handles flipping
-checkMatch() → match logic
-startTimer() / stopTimer() → timer system
-updateStatus() → UI updates
-createDeck() → generates cards
-shuffle() → randomizes deck
 
-### 1 State Management
+### JavaScript Modules
+
+- `renderBoard()` → draws the cards  
+- `onCardClick()` → handles flipping  
+- `checkMatch()` → match logic  
+- `startTimer()` / `stopTimer()` → timer system  
+- `updateStatus()` → UI updates  
+- `createDeck()` → generates cards  
+- `shuffle()` → randomizes deck  
+
+---
+
+## State Management
+
 All dynamic game values are stored inside a single `state` object:
 
 - `cards`
@@ -80,12 +108,13 @@ All dynamic game values are stored inside a single `state` object:
 - `lockBoard`
 - `isRunning`
 - `timer`
+- `playerName`
 
 This centralised structure ensures clean logic and predictable data flow.
 
 ---
 
-### 2️ Game Flow Pipeline
+## Game Flow Pipeline
 
 1. User enters name and selects difficulty  
 2. Form validation runs  
@@ -103,13 +132,13 @@ This centralised structure ensures clean logic and predictable data flow.
 
 This project is hosted using **GitHub Pages**:
 
- **Live URL:**  
+**Live URL:**  
 https://iesquivelcanaviri-coder.github.io/Project_MemoryGame/
 
 ---
 
-
 ## Folder Structure
+
 Project_MemoryGame  
 ├── index.html  
 ├── styles.css  
@@ -121,4 +150,7 @@ Project_MemoryGame
 ---
 
 ## Wireframe Preview
+
 ![Memory Game Wireframe](./assets/memorygame-wireframe_v1.png)
+
+---
