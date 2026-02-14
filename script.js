@@ -520,6 +520,15 @@ function createDeck(totalCards) {
         textContent     -Sets the visible text inside the button.
         "Card"     - Placeholder text until the card is flipped.
 
+     btn.dataset.index = String(index);
+            btn.dataset     -Access to all data-* attributes on the element.
+            .index          -Creates data-index="..." on the button.
+            =               -Assigns a value.
+            String(index)   -Converts index to a string.
+                              This stores the card’s position in the deck
+                              so you can identify which card was clicked
+                              without relying on DOM order.
+
     btn.addEventListener("click", () => onCardClick(btn, card));
        addEventListener      -DOM method; attaches an event listener.
        "click"          -Event type; triggers when the button is clicked.
@@ -550,6 +559,7 @@ function renderBoard() {
     const btn = document.createElement("button");
     btn.className = "card";
     btn.textContent = "Card";
+    btn.dataset.index = String(index);
 
     btn.addEventListener("click", () => onCardClick(btn, card));
     boardEl.appendChild(btn);
@@ -894,7 +904,7 @@ function onCardClick(element, index) {
          return -> Exits early if either is missing.
          ; -> Ends the statement.
    if (first.card.value === second.card.value) {
-            if -> Conditional statement.
+          if -> Conditional statement.
             ( first.card.value === second.card.value ) -> Checks if symbols match.
                     - first.card.value -> Symbol of first card.
                     - === -> Strict equality operator.
@@ -918,6 +928,14 @@ function onCardClick(element, index) {
           state.pairsFound++;
                 state.pairsFound -> Counter of matched pairs.
                 ++ -> Increment operator.
+      
+          updateStatus();  -> Calls the function that refreshes all on‑screen game stats.  
+                   - Updates the UI elements for:  
+                       • movesValueEl → shows current move count  
+                       • pairsValueEl → shows number of matched pairs  
+                       • timeValueEl  → shows formatted timer ("mm:ss")  
+                   -> Reads values from state (state.moves, state.pairsFound, state.seconds). Ensures the player sees the latest game information immediately after a card click or timer tick.
+
           resetPicks();
                 resetPicks -> Clears firstPick and secondPick.
                 () -> Calls the function.
@@ -993,12 +1011,14 @@ function checkMatch() {
       first.element.classList.add("is-matched");
       second.element.classList.add("is-matched");
       state.pairsFound++;
+      updateStatus();
       resetPicks();
       if (state.pairsFound === state.totalPairs) {
         endGame();
       }
       return;
   }
+
   state.lockBoard = true;
   setTimeout(() => {
     first.element.textContent = "Card";

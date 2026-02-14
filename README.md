@@ -29,18 +29,9 @@ This version focuses on:
 
 ---
 
-## Version 8 Improvements (vs Version 7)
-- Added **lockBoard** to prevent flipping more than 2 cards at once
-- Prevented rapid clicking while mismatch cards reset
-- Added **Restart** functionality (safe reset + start again)
-- Added **Win detection** (timer stops + personalised success message)
-- Added **matched UI state** (`.is-matched`) so matched cards are visually distinct
-- Improved consistency of comments and section alignment
-
----
 
 ## Hosting
-This project is hosted using **GitHub Pages**.
+This project is hosted using [**GitHub Pages**.](https://iesquivelcanaviri-coder.github.io/Project_MemoryGame/)
 
 ---
 
