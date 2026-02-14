@@ -293,6 +293,7 @@ let state = {
 function shuffle(array) {
   return array.sort(() => Math.random() - 0.5);
 }
+
 /* --------------------------------------------------
       HELPER FUNCTION — FORMAT TIME (mm:ss) — CONVERTS SECONDS TO "mm:ss"
    function formatTime(seconds) { ... }
@@ -657,7 +658,7 @@ function updateStatus() {
              . -> Dot operator.
              seconds -> Tracks elapsed time.
              ++ -> Increment operator; adds 1 each second.
-      updateStatus();
+      updateStatus(); 
              updateStatus -> Function that refreshes the UI.
              () -> Calls the function.
    WHAT FEEDS INTO startTimer()
@@ -679,7 +680,6 @@ function updateStatus() {
 -------------------------------------------------- */
 function startTimer() {
   clearInterval(state.timer);
-
   state.timer = setInterval(() => {
     state.seconds++;
     updateStatus();
@@ -687,40 +687,46 @@ function startTimer() {
 }
 
 /* --------------------------------------------------
-   STOP TIMER — USED WHEN GAME ENDS
+   STOP TIMER — HALTS THE GAME CLOCK
+   NEW IN V8:
+         - Cleanly stops the running interval.
+         - Resets state.timer so a new timer can start safely.
+--------------------------------------------------
    function stopTimer() { ... }
          function -> Declares a reusable block of code.
-         stopTimer -> Function name YOU created; stops the running game timer.
+         stopTimer -> Function name YOU created; stops the game timer.
          { } -> Function body; contains all instructions executed when called.
    clearInterval(state.timer);
          clearInterval -> Built‑in JS function that stops a running interval.
-                - Prevents the timer from continuing after the game ends.
-                - Ensures no further seconds are added.
-         (state.timer) -> The interval ID stored in state.timer.
-                - If null, clearInterval safely does nothing.
+                - Immediately halts the ticking of the timer.
+         (state.timer) -> The interval ID currently stored in state.timer.
          ; -> Ends the statement.
    state.timer = null;
          state -> Game state object.
          . -> Dot operator.
          timer -> Property storing the interval ID.
          = -> Assignment operator.
-         null -> Resets the timer reference.
-                - Indicates “no timer is currently running”.
+         null -> Explicitly clears the timer reference.
+                - Indicates “no active timer”.
+                - Ensures startTimer() can create a fresh interval later.
          ; -> Ends the statement.
    WHAT FEEDS INTO stopTimer()
-         Game completion -> Called when all pairs are found.
-         Game reset -> Called before starting a new game.
-         startTimer() -> Ensures old timers are cleared before new ones begin.
+         • state.timer -> Must contain a valid interval ID.
+         • Called when:
+              - Game ends
+              - Player wins
+              - Game resets
+              - Difficulty changes
    WHERE stopTimer() FEEDS INTO
-         state.timer -> Cleared so no interval continues running.
-         Timer logic -> Prevents double timers or ghost timers.
-         UI updates -> Timer display stops increasing.
+         • Prevents further time increments.
+         • Freezes the timer display at the final time.
+         • Ensures startTimer() won’t stack multiple intervals.
    FULL PIPELINE
-         Game ends
          stopTimer()
          clearInterval(state.timer)
          state.timer = null
-         Timer stops completely
+         Timer fully stops
+         No more state.seconds++ updates
 -------------------------------------------------- */
 function stopTimer() {
   clearInterval(state.timer);
@@ -854,24 +860,19 @@ function stopTimer() {
 -------------------------------------------------- */
 function onCardClick(element, index) {
   if (!state.isRunning) return;
-  if (state.lockBoard) return;
-
+  if (state.lockBoard) return; 
   const card = state.cards[index];
-  if (card.matched) return;
-  if (state.firstPick && state.firstPick.index === index) return;
-
+  if (card.matched) return;  /* Prevent clicking already matched cards */
+  if (state.firstPick && state.firstPick.index === index) return;  /* Prevent clicking the same card twice in the same turn */
   element.textContent = card.value;
   element.classList.add("is-flipped");
-
   if (!state.firstPick) {
     state.firstPick = { element, index, card };
     return;
   }
-
   state.secondPick = { element, index, card };
   state.moves++;
   updateStatus();
-
   checkMatch();
 }
 
@@ -1393,7 +1394,6 @@ gameForm.addEventListener("submit", e => {
   e.preventDefault();
   const name = playerNameEl.value.trim();
   const difficulty = difficultyEl.value;
-
   if (!name || !difficulty) {
       setFeedback("Please enter your name and select a difficulty.");
       return;
@@ -1445,7 +1445,7 @@ gameForm.addEventListener("submit", e => {
              setFeedback -> Function that updates the UI feedback area.
              ( "Please enter..." ) -> Error message shown to user.
       return;  -> return -> Stops execution; restart does not proceed.
-    }
+
    state.playerName = name;
          state -> Main game state object.
          .playerName -> Stores the player's name.
@@ -1535,23 +1535,31 @@ gameForm.addEventListener("submit", e => {
              show restart message
 -------------------------------------------------- */
 restartBtn.addEventListener("click", () => {
-  const difficulty = difficultyEl.value;
   const name = playerNameEl.value.trim();
+  const difficulty = difficultyEl.value;
+
   if (!name || !difficulty) {
-      setFeedback("Please enter your name and select a difficulty.");
-      return;
+    setFeedback("Please enter your name and select a difficulty.");
+    return;
   }
+
   state.playerName = name;
+  
   const config = DIFFICULTY[difficulty];
   const totalCards = config.cols * config.rows;
+
   resetGame();
+
   state.cards = createDeck(totalCards);
   state.totalPairs = totalCards / 2;
   state.isRunning = true;
+
   boardEl.style.gridTemplateColumns = `repeat(${config.cols}, 1fr)`;
+
   renderBoard();
   updateStatus();
   startTimer();
+  
   setFeedback(`Restarted! Good luck, ${name}.`);
 });
 /* --------------------------------------------------
