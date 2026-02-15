@@ -1,89 +1,310 @@
+/* --------------------------------------------------------
+   ROOT VARIABLES
+   Centralised colour system for consistency and easy theming.
+   All colours are defined here so the entire UI can be updated
+   by changing only these values.
+-------------------------------------------------------- */
 :root { /* Root scope for global CSS variables */
-  --bg: #0f172a; /* Global background color */
-  --panel: #111c35; /* Panel background color */
-  --text: #e5e7eb; /* Default text color */
-  --muted: #cbd5e1; /* Muted/secondary text color */
-  --border: rgba(255,255,255,0.14); /* Subtle border color */
-  --highlight: #facc15; /* Highlight color for flipped cards */
-  --focus: rgba(250,204,21,0.35); /* Soft focus/active state color */
-}
+  --bg: #0f172a; /* Page background colour */
+  --panel: #111c35; /* Panel / container background */
+  --text: #e5e7eb; /* Primary text colour */
+  --muted: #cbd5e1; /* Secondary / muted text colour */
+  --border: rgba(255,255,255,0.14); /* Subtle border colour */
 
-* { /* Universal selector applying to all elements */
-  box-sizing: border-box; /* Ensures padding + border are included in width/height */
-}
+  /* Interaction / feedback colours */
+  --accent: #38bdf8; /* Hover / focus highlight colour */
+  --success: #22c55e; /* Matched card colour */
+  --selected: #facc15; /* Selected card highlight (yellow) */
+  --focus: rgba(56,189,248,0.75); /* Focus ring for accessibility */
+} 
 
+/* --------------------------------------------------------
+   GLOBAL RESET
+   Ensures consistent box-sizing across all elements.
+-------------------------------------------------------- */
+* { /* Universal selector */
+  box-sizing: border-box; /* Includes padding + border inside width/height */
+} 
+
+/* --------------------------------------------------------
+   BODY & LAYOUT
+   Sets global font, colours, and page background.
+   Defines the main layout container used across the site.
+--------------------------------------------------------*/
 body { /* Main page container */
   margin: 0; /* Removes default browser margin */
-  font-family: system-ui, sans-serif; /* Clean, modern default font */
-  background: var(--bg); /* Applies global background color */
-  color: var(--text); /* Applies global text color */
-}
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; /* Modern, readable font stack */
+  background: var(--bg); /* Applies global background colour */
+  color: var(--text); /* Applies global text colour */
+} 
 
 .container { /* Responsive centered layout wrapper */
   width: min(1000px, 92%); /* Max width of 1000px or 92% of screen */
-  margin: auto; /* Centers container horizontally */
-}
+  margin: 0 auto; /* Centers container horizontally */
+} 
 
-.panel { /* Reusable UI panel component */
-  background: var(--panel); /* Panel background color */
+/* --------------------------------------------------------
+   HEADER & FOOTER
+   Shared styling for top and bottom sections of the page.
+   Adds borders and spacing for visual separation.
+--------------------------------------------------------*/
+.site-header,
+.site-footer { /* Header and footer shared styling */
+  border-bottom: 1px solid var(--border); /* Bottom border for separation */
+} 
+
+.site-footer { /* Footer-specific styling */
+  border-top: 1px solid var(--border); /* Top border for footer */
+  border-bottom: none; /* Removes bottom border */
+  margin-top: 24px; /* Adds spacing above footer */
+} 
+
+.site-header .container,
+.site-footer .container { /* Inner padding for header/footer */
+  padding: 20px 0; /* Vertical spacing */
+} 
+
+.subtitle { /* Subtitle under main heading */
+  margin-top: 8px; /* Space above subtitle */
+  color: var(--muted); /* Muted text colour */
+  line-height: 1.5; /* Comfortable line spacing */
+} 
+
+/* --------------------------------------------------------
+   PANEL COMPONENT
+   Reusable card-like container used for rules, controls,
+   status panel, and other UI sections.
+-------------------------------------------------------- */
+.panel { /* Reusable UI panel */
+  margin: 18px 0; /* Vertical spacing between panels */
+  padding: 16px; /* Inner spacing */
+  background: var(--panel); /* Panel background colour */
   border: 1px solid var(--border); /* Subtle border */
   border-radius: 14px; /* Rounded corners */
-  padding: 16px; /* Inner spacing */
-  margin: 18px 0; /* Vertical spacing between panels */
 }
 
-.controls { /* Layout for form fields and buttons */
+/* --------------------------------------------------------
+   GAME CONTROLS (FORM)
+   Grid layout for labels, inputs, selects, and buttons.
+   Includes hover, disabled, and focus-visible states.
+-------------------------------------------------------- */
+.controls { /* Form layout container */
   display: grid; /* Enables grid layout */
   gap: 12px; /* Space between grid items */
+  grid-template-columns: 1fr 1fr; /* Two equal-width columns */
+} 
+
+.controls label { /* Form labels */
+  grid-column: 1 / -1; /* Label spans full width */
+  color: var(--muted); /* Muted label colour */
+  font-size: 0.9rem; /* Slightly smaller text */
 }
 
 .controls input,
-.controls select,
-.controls button { /* Shared styling for form elements */
+.controls select { /* Shared styling for inputs and selects */
   padding: 10px; /* Inner spacing */
   border-radius: 10px; /* Rounded corners */
   border: 1px solid var(--border); /* Subtle border */
-  background: rgba(255,255,255,0.05); /* Slight translucent background */
-  color: var(--text); /* Text color matches theme */
-}
+  background: rgba(255,255,255,0.04); /* Slight translucent background */
+  color: var(--text); /* Text colour */
+} 
 
-.controls button { /* Button-specific styling */
-  cursor: pointer; /* Indicates interactivity */
+.controls button { /* Button styling */
+  padding: 10px; /* Inner spacing */
+  border-radius: 10px; /* Rounded corners */
+  border: 1px solid var(--border); /* Subtle border */
+  background: rgba(255,255,255,0.06); /* Slightly brighter background */
+  color: var(--text); /* Text colour */
+  cursor: pointer; /* Pointer cursor for interactivity */
+  transition: border-color 120ms ease; /* Smooth hover transition */
+} 
+
+.controls button:hover { /* Hover state */
+  border-color: var(--accent); /* Highlight border on hover */
+} 
+
+.controls button:disabled { /* Disabled button */
+  opacity: 0.5; /* Faded appearance */
+  cursor: not-allowed; /* Disabled cursor */
+} 
+
+/* Keyboard focus (accessibility) */
+.controls input:focus-visible,
+.controls select:focus-visible,
+.controls button:focus-visible { /* Focus-visible state */
+  outline: none; /* Removes default outline */
+  border-color: var(--accent); /* Highlight border */
+  box-shadow: 0 0 0 3px var(--focus); /* Glow ring for accessibility */
 }
 
 .feedback { /* Feedback message area */
+  grid-column: 1 / -1; /* Full width */
+  color: var(--muted); /* Muted text */
   min-height: 1.2em; /* Reserves space even when empty */
-  color: var(--muted); /* Muted text color */
-}
+} 
 
-.status { /* Status bar layout */
+/* --------------------------------------------------------
+   STATUS PANEL
+   Displays moves, time, and pairs in a 3-column grid.
+-------------------------------------------------------- */
+.status { /* Status panel layout */
   display: grid; /* Enables grid layout */
-  grid-template-columns: repeat(3, 1fr); /* Three equal-width columns */
-  gap: 12px; /* Space between columns */
-}
+  grid-template-columns: repeat(3, 1fr); /* Three equal columns */
+  gap: 12px; /* Space between items */
+} 
 
+.status div { /* Individual status boxes */
+  padding: 12px; /* Inner spacing */
+  border-radius: 12px; /* Rounded corners */
+  border: 1px solid var(--border); /* Subtle border */
+  background: rgba(255,255,255,0.03); /* Slight translucent background */
+} 
+
+/* --------------------------------------------------------
+   GAME BOARD
+   Grid container for dynamically generated cards.
+-------------------------------------------------------- */
 .board { /* Game board container */
   display: grid; /* Enables grid layout */
   gap: 12px; /* Space between cards */
-}
+  margin-top: 12px; /* Space above board */
+} 
 
+/* --------------------------------------------------------
+   CARD COMPONENT
+   Defines default card appearance and interactive states:
+   - Hover
+   - Focus-visible
+   - Flipped
+   - Matched
+-------------------------------------------------------- */
 .card { /* Base card styling */
-  height: 90px; /* Card height */
+  position: relative; /* Needed for inner faces */
+  height: 92px; /* Card height */
   border-radius: 14px; /* Rounded corners */
   border: 2px solid var(--border); /* Subtle border */
-  background: rgba(255,255,255,0.05); /* Slight translucent background */
-  cursor: pointer; /* Indicates interactivity */
-  font-size: 1.5rem; /* Large text for emojis/numbers */
-  transition: 120ms ease; /* Smooth flip animation */
+  background: rgba(255,255,255,0.04); /* Slight translucent background */
+  cursor: pointer; /* Pointer cursor */
+  overflow: hidden; /* Hides inner face overflow */
+  transition: /* Smooth animations */
+    transform 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+} 
+
+/* Hover (mouse users) */
+.card:hover { /* Hover state */
+  transform: translateY(-2px); /* Slight lift effect */
+  border-color: var(--accent); /* Highlight border */
+} 
+
+/* Keyboard focus */
+.card:focus-visible { /* Focus-visible state */
+  outline: none; /* Removes default outline */
+  border-color: var(--accent); /* Highlight border */
+  box-shadow: 0 0 0 3px var(--focus); /* Glow ring */
+} 
+
+/* Inner faces */
+.card-inner { /* Container for front/back faces */
+  position: absolute; /* Positioned inside card */
+  inset: 0; /* Fills entire card */
+  display: grid; /* Centers content */
+  place-items: center; /* Perfect centering */
+  font-size: 2rem; /* Large text */
+  font-weight: 600; /* Bold text */
+  letter-spacing: 0.08em; /* Slight spacing */
+} 
+
+/* Back face (hidden letter) */
+.card .back { /* Back face styling */
+  color: var(--muted); /* Muted text */
+  opacity: 1; /* Visible by default */
+  transition: opacity 160ms ease; /* Smooth fade */
+} 
+
+/* Front face (revealed letter) */
+.card .front { /* Front face styling */
+  opacity: 0; /* Hidden by default */
+  color: #0f172a; /* Dark text for contrast */
+  background: rgba(250, 204, 21, 0.9); /* Yellow face */
+  transform: scale(0.95); /* Slightly smaller */
+  transition: opacity 160ms ease, transform 160ms ease; /* Smooth reveal */
+} 
+
+/* --------------------------------------------------------
+   SELECTED CARD (FLIPPED)
+   Strong yellow border + glow for visibility.
+--------------------------------------------------------*/
+.card.is-flipped { /* Flipped card state */
+  border-color: var(--selected); /* Yellow border */
+  border-width: 4px; /* Thicker border */
+  box-shadow: /* Glow effect */
+    0 0 0 3px rgba(250, 204, 21, 0.35),
+    0 8px 20px rgba(0, 0, 0, 0.35);
+} 
+
+.card.is-flipped .front { /* Front face when flipped */
+  opacity: 1; /* Fully visible */
+  transform: scale(1); /* Full size */
+} 
+
+.card.is-flipped .back { /* Back face when flipped */
+  opacity: 0; /* Hidden */
 }
 
-.card.is-flipped { /* Styling for revealed cards */
-  background: var(--highlight); /* Highlight background */
-  border-color: var(--highlight); /* Highlight border */
-  color: #000; /* Dark text for contrast */
-}
+/* --------------------------------------------------------
+   MATCHED CARD
+   Green tint + reduced opacity to indicate completion.
+-------------------------------------------------------- */
+.card.is-matched { /* Matched card state */
+  border-color: var(--success); /* Green border */
+  background: rgba(34,197,94,0.14); /* Green tint */
+  opacity: 0.6; /* Faded appearance */
+  cursor: default; /* No pointer cursor */
+} 
 
-.card.is-matched { /* Styling for matched cards */
-  opacity: 0.6; /* Slightly faded to indicate completion */
-  cursor: default; /* Removes pointer cursor */
-}
+/*--------------------------------------------------------
+   HISTORY TABLE
+   Used to display past game results.
+-------------------------------------------------------- */
+.history-table { /* Table container */
+  width: 100%; /* Full width */
+  border-collapse: collapse; /* Removes spacing between cells */
+  margin-top: 10px; /* Space above table */
+  font-size: 0.95rem; /* Slightly smaller text */
+} 
+
+.history-table th,
+.history-table td { /* Table cells */
+  border: 1px solid var(--border); /* Subtle border */
+  padding: 8px; /* Inner spacing */
+  text-align: left; /* Left-aligned text */
+} 
+
+.history-table th { /* Header cells */
+  background: rgba(255,255,255,0.06); /* Slight background tint */
+  color: var(--muted); /* Muted text */
+} 
+
+.history-table tr:nth-child(odd) { /* Odd rows */
+  background: rgba(255,255,255,0.02); /* Very subtle striping */
+} 
+
+/* --------------------------------------------------------
+   RESPONSIVE
+   Adjusts layout for smaller screens.
+--------------------------------------------------------*/
+@media (max-width: 700px) { /* Mobile breakpoint */
+  .controls {
+    grid-template-columns: 1fr; /* Single column layout */
+  }
+
+  .status {
+    grid-template-columns: 1fr; /* Single column layout */
+  }
+
+  .card {
+    height: 82px; /* Slightly smaller cards */
+  }
+} 
