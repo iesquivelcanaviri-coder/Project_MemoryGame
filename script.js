@@ -1,10 +1,9 @@
 "use strict";
 /* --------------------------------------------------
-   SELECT HTML ELEMENTS — DOM ELEMENT REFERENCES
-   These are called:
-   “DOM (Document Object Model) element references”
+DOM (Document Object Model) ELEMENT REFERENCES — CONSTANT ASSIGNMENTS SELECT HTML ELEMENTS
    because each variable stores a reference to an element
-   from the HTML page.
+     • All lines are constant variable assignments.
+     • Each one stores a DOM element refer
 --------------------------------------------------
    SELECT HTML ELEMENTS — DOM ELEMENT REFERENCES
    const boardEl = document.getElementById("board");
@@ -89,8 +88,12 @@ const timeValueEl = document.getElementById("timeValue");
 const pairsValueEl = document.getElementById("pairsValue");
 
 /* --------------------------------------------------
-   DIFFICULTY SETTINGS OBJECT
-   const DIFFICULTY = { ... };
+CONSTANT OBJECT WITH NESTED SETTINGS -  DIFFICULTY
+       • DIFFICULTY is an object containing three nested objects.
+       • Each nested object defines board dimensions.
+       • This is not a function — it is a structured data object
+----------------------------------------------------------
+       const DIFFICULTY = { ... };
          const -> Declares a constant variable (cannot be reassigned).
          DIFFICULTY -> Variable name I created; stores all difficulty presets.
          = -> Assignment operator (“store right side into left side”).
@@ -179,7 +182,11 @@ const DIFFICULTY = {
 const SYMBOLS = "ABCDEFGHJKLMNPQRSTUVWXYZ".split("");
 
 /* --------------------------------------------------
-   GAME STATE OBJECT
+   MUTABLE GAME STATE OBJECT
+     • state is an object that holds all game-related data.
+     • Each property is a simple value (boolean, string, number, array, or null).
+     • pure data storage.
+---------------------------------------------
    let state = { ... };
          let -> Declares a variable whose value CAN change later.
          state -> Variable name YOU created; stores all live game data.
@@ -242,7 +249,11 @@ let state = {
 };
 
 /* --------------------------------------------------
-   HELPER FUNCTIONS
+SHUFFLING, TIME FORMATTING, FEEDBACK - UTILITY FUNCTIONS 
+    • All three are function declarations.
+     • shuffle() uses array sorting + randomness.
+     • formatTime() converts numbers into a UI‑friendly time string.
+     • setFeedback() updates the DOM with a message.
 --------------------------------------------------
    function shuffle(array) { ... }
          function -> Declares a reusable block of code.
@@ -317,10 +328,10 @@ function setFeedback(message) {
 }
 
 /* --------------------------------------------------
-   CREATE DECK — BUILDS ALL CARD OBJECTS FOR THE GAME
-         - Dynamically generates card pairs based on difficulty.
-         - Ensures each symbol appears exactly twice.
-         - Returns a fully shuffled deck ready for rendering.
+FUNCTION DECLARATION + DECK CREATION LOGIC - createDeck(totalCards) 
+  • createDeck() is a function declaration.
+  • Inside it: array slicing, looping, object creation, and a shuffle call.
+  • The result is a fully built, randomized deck ready for the game.
 --------------------------------------------------
    function createDeck(totalCards) { ... }
          function -> Declares a reusable block of code.
@@ -396,10 +407,9 @@ function createDeck(totalCards) {
 }
 
 /* --------------------------------------------------
-   RENDER BOARD — DRAWS ALL CARD BUTTONS ON SCREEN
-         - Fully dynamic board creation based on difficulty.
-         - Clears old board before rendering a new one.
-         - Attaches click handlers to every card button.
+FUNCTION DECLARATION + BOARD RENDERING LOGIC - renderBoard() 
+      • renderBoard() is a function declaration.
+      • Inside it: DOM clearing, looping, element creation, event listeners.
 --------------------------------------------------
    function renderBoard() { ... }
          function -> Declares a reusable block of code.
@@ -486,10 +496,9 @@ function renderBoard() {
 }
 
 /* --------------------------------------------------
-   CARD CLICK HANDLER — PROCESSES EACH CARD FLIP
-         - Prevents invalid clicks (same card, matched card, rapid clicks).
-         - Stores first and second picks for match checking.
-         - Updates move counter automatically.
+FUNCTION DECLARATION + CLICK LOGIC - onCardClick(element, index) 
+       • onCardClick() is a function declaration.
+       • Inside it: guard clauses, DOM updates, state updates, and function calls.
 --------------------------------------------------
    function onCardClick(element, index) { ... }
          function -> Declares a reusable block of code.
@@ -612,7 +621,6 @@ function onCardClick(element, index) {
          function -> Declares a reusable block of code.
          checkMatch -> Function name YOU created; evaluates card matches.
          { } -> Function body containing all instructions.
-
    const first = state.firstPick;
    const second = state.secondPick;
          const -> Declares read‑only variables.
@@ -621,43 +629,32 @@ function onCardClick(element, index) {
                 - index (position)
                 - card (data object)
          state.firstPick / state.secondPick -> Values set in onCardClick().
-
    if (!first || !second) return;
          Guard clause:
                 - If either pick is missing, exit early.
                 - Prevents errors if function is called too soon.
          return -> Stops execution.
-
    if (first.card.value === second.card.value) {
          Compares the symbols of both selected cards.
          If equal → MATCH FOUND.
-
       first.card.matched = true;
       second.card.matched = true;
              Marks both card objects as permanently matched.
-
       first.element.classList.add("is-matched");
       second.element.classList.add("is-matched");
              Adds matched styling to both card buttons.
-
       state.pairsFound++;
              Increments number of matched pairs.
-
       updateStatus();
              Refreshes UI (pairs, moves, time).
-
       resetPicks();
              Clears firstPick and secondPick for next turn.
-
       if (state.pairsFound === state.totalPairs) {
              Checks if all pairs are matched.
              If yes → Game is finished.
          endGame();
-      }
-
       return;
              Ends function after handling match.
-   }
 
    state.lockBoard = true;
          No match → Temporarily disable clicking.
@@ -666,22 +663,17 @@ function onCardClick(element, index) {
    setTimeout(() => {
          setTimeout -> Delays execution for mismatch animation.
          600 -> Delay in milliseconds (0.6 seconds).
-
       first.element.textContent = "Card";
       second.element.textContent = "Card";
              Resets card text back to placeholder.
-
       first.element.classList.remove("is-flipped");
       second.element.classList.remove("is-flipped");
              Removes flipped styling.
-
       resetPicks();
              Clears stored selections.
-
       state.lockBoard = false;
              Re‑enables clicking after animation.
    }, 600);
-
 --------------------------------------------------
    WHAT FEEDS INTO checkMatch()
          • onCardClick() -> Sets firstPick and secondPick.
@@ -797,9 +789,11 @@ function resetPicks() {
 
 /* --------------------------------------------------
    STATUS + TIMER — UPDATES UI + CONTROLS GAME CLOCK
-     • All three are function declarations.
-     • Inside them are assignments, DOM updates, and function invocations.
-     • No objects are created here — only state updates and timer control.
+ • “UI” stands for **User Interface** — the visible parts of the game the player interacts with (buttons, text, counters, timer display).
+ • updateStatus() refreshes what the player sees on the screen.
+ • startTimer() begins a repeating time update and ensures the UI shows the correct time every second.
+ • stopTimer() cleanly stops the timer when the game ends or resets.
+ • Together, they ensure the game feels responsive, accurate, and alive.
 --------------------------------------------------
    function updateStatus() { ... }
          function -> Declares a reusable block of code.
@@ -889,25 +883,29 @@ function stopTimer() {
 }
 
 /* --------------------------------------------------
-   endGame() — FUNCTION DECLARATION + INTERNAL ACTIONS
-
-   • function endGame() { ... }
-       - Type: Function declaration — defines a reusable function named endGame.
-       - Role: Stops the game and shows the final results to the player.
-
-   • Inside the { ... } block:
-       - state.isRunning = false — assignment; marks the game as no longer active.
-       - stopTimer() — function call; stops the timer immediately.
-       - setFeedback(...) — function call; displays a final message including:
-            • player name (state.playerName)
-            • total moves (state.moves)
-            • formatted time (formatTime(state.seconds))
-       - All inner lines are assignments or function invocations, not objects.
-
+FUNCTION DECLARATION + INTERNAL ACTIONS  -  endGame() 
+• function endGame() { ... }
+       - Type: Function declaration — defines a reusable function.
+       - Role: Stops the game and displays the final results to the player.
+• Inside the { ... } block:
+       - state.isRunning = false
+           → Assignment; marks the game as no longer active.
+       - stopTimer()
+           → Function call; stops the running timer so time no longer increases.
+       - setFeedback(`Well done, ${state.playerName}! ...`)
+           → Function call; updates the UI with a final message that includes:
+               • the player's name
+               • the total number of moves
+               • the formatted time (via formatTime(state.seconds)
    SUMMARY:
-       • endGame() is a function declaration.
-       • Inside it: one assignment + two function calls.
-       • Purpose: cleanly stop the game and show the final score.
+       • endGame() is responsible for cleanly finishing the game.
+       • It updates the **game state** (isRunning = false) so no more actions occur.
+       • It stops the **timer**, ensuring the final time is accurate.
+       • It updates the **UI** with a personalised completion message.
+       • “UI” stands for **User Interface** — the visible parts of the game the
+         player interacts with (text, buttons, counters, timer, feedback area).
+       • This function ensures the player receives clear, immediate feedback
+         when the game is completed, making the experience feel polished.
 -------------------------------------------------- */
 function endGame() {
   state.isRunning = false;
@@ -916,68 +914,57 @@ function endGame() {
 }
 
 /* --------------------------------------------------
-     resetGame() — FUNCTION DECLARATION + INTERNAL ACTIONS
-         • resetGame() is a function declaration.
-       • Inside it are assignments (changing state values) and function calls.
-       • Nothing inside is an object — they are state updates + invocations.
+FUNCTION DECLARATION + INTERNAL ACTIONS    -   resetGame() 
+• resetGame() is responsible for returning the entire game to its initial state — no cards, no time, no moves, no selections.
+• It resets the game state (all values inside the state object).
+• It resets the timer so the next game starts at 0 seconds.
+• It resets the UI (User Interface), meaning the visible elements the player interacts with: the board, counters, and timer display.
+• This function ensures that every new game begins cleanly, without leftover data or visual elements from previous rounds.
 --------------------------------------------------
    function resetGame() { ... }
          function -> Declares a reusable block of code.
          resetGame -> Function name YOU created; resets the entire game.
          { } -> Function body containing all instructions.
-
    stopTimer();
          stopTimer -> Halts the active timer interval.
          Ensures no time continues counting during reset.
-
    state.isRunning = false;
          state -> Game state object.
          .isRunning -> Controls whether gameplay is active.
          false -> Game is not currently running.
-
    state.lockBoard = false;
          .lockBoard -> Prevents clicks during animations.
          false -> Re‑enables clicking for the next game.
-
    state.cards = [];
          .cards -> Array storing all card objects.
          [] -> Clears the deck completely.
-
    state.firstPick = null;
          .firstPick -> First selected card.
          null -> No card selected.
-
    state.secondPick = null;
          .secondPick -> Second selected card.
          null -> Clears second selection.
-
    state.moves = 0;
          .moves -> Move counter.
          0 -> Reset to zero.
-
    state.pairsFound = 0;
          .pairsFound -> Number of matched pairs.
          0 -> Reset to zero.
-
    state.totalPairs = 0;
          .totalPairs -> Set later based on difficulty.
          0 -> Placeholder until new game starts.
-
    state.seconds = 0;
          .seconds -> Timer value.
          0 -> Timer resets to zero.
-
    boardEl.innerHTML = "";
          boardEl -> DOM element for the game board.
          .innerHTML = "" -> Removes all card buttons from the UI.
-
    updateStatus();
          updateStatus -> Refreshes UI elements:
                 - moves
                 - pairs
                 - time
          Ensures the screen shows a clean reset state.
-
 --------------------------------------------------
    WHAT FEEDS INTO resetGame()
          • stopTimer() -> Ensures timer is not running.
@@ -1015,34 +1002,28 @@ function resetGame() {
 }
 
 /* --------------------------------------------------
-An event listener with an anonymous callback function
-  START GAME (FORM SUBMIT) — INITIALIZES A NEW GAME
-   1. gameForm.addEventListener("submit", ...)
-      • Type: Event listener — watches for the "submit" event on the form.
-      • Meaning: “When the form is submitted, run the callback function.”
-
-   2. e => { ... }
-      • Type: Anonymous arrow function — a function with no name.
-      • Role: Callback function — executed automatically when the event fires.
-      • Not an object, not a method, not a function declaration.
-
-   3. Inside the { ... } block (the callback body)
-      • e.preventDefault() — function call; stops page reload.
-      • resetGame() — function call; clears previous game state.
-      • renderBoard() — function call; draws the cards.
-      • startTimer() — function call; starts the timer.
-      • setFeedback(...) — function call; updates the message.
-      • All of these are function invocations (executing functions), not objects.
-
-   SUMMARY OF THE STRUCTURE:
-      Event Listener
-         → contains an Arrow Function (callback)
-             → contains Function Calls + Logic
+FORM SUBMISSION — STARTS A NEW GAME BASED ON USER INPUT
+  • This code is an event listener with an anonymous arrow function callback.
+  • It handles form submission, validates user input, resets the game, configures difficulty, generates a new deck, updates the UI, renders the board, and starts the timer.
+  • It is one of the most common JavaScript patterns for interactive web apps.
+-----------------------------------------------------------
+     • This event listener is the **entry point** for starting a new game.
+       • It performs **input validation**, ensuring the player provides a name
+         and selects a difficulty.
+       • It loads the correct **difficulty configuration** (rows/columns).
+       • It resets all previous game data so the new game starts cleanly.
+       • It generates a **new deck**, updates the **game state**, and prepares
+         the **UI** (User Interface) — meaning the visible elements the player
+         interacts with: the board, counters, timer, and feedback area.
+       • It renders the board, starts the timer, and enables the restart button.
+       • This function ties together all major systems: state, deck creation,
+         board rendering, timer control, and UI feedback.
 --------------------------------------------------
    gameForm.addEventListener("submit", e => { ... })
-         gameForm -> The <form> element containing name + difficulty.
-         .addEventListener -> Listens for a specific event.
-         "submit" -> Triggered when the form is submitted.
+        • This is a method call on a DOM element. 
+         gameForm -> The <form> element containing name + difficulty.  gameForm is a DOM element (the <form>).
+         .addEventListener -> Listens for a specific event. addEventListener() is a built‑in browser method.
+         "submit" -> Triggered when the form is submitted. submit" is the event type being listened for.
          e -> Event object representing the form submission.
          => -> Arrow function handling the event.
          { } -> Function body containing all instructions.

@@ -1,19 +1,7 @@
 /* --------------------------------------------------
-   COLOUR VARIABLES (CSS CUSTOM PROPERTIES)
-   :root { ... }  ->  :root -> The top‑level element in CSS (the HTML root).
-                - Variables defined here are available everywhere.
-           { } -> Block containing all custom CSS variables.
-   --bg: #0f172a;  ->  --bg -> Custom CSS variable name.
-         : -> Assigns a value to the variable.
-         #0f172a -> Dark blue background color.
-         ; -> Ends the declaration.
-   --panel: #111c35;  ->  --panel -> Background color for panels.
-         #111c35 -> Deep navy tone.
-   --text: #e5e7eb;   ->     --text -> Main text color.
-         #e5e7eb -> Light gray.
-   --muted: #cbd5e1;  ->     --muted -> Subtle, secondary text color.
-   --border: rgba(255,255,255,0.14); ->   --border -> Semi‑transparent white border color.
-   --highlight: #facc15;  ->    --highlight -> Bright yellow used for flipped cards.
+   GLOBAL THEME VARIABLES (CSS CUSTOM PROPERTIES)
+   • :root defines variables available everywhere.
+   • Used for consistent colors and easy theme changes.
 -------------------------------------------------- */
 :root {
   --bg: #0f172a;
@@ -22,18 +10,22 @@
   --muted: #cbd5e1;
   --border: rgba(255,255,255,0.14);
   --highlight: #facc15;
-  --focus: rgba(250, 204, 21, 0.35);
 }
 
+
 /* --------------------------------------------------
-   GLOBAL RESET
+   GLOBAL RESET — UNIVERSAL SELECTOR
+   • Ensures consistent box-sizing across all elements.
 -------------------------------------------------- */
 * {
   box-sizing: border-box;
 }
 
+
 /* --------------------------------------------------
-   PAGE LAYOUT
+   BASE PAGE STYLING — BODY ELEMENT
+   • Sets global font, background, and text color.
+   • Removes default browser margin.
 -------------------------------------------------- */
 body {
   margin: 0;
@@ -42,37 +34,20 @@ body {
   color: var(--text);
 }
 
+
+/* --------------------------------------------------
+   LAYOUT CONTAINER — RESPONSIVE CENTERED WRAPPER
+   • Limits max width and centers content.
+-------------------------------------------------- */
 .container {
   width: min(1000px, 92%);
   margin: auto;
 }
 
-/* --------------------------------------------------
-   HEADER & FOOTER
--------------------------------------------------- */
-.site-header,
-.site-footer {
-  border-bottom: 1px solid var(--border);
-}
-
-.site-footer {
-  border-top: 1px solid var(--border);
-  border-bottom: none;
-  margin-top: 24px;
-}
-
-.site-header .container,
-.site-footer .container {
-  padding: 18px 0;
-}
-
-.subtitle {
-  color: var(--muted);
-  line-height: 1.5;
-}
 
 /* --------------------------------------------------
-   PANELS
+   PANEL COMPONENT — REUSABLE BOX STYLE
+   • Used for form, status, and other UI sections.
 -------------------------------------------------- */
 .panel {
   background: var(--panel);
@@ -82,57 +57,20 @@ body {
   margin: 18px 0;
 }
 
+
 /* --------------------------------------------------
-   FORM CONTROLS
+   CONTROLS LAYOUT — FORM + BUTTON AREA
+   • Uses CSS Grid for spacing and alignment.
 -------------------------------------------------- */
 .controls {
   display: grid;
   gap: 12px;
-  grid-template-columns: 1fr 1fr;
 }
 
-.controls label {
-  grid-column: 1 / -1;
-  color: var(--muted);
-  font-size: 0.95rem;
-}
-
-.controls input,
-.controls select,
-.controls button {
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,0.05);
-  color: var(--text);
-}
-
-.controls button {
-  cursor: pointer;
-}
-
-.controls button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Keyboard focus (accessibility) */
-.controls input:focus-visible,
-.controls select:focus-visible,
-.controls button:focus-visible {
-  outline: none;
-  border-color: var(--highlight);
-  box-shadow: 0 0 0 3px var(--focus);
-}
-
-.feedback {
-  grid-column: 1 / -1;
-  color: var(--muted);
-  min-height: 1.2em;
-}
 
 /* --------------------------------------------------
-   STATUS PANEL
+   STATUS BAR — MOVES / PAIRS / TIME
+   • Three equal columns using CSS Grid.
 -------------------------------------------------- */
 .status {
   display: grid;
@@ -140,24 +78,20 @@ body {
   gap: 12px;
 }
 
-.status div {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px;
-  background: rgba(255,255,255,0.03);
-}
 
 /* --------------------------------------------------
-   GAME BOARD
+   GAME BOARD — GRID OF CARDS
+   • Columns are set dynamically in JavaScript.
 -------------------------------------------------- */
 .board {
   display: grid;
   gap: 12px;
-  margin-top: 10px;
 }
 
+
 /* --------------------------------------------------
-   CARD STYLING
+   CARD — DEFAULT APPEARANCE
+   • Base styling for each card button.
 -------------------------------------------------- */
 .card {
   height: 90px;
@@ -166,48 +100,25 @@ body {
   background: rgba(255,255,255,0.05);
   cursor: pointer;
   font-size: 1.5rem;
-  color: var(--text);
-  transition: transform 120ms ease, border-color 120ms ease;
 }
 
-.card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(250,204,21,0.6);
-}
 
-/* Keyboard focus on cards */
-.card:focus-visible {
-  outline: none;
-  border-color: var(--highlight);
-  box-shadow: 0 0 0 3px var(--focus);
-}
-
-/* Flipped card state */
+/* --------------------------------------------------
+   CARD STATE — FLIPPED
+   • Applied when the card is revealed.
+-------------------------------------------------- */
 .card.is-flipped {
   background: var(--highlight);
   border-color: var(--highlight);
   color: #000;
 }
 
-/* Matched card state */
-.card.is-matched {
-  opacity: 0.65;
-  cursor: default;
-}
 
 /* --------------------------------------------------
-   RESPONSIVE
+   CARD STATE — MATCHED
+   • Applied when the card has been successfully paired.
 -------------------------------------------------- */
-@media (max-width: 700px) {
-  .controls {
-    grid-template-columns: 1fr;
-  }
-
-  .status {
-    grid-template-columns: 1fr;
-  }
-
-  .card {
-    height: 82px;
-  }
+.card.is-matched {
+  opacity: 0.6;
+  cursor: default;
 }

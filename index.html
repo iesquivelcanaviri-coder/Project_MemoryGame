@@ -4,14 +4,13 @@
   <!-- --------------------------------------------------
        DOCUMENT SETUP
        - Character encoding
-       - Responsive scaling for mobile devices
-       - Page title
-       - External CSS file
+       - Responsive scaling
+       - Title
+       - External CSS
   -------------------------------------------------- -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>JavaScript Memory Game</title>
-
   <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -19,10 +18,8 @@
 
   <!-- --------------------------------------------------
        HEADER
-       - Displays the game title and short description
-       - Uses a container for consistent alignment
   -------------------------------------------------- -->
-   <header class="site-header">
+  <header class="site-header">
     <div class="container">
       <h1>JavaScript Memory Game</h1>
       <p class="subtitle">
@@ -31,15 +28,10 @@
     </div>
   </header>
 
-  <!-- --------------------------------------------------
-       MAIN CONTENT
-  -------------------------------------------------- -->
   <main class="container">
 
     <!-- --------------------------------------------------
-         GAME RULES (INFORMATION ONLY)
-         - Explains how the game works
-         - No JavaScript interaction in this section
+         GAME RULES
     -------------------------------------------------- -->
     <section class="panel rules">
       <h2>How to Play</h2>
@@ -54,9 +46,6 @@
 
     <!-- --------------------------------------------------
          GAME CONTROLS (FORM)
-         - Required by assessment
-         - JavaScript reads values from this form
-         - novalidate disables browser validation
     -------------------------------------------------- -->
     <section class="panel">
       <h2>Game Controls</h2>
@@ -81,13 +70,10 @@
       </form>
     </section>
 
-
     <!-- --------------------------------------------------
          GAME STATUS
-         - Updated live by JavaScript
-         - Displays moves, time, and matched pairs
     -------------------------------------------------- -->
-  <section class="panel">
+    <section class="panel">
       <h2>Game Status</h2>
       <div class="status">
         <div><strong>Moves:</strong> <span id="movesValue">0</span></div>
@@ -98,27 +84,20 @@
 
     <!-- --------------------------------------------------
          GAME BOARD
-         - Cards are created dynamically by JavaScript
-         - CSS Grid controls layout
     -------------------------------------------------- -->
-   <section class="panel">
+    <section class="panel">
       <h2>Game Board</h2>
       <div id="board" class="board"></div>
     </section>
 
   </main>
-  <!-- --------------------------------------------------
-       FOOTER
-  -------------------------------------------------- -->
+
   <footer class="site-footer">
     <div class="container">
       <p>Hosted on GitHub Pages</p>
     </div>
   </footer>
 
-  <!-- --------------------------------------------------
-       EXTERNAL JAVASCRIPT FILE
-  -------------------------------------------------- -->
   <script src="script.js"></script>
 </body>
 </html>
