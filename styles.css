@@ -1,124 +1,89 @@
-/* --------------------------------------------------
-   GLOBAL THEME VARIABLES (CSS CUSTOM PROPERTIES)
-   • :root defines variables available everywhere.
-   • Used for consistent colors and easy theme changes.
--------------------------------------------------- */
-:root {
-  --bg: #0f172a;
-  --panel: #111c35;
-  --text: #e5e7eb;
-  --muted: #cbd5e1;
-  --border: rgba(255,255,255,0.14);
-  --highlight: #facc15;
+:root { /* Root scope for global CSS variables */
+  --bg: #0f172a; /* Global background color */
+  --panel: #111c35; /* Panel background color */
+  --text: #e5e7eb; /* Default text color */
+  --muted: #cbd5e1; /* Muted/secondary text color */
+  --border: rgba(255,255,255,0.14); /* Subtle border color */
+  --highlight: #facc15; /* Highlight color for flipped cards */
+  --focus: rgba(250,204,21,0.35); /* Soft focus/active state color */
 }
 
-
-/* --------------------------------------------------
-   GLOBAL RESET — UNIVERSAL SELECTOR
-   • Ensures consistent box-sizing across all elements.
--------------------------------------------------- */
-* {
-  box-sizing: border-box;
+* { /* Universal selector applying to all elements */
+  box-sizing: border-box; /* Ensures padding + border are included in width/height */
 }
 
-
-/* --------------------------------------------------
-   BASE PAGE STYLING — BODY ELEMENT
-   • Sets global font, background, and text color.
-   • Removes default browser margin.
--------------------------------------------------- */
-body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--text);
+body { /* Main page container */
+  margin: 0; /* Removes default browser margin */
+  font-family: system-ui, sans-serif; /* Clean, modern default font */
+  background: var(--bg); /* Applies global background color */
+  color: var(--text); /* Applies global text color */
 }
 
-
-/* --------------------------------------------------
-   LAYOUT CONTAINER — RESPONSIVE CENTERED WRAPPER
-   • Limits max width and centers content.
--------------------------------------------------- */
-.container {
-  width: min(1000px, 92%);
-  margin: auto;
+.container { /* Responsive centered layout wrapper */
+  width: min(1000px, 92%); /* Max width of 1000px or 92% of screen */
+  margin: auto; /* Centers container horizontally */
 }
 
-
-/* --------------------------------------------------
-   PANEL COMPONENT — REUSABLE BOX STYLE
-   • Used for form, status, and other UI sections.
--------------------------------------------------- */
-.panel {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px;
-  margin: 18px 0;
+.panel { /* Reusable UI panel component */
+  background: var(--panel); /* Panel background color */
+  border: 1px solid var(--border); /* Subtle border */
+  border-radius: 14px; /* Rounded corners */
+  padding: 16px; /* Inner spacing */
+  margin: 18px 0; /* Vertical spacing between panels */
 }
 
-
-/* --------------------------------------------------
-   CONTROLS LAYOUT — FORM + BUTTON AREA
-   • Uses CSS Grid for spacing and alignment.
--------------------------------------------------- */
-.controls {
-  display: grid;
-  gap: 12px;
+.controls { /* Layout for form fields and buttons */
+  display: grid; /* Enables grid layout */
+  gap: 12px; /* Space between grid items */
 }
 
-
-/* --------------------------------------------------
-   STATUS BAR — MOVES / PAIRS / TIME
-   • Three equal columns using CSS Grid.
--------------------------------------------------- */
-.status {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+.controls input,
+.controls select,
+.controls button { /* Shared styling for form elements */
+  padding: 10px; /* Inner spacing */
+  border-radius: 10px; /* Rounded corners */
+  border: 1px solid var(--border); /* Subtle border */
+  background: rgba(255,255,255,0.05); /* Slight translucent background */
+  color: var(--text); /* Text color matches theme */
 }
 
-
-/* --------------------------------------------------
-   GAME BOARD — GRID OF CARDS
-   • Columns are set dynamically in JavaScript.
--------------------------------------------------- */
-.board {
-  display: grid;
-  gap: 12px;
+.controls button { /* Button-specific styling */
+  cursor: pointer; /* Indicates interactivity */
 }
 
-
-/* --------------------------------------------------
-   CARD — DEFAULT APPEARANCE
-   • Base styling for each card button.
--------------------------------------------------- */
-.card {
-  height: 90px;
-  border-radius: 14px;
-  border: 2px solid var(--border);
-  background: rgba(255,255,255,0.05);
-  cursor: pointer;
-  font-size: 1.5rem;
+.feedback { /* Feedback message area */
+  min-height: 1.2em; /* Reserves space even when empty */
+  color: var(--muted); /* Muted text color */
 }
 
-
-/* --------------------------------------------------
-   CARD STATE — FLIPPED
-   • Applied when the card is revealed.
--------------------------------------------------- */
-.card.is-flipped {
-  background: var(--highlight);
-  border-color: var(--highlight);
-  color: #000;
+.status { /* Status bar layout */
+  display: grid; /* Enables grid layout */
+  grid-template-columns: repeat(3, 1fr); /* Three equal-width columns */
+  gap: 12px; /* Space between columns */
 }
 
+.board { /* Game board container */
+  display: grid; /* Enables grid layout */
+  gap: 12px; /* Space between cards */
+}
 
-/* --------------------------------------------------
-   CARD STATE — MATCHED
-   • Applied when the card has been successfully paired.
--------------------------------------------------- */
-.card.is-matched {
-  opacity: 0.6;
-  cursor: default;
+.card { /* Base card styling */
+  height: 90px; /* Card height */
+  border-radius: 14px; /* Rounded corners */
+  border: 2px solid var(--border); /* Subtle border */
+  background: rgba(255,255,255,0.05); /* Slight translucent background */
+  cursor: pointer; /* Indicates interactivity */
+  font-size: 1.5rem; /* Large text for emojis/numbers */
+  transition: 120ms ease; /* Smooth flip animation */
+}
+
+.card.is-flipped { /* Styling for revealed cards */
+  background: var(--highlight); /* Highlight background */
+  border-color: var(--highlight); /* Highlight border */
+  color: #000; /* Dark text for contrast */
+}
+
+.card.is-matched { /* Styling for matched cards */
+  opacity: 0.6; /* Slightly faded to indicate completion */
+  cursor: default; /* Removes pointer cursor */
 }
