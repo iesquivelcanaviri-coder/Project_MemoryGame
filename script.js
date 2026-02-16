@@ -1060,13 +1060,13 @@ function renderHistory() {
 
   gameHistory.forEach(game => {
     const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${game.name}</td>
-      <td>${game.difficulty}</td>
-      <td>${game.moves}</td>
-      <td>${game.time}</td>
-      <td>${game.pairs}</td>
-    `;
+   row.innerHTML = `
+  <td data-label="Player">${game.name}</td>
+  <td data-label="Difficulty">${game.difficulty}</td>
+  <td data-label="Moves">${game.moves}</td>
+  <td data-label="Time">${game.time}</td>
+  <td data-label="Pairs">${game.pairs}</td>
+`;
     historyBodyEl.appendChild(row);
   });
 }

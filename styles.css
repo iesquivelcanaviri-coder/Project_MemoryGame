@@ -1,256 +1,288 @@
-/*  root variables */
-:root { /* Root scope for CSS custom properties (global variables) */
-  --bg: #0f172a;                 /* Page background colour */
-  --panel: #111c35;              /* Background colour for panels and containers */
-  --text: #e5e7eb;               /* Primary text colour */
-  --muted: #cbd5e1;              /* Secondary / muted text colour */
-  --border: rgba(255,255,255,0.14); /* Semi-transparent border colour */
+/* root variables */ /* Section label for theme variables */
+:root { /* Root scope for global CSS variables */
+  --bg: #0f172a; /* Dark blue background for entire site */
+  --panel: #111c35; /* Panel background colour */
+  --text: #e5e7eb; /* Primary text colour */
+  --muted: #cbd5e1; /* Muted/secondary text colour */
+  --border: rgba(255,255,255,0.14); /* Subtle border colour */
+  --accent: #38bdf8; /* Accent colour for hover/focus */
+  --success: #22c55e; /* Green success colour for matched cards */
+  --selected: #facc15; /* Yellow highlight for flipped cards */
+  --focus: rgba(56,189,248,0.75); /* Glow effect for keyboard focus */
+}
 
-  /* Interaction / feedback colours */ /* Comment grouping interaction colours */
-  --accent: #38bdf8;             /* Accent colour for hover and focus states */
-  --success: #22c55e;            /* Colour indicating matched cards */
-  --selected: #facc15;           /* Colour for selected (flipped) card state */
-  --focus: rgba(56,189,248,0.75);/* Focus ring colour for accessibility */
-} /* End root variables */
+/* global reset */ /* Universal reset for consistent sizing */
+* {
+  box-sizing: border-box; /* Includes padding/border inside element width */
+}
 
-/* global reset */
-* { /* Universal selector targeting all elements */
-  box-sizing: border-box; /* Includes padding and border in element width/height */
-} /* End global reset */
+/* body and layout */ /* Base layout + typography */
+body {
+  margin: 0; /* Removes default body margin */
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; /* Modern font stack */
+  background: var(--bg); /* Applies global background colour */
+  color: var(--text); /* Applies global text colour */
+}
 
-/*   body and layout */
-body { /* Styles applied to the body element */
-  margin: 0; /* Removes default browser margin */
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; /* System-based font stack */
-  background: var(--bg); /* Applies background colour using CSS variable */
-  color: var(--text); /* Sets default text colour */
-} /* End body styles */
+.container {
+  width: min(62.5rem, 92%); /* Responsive max width */
+  margin: 0 auto; /* Centers container horizontally */
+}
 
-.container { /* Reusable layout wrapper class */
-  width: min(1000px, 92%); /* Constrains width for large screens and mobile */
-  margin: 0 auto; /* Horizontally centres the container */
-} /* End container */
-
-/*  header and footer */
+/* header and footer */ /* Shared header/footer styling */
 .site-header,
-.site-footer { /* Shared styles for header and footer */
-  border-bottom: 1px solid var(--border); /* Adds bottom border for separation */
-} /* End shared header/footer styles */
+.site-footer {
+  border-bottom: 0.0625rem solid var(--border); /* Thin bottom border */
+}
 
-.site-footer { /* Footer-specific overrides */
-  border-top: 1px solid var(--border); /* Adds top border */
+.site-footer {
+  border-top: 0.0625rem solid var(--border); /* Adds top border */
   border-bottom: none; /* Removes bottom border */
-  margin-top: 24px; /* Adds spacing above footer */
-} /* End footer overrides */
+  margin-top: 1.5rem; /* Adds spacing above footer */
+}
 
 .site-header .container,
-.site-footer .container { /* Container inside header and footer */
-  padding: 20px 0; /* Vertical padding for spacing */
-} /* End header/footer container padding */
+.site-footer .container {
+  padding: 1.25rem 0; /* Vertical padding inside header/footer */
+}
 
-.subtitle { /* Subtitle paragraph under main heading */
-  margin-top: 8px; /* Adds spacing above subtitle */
-  color: var(--muted); /* Uses muted text colour */
-  line-height: 1.5; /* Improves text readability */
-} /* End subtitle styles */
+.subtitle {
+  margin-top: 0.5em; /* Spacing above subtitle */
+  color: var(--muted); /* Muted text colour */
+  line-height: 1.5; /* Comfortable line spacing */
+}
 
-/*   panel component */
-.panel { /* Reusable panel component */
-  margin: 18px 0; /* Vertical spacing between panels */
-  padding: 16px; /* Inner spacing for panel content */
+/* panel component */ /* Reusable panel styling */
+.panel {
+  margin: 1.125rem 0; /* Vertical spacing around panel */
+  padding: 1rem; /* Inner padding */
   background: var(--panel); /* Panel background colour */
-  border: 1px solid var(--border); /* Subtle panel border */
-  border-radius: 14px; /* Rounded panel corners */
-} /* End panel */
+  border: 0.0625rem solid var(--border); /* Thin border */
+  border-radius: 0.875rem; /* Rounded corners */
+}
 
-/*   game controls (form) */
-.controls { /* Grid container for form controls */
-  display: grid; /* Enables CSS grid layout */
-  gap: 12px; /* Space between grid items */
-  grid-template-columns: 1fr 1fr; /* Two-column layout on desktop */
-} /* End controls grid */
+/* game controls (form) */ /* Form layout grid */
+.controls {
+  display: grid; /* Enables grid layout */
+  gap: 0.75rem; /* Spacing between grid items */
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+}
 
-.controls label { /* Label styling inside controls */
-  grid-column: 1 / -1; /* Makes labels span full width */
+.controls label {
+  grid-column: 1 / -1; /* Label spans full width */
   color: var(--muted); /* Muted label colour */
-  font-size: 0.9rem; /* Slightly smaller font size */
-} /* End label styles */
+  font-size: 0.9rem; /* Slightly smaller text */
+}
 
 .controls input,
-.controls select { /* Shared styles for input and select elements */
-  padding: 10px; /* Inner spacing for form fields */
-  border-radius: 10px; /* Rounded corners */
-  border: 1px solid var(--border); /* Subtle border */
-  background: rgba(255,255,255,0.04); /* Slightly translucent background */
+.controls select {
+  padding: 0.65em; /* Inner padding */
+  border-radius: 0.625rem; /* Rounded corners */
+  border: 0.0625rem solid var(--border); /* Subtle border */
+  background: rgba(255,255,255,0.04); /* Slight translucent background */
   color: var(--text); /* Text colour */
-} /* End input/select styles */
+}
 
-.controls button { /* Button styling */
-  padding: 10px; /* Inner spacing */
-  border-radius: 10px; /* Rounded corners */
-  border: 1px solid var(--border); /* Button border */
-  background: rgba(255,255,255,0.06); /* Button background */
+.controls button {
+  padding: 0.65em; /* Button padding */
+  border-radius: 0.625rem; /* Rounded corners */
+  border: 0.0625rem solid var(--border); /* Subtle border */
+  background: rgba(255,255,255,0.06); /* Slight translucent background */
   color: var(--text); /* Button text colour */
-  cursor: pointer; /* Pointer cursor on hover */
-  transition: border-color 120ms ease; /* Smooth border transition */
-} /* End button styles */
+  cursor: pointer; /* Pointer cursor */
+  transition: border-color 0.12s ease; /* Smooth hover transition */
+}
 
-.controls button:hover { /* Hover effect for buttons */
-  border-color: var(--accent); /* Highlights border on hover */
-} /* End hover state */
+.controls button:hover {
+  border-color: var(--accent); /* Accent border on hover */
+}
 
-.controls button:disabled { /* Disabled button state */
-  opacity: 0.5; /* Visually dims disabled button */
-  cursor: not-allowed; /* Indicates non-interactive state */
-} /* End disabled button state */
+.controls button:disabled {
+  opacity: 0.5; /* Dimmed appearance */
+  cursor: not-allowed; /* Disabled cursor */
+}
 
-/* Keyboard focus (accessibility) */ /* Accessibility-focused section comment */
+/* keyboard focus */ /* Accessibility focus styling */
 .controls input:focus-visible,
 .controls select:focus-visible,
-.controls button:focus-visible { /* Focus styles for keyboard users */
-  outline: none; /* Removes default browser outline */
-  border-color: var(--accent); /* Highlights focused element */
-  box-shadow: 0 0 0 3px var(--focus); /* Custom focus ring */
-} /* End focus-visible styles */
-
-.feedback { /* Feedback message area below form */
-  grid-column: 1 / -1; /* Spans full width of grid */
-  color: var(--muted); /* Muted feedback colour */
-  min-height: 1.2em; /* Reserves space even when empty */
-} /* End feedback */
-
-/*  status panel */
-.status { /* Container for game status items */
-  display: grid; /* Uses CSS grid */
-  grid-template-columns: repeat(3, 1fr); /* Three equal columns */
-  gap: 12px; /* Space between status boxes */
-} /* End status grid */
-
-.status div { /* Individual status boxes */
-  padding: 12px; /* Inner spacing */
-  border-radius: 12px; /* Rounded corners */
-  border: 1px solid var(--border); /* Border around status box */
-  background: rgba(255,255,255,0.03); /* Subtle background */
-} /* End status box styles */
-
-/*  Section divider: game board */
-.board { /* Game board grid container */
-  display: grid; /* Enables grid layout for cards */
-  gap: 12px; /* Space between cards */
-  margin-top: 12px; /* Space above board */
-} /* End board */
-
-/*  card component */
-.card { /* Individual memory card */
-  position: relative; /* Allows absolute positioning of inner faces */
-  height: 92px; /* Fixed card height */
-  border-radius: 14px; /* Rounded card corners */
-  border: 2px solid var(--border); /* Default card border */
-  background: rgba(255,255,255,0.04); /* Card background */
-  cursor: pointer; /* Indicates interactivity */
-  overflow: hidden; /* Clips inner elements */
-  transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease; /* Smooth visual transitions */
-} /* End card base styles */
-
-/* Hover (mouse users) */ /* Mouse interaction state */
-.card:hover { /* Hover state for card */
-  transform: translateY(-2px); /* Slight lift effect */
-  border-color: var(--accent); /* Accent border on hover */
-} /* End hover state */
-
-/* Keyboard focus */ /* Accessibility focus state */
-.card:focus-visible { /* Focus-visible state for keyboard navigation */
+.controls button:focus-visible {
   outline: none; /* Removes default outline */
   border-color: var(--accent); /* Accent border */
-  box-shadow: 0 0 0 3px var(--focus); /* Custom focus ring */
-} /* End focus-visible */
+  box-shadow: 0 0 0 0.1875rem var(--focus); /* Glow ring */
+}
 
-/* Inner faces */ /* Shared inner card face styles */
-.card-inner { /* Inner container for card faces */
-  position: absolute; /* Positions relative to card */
-  inset: 0; /* Fills entire card */
-  display: grid; /* Centres content */
-  place-items: center; /* Vertical and horizontal centring */
-  font-size: 2rem; /* Large symbol/letter size */
-  font-weight: 600; /* Semi-bold text */
-  letter-spacing: 0.08em; /* Increased letter spacing */
-} /* End card-inner */
-
-/* Back face (hidden letter) */ /* Default hidden side */
-.card .back { /* Back face of the card */
+.feedback {
+  grid-column: 1 / -1; /* Full-width feedback area */
   color: var(--muted); /* Muted text colour */
-  opacity: 1; /* Fully visible initially */
-  transition: opacity 160ms ease; /* Smooth fade transition */
-} /* End back face */
+  min-height: 1.2em; /* Reserve space for messages */
+}
 
-/* Front face (revealed letter) */ /* Revealed card face */
-.card .front { /* Front face of the card */
+/* status panel */ /* Moves/time/pairs layout */
+.status {
+  display: grid; /* Grid layout */
+  grid-template-columns: repeat(3, 1fr); /* Three equal columns */
+  gap: 0.75rem; /* Spacing between items */
+}
+
+.status div {
+  padding: 0.75rem; /* Inner padding */
+  border-radius: 0.75rem; /* Rounded corners */
+  border: 0.0625rem solid var(--border); /* Subtle border */
+  background: rgba(255,255,255,0.03); /* Slight translucent background */
+}
+
+/* game board */ /* Grid for cards */
+.board {
+  display: grid; /* Grid layout */
+  gap: 0.75rem; /* Spacing between cards */
+  margin-top: 0.75rem; /* Spacing above board */
+  grid-auto-rows: 1fr; /* Square-ish rows */
+}
+
+/* card component */ /* Base card styling */
+.card {
+  position: relative; /* Needed for absolute children */
+  aspect-ratio: 1 / 1; /* Perfect square */
+  border-radius: 0.875rem; /* Rounded corners */
+  border: 0.125rem solid var(--border); /* Border */
+  background: rgba(255,255,255,0.04); /* Slight translucent background */
+  cursor: pointer; /* Pointer cursor */
+  overflow: hidden; /* Hide overflow */
+  transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease; /* Smooth transitions */
+}
+
+.card:hover {
+  transform: translateY(-0.125rem); /* Lift effect */
+  border-color: var(--accent); /* Accent border */
+}
+
+.card:focus-visible {
+  outline: none; /* Remove default outline */
+  border-color: var(--accent); /* Accent border */
+  box-shadow: 0 0 0 0.1875rem var(--focus); /* Glow ring */
+}
+
+.card-inner {
+  position: absolute; /* Positioned inside card */
+  inset: 0; /* Fill entire card */
+  display: grid; /* Center content */
+  place-items: center; /* Perfect centering */
+  font-size: clamp(1.2rem, 4vw, 2rem); /* Responsive font size */
+  font-weight: 600; /* Bold text */
+  letter-spacing: 0.08em; /* Slight spacing */
+}
+
+.card .back {
+  color: var(--muted); /* Back text colour */
+  opacity: 1; /* Visible by default */
+  transition: opacity 0.16s ease; /* Smooth fade */
+}
+
+.card .front {
   opacity: 0; /* Hidden by default */
-  color: #0f172a; /* Dark text for contrast */
-  background: rgba(250, 204, 21, 0.9); /* Yellow background */
-  transform: scale(0.95); /* Slightly scaled down */
-  transition: opacity 160ms ease, transform 160ms ease; /* Smooth reveal animation */
-} /* End front face */
+  color: #0f172a; /* Dark text */
+  background: rgba(250,204,21,0.9); /* Yellow background */
+  transform: scale(0.95); /* Slightly smaller */
+  transition: opacity 0.16s ease, transform 0.16s ease; /* Smooth reveal */
+}
 
-/* Section divider: selected card */
-.card.is-flipped { /* Flipped (selected) card state */
-  border-color: var(--selected); /* Yellow border to indicate selection */
-  border-width: 4px; /* Thicker border for emphasis */
-  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.35), 0 8px 20px rgba(0, 0, 0, 0.35); /* Glow and depth shadow */
-} /* End flipped card */
+.card.is-flipped {
+  border-color: var(--selected); /* Yellow border */
+  border-width: 0.25rem; /* Thicker border */
+  box-shadow:
+    0 0 0 0.1875rem rgba(250,204,21,0.35), /* Glow ring */
+    0 0.5rem 1.25rem rgba(0,0,0,0.35); /* Drop shadow */
+}
 
-.card.is-flipped .front { /* Front face when card is flipped */
-  opacity: 1; /* Makes front face visible */
-  transform: scale(1); /* Restores full scale */
-} /* End flipped front */
+.card.is-flipped .front {
+  opacity: 1; /* Reveal front */
+  transform: scale(1); /* Full size */
+}
 
-.card.is-flipped .back { /* Back face when card is flipped */
-  opacity: 0; /* Hides back face */
-} /* End flipped back */
+.card.is-flipped .back {
+  opacity: 0; /* Hide back */
+}
 
-/*  matched card */
-.card.is-matched { /* Matched card state */
-  border-color: var(--success); /* Green border for success */
-  background: rgba(34,197,94,0.14); /* Green-tinted background */
-  opacity: 0.6; /* Slightly faded appearance */
-  cursor: default; /* Removes pointer cursor */
-} /* End matched card */
+.card.is-matched {
+  border-color: var(--success); /* Green border */
+  background: rgba(34,197,94,0.14); /* Green tint */
+  opacity: 0.6; /* Dimmed */
+  cursor: default; /* No interaction */
+}
 
-/* Section divider: history table */
-.history-table { /* Game history table */
-  width: 100%; /* Full width table */
-  border-collapse: collapse; /* Merges borders */
-  margin-top: 10px; /* Space above table */
+/* history table */ /* Table styling */
+.history-table {
+  width: 100%; /* Full width */
+  border-collapse: collapse; /* Remove spacing between cells */
+  margin-top: 0.625rem; /* Spacing above table */
   font-size: 0.95rem; /* Slightly smaller text */
-} /* End history table */
+  max-width: 100%; /* Prevent overflow */
+}
 
 .history-table th,
-.history-table td { /* Table header and cell styles */
-  border: 1px solid var(--border); /* Cell borders */
-  padding: 8px; /* Cell padding */
+.history-table td {
+  border: 0.0625rem solid var(--border); /* Cell borders */
+  padding: 0.5em; /* Cell padding */
   text-align: left; /* Left-aligned text */
-} /* End table cell styles */
+  white-space: nowrap; /* Prevent wrapping */
+}
 
-.history-table th { /* Header cell styles */
+.history-table th {
   background: rgba(255,255,255,0.06); /* Header background */
   color: var(--muted); /* Muted header text */
-} /* End header styles */
+}
 
-.history-table tr:nth-child(odd) { /* Zebra striping for rows */
-  background: rgba(255,255,255,0.02); /* Alternating row background */
-} /* End zebra striping */
+.history-table tr:nth-child(odd) {
+  background: rgba(255,255,255,0.02); /* Alternating row colour */
+}
 
-/*  responsive styles */
-@media (max-width: 700px) { /* Media query for small screens */
-  .controls { /* Controls layout on mobile */
-    grid-template-columns: 1fr; /* Switches to single-column layout */
-  } /* End mobile controls */
+/* -----------------------------
+   RESPONSIVE HISTORY TABLE
+   ----------------------------- */
+@media (max-width: 43.75rem) { /* Mobile breakpoint */
 
-  .status { /* Status layout on mobile */
-    grid-template-columns: 1fr; /* Stacks status boxes vertically */
-  } /* End mobile status */
+  .history-table thead {
+    display: none; /* Hide table header on mobile */
+  }
 
-  .card { /* Card sizing on mobile */
-    height: 82px; /* Reduces card height for small screens */
-  } /* End mobile card */
-} /* End media query */
+  .history-table,
+  .history-table tbody,
+  .history-table tr,
+  .history-table td {
+    display: block; /* Convert table to block layout */
+    width: 100%; /* Full width */
+  }
+
+  .history-table tr {
+    margin-bottom: 1rem; /* Space between rows */
+    border: 0.0625rem solid var(--border); /* Border */
+    border-radius: 0.75rem; /* Rounded corners */
+    padding: 0.75rem; /* Inner padding */
+    background: rgba(255,255,255,0.03); /* Background tint */
+  }
+
+  .history-table td {
+    display: flex; /* Label + value layout */
+    justify-content: space-between; /* Spread items */
+    align-items: center; /* Vertical alignment */
+    padding: 0.4em 0; /* Vertical padding */
+    border: none; /* Remove borders */
+  }
+
+  .history-table td::before {
+    content: attr(data-label); /* Insert label text */
+    font-weight: 600; /* Bold label */
+    color: var(--muted); /* Muted label colour */
+  }
+}
+
+/* responsive */ /* General responsive layout */
+@media (max-width: 43.75rem) {
+  .controls {
+    grid-template-columns: 1fr; /* Single-column form */
+  }
+
+  .status {
+    grid-template-columns: 1fr; /* Single-column status panel */
+  }
+}
