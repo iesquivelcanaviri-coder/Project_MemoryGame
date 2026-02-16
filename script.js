@@ -62,13 +62,15 @@
 const boardEl = document.getElementById("board");
 const gameForm = document.getElementById("gameForm");
 const playerNameEl = document.getElementById("playerName");
-const difficultyEl = document.getElementById("difficulty");
-const restartBtn = document.getElementById("restartBtn");
-const feedbackEl = document.getElementById("formFeedback");
+const difficultyEl = document.getElementById("difficulty"); 
+const restartBtn = document.getElementById("restartBtn"); 
+const feedbackEl = document.getElementById("formFeedback"); 
+
 
 const movesValueEl = document.getElementById("movesValue");
 const timeValueEl = document.getElementById("timeValue");
 const pairsValueEl = document.getElementById("pairsValue");
+
 const historyBodyEl = document.getElementById("historyBody");
 
 /* --------------------------------------------------
@@ -119,9 +121,9 @@ const historyBodyEl = document.getElementById("historyBody");
          state.totalPairs = totalCards / 2
 -------------------------------------------------- */
 const DIFFICULTY = {
-  easy: { cols: 2, rows: 3 },
-  medium: { cols: 3, rows: 4 },
-  hard: { cols: 4, rows: 4 }
+  easy: { cols: 2, rows: 3 },  
+  medium: { cols: 3, rows: 4 }, 
+  hard: { cols: 4, rows: 4 }    
 };
 
 
@@ -162,7 +164,8 @@ const DIFFICULTY = {
    7) The shuffled deck is stored in:  state.cards
    8) renderBoard() uses state.cards to draw the visible cards.
 -------------------------------------------------- */
-const SYMBOLS = "ABCDEFGHJKLMNPQRSTUVWXYZ".split("");
+const SYMBOLS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".split(""); 
+
 
 /* --------------------------------------------------
    MUTABLE GAME STATE OBJECT — state
@@ -173,27 +176,14 @@ const SYMBOLS = "ABCDEFGHJKLMNPQRSTUVWXYZ".split("");
 --------------------------------------------------
    TECHNICAL BREAKDOWN OF THE STATEMENT:
    let state = { ... };
-
-     let
-       -> JavaScript keyword.
+     let   -> JavaScript keyword.
        -> Declares a variable whose value CAN be reassigned.
        -> Used here because the state object will be updated during gameplay.
-
-     state
-       -> Developer‑chosen variable name.
+     state   -> Developer‑chosen variable name.
        -> Stores all dynamic game data.
        -> Accessible by all functions that need to read or update game status.
-
-     =
-       -> Assignment operator.
-       -> Meaning: “Store the value on the right into the variable on the left.”
-
-     { }
-       -> Object literal.
-       -> Contains key–value pairs representing different pieces of game data.
-
-     ;
-       -> Ends the JavaScript statement.
+     =    -> Assignment operator. Meaning: “Store the value on the right into the variable on the left.”
+     { }   -> Object literal. Contains key–value pairs representing different pieces of game data.
 
 --------------------------------------------------
    OBJECT PROPERTIES — KEY–VALUE PAIRS
@@ -202,47 +192,36 @@ const SYMBOLS = "ABCDEFGHJKLMNPQRSTUVWXYZ".split("");
        isRunning -> Boolean flag controlling whether gameplay is active.
        :         -> Separates property name from its value.
        false     -> Game is not running initially.
-
    playerName: ""
        playerName -> Stores the player’s name.
        ""         -> Empty string until user enters a name.
-
    cards: []
        cards -> Will store all card objects created by createDeck().
        []    -> Empty array placeholder.
-
    firstPick: null
        firstPick -> Stores the first selected card in a turn.
        null      -> No card selected yet.
-
    secondPick: null
        secondPick -> Stores the second selected card.
        null       -> No second card selected yet.
-
    lockBoard: false
        lockBoard -> Prevents clicks during animations or match checks.
        false     -> Board is initially unlocked.
-
    moves: 0
        moves -> Counts how many turns the player has taken.
        0     -> Starts at zero.
-
    pairsFound: 0
        pairsFound -> Increases when a matching pair is found.
        0          -> No pairs found at the beginning.
-
    totalPairs: 0
        totalPairs -> Set at game start based on difficulty (totalCards / 2).
        0          -> Placeholder until difficulty is chosen.
-
    seconds: 0
        seconds -> Tracks elapsed time.
        0       -> Timer starts at zero.
-
    timer: null
        timer -> Will store the setInterval() ID.
        null  -> No timer running yet.
-
 --------------------------------------------------
    DEEP LOGIC — WHAT ACTUALLY HAPPENS
 
@@ -261,7 +240,6 @@ const SYMBOLS = "ABCDEFGHJKLMNPQRSTUVWXYZ".split("");
    8) updateStatus() reads:
          moves, pairsFound, seconds
       to update the UI.
-
 --------------------------------------------------
    FINAL SUMMARY
    state    -> Central data object storing everything the game needs.
@@ -278,16 +256,17 @@ const SYMBOLS = "ABCDEFGHJKLMNPQRSTUVWXYZ".split("");
 -------------------------------------------------- */
 let state = {
   isRunning: false,
-  playerName: "",
-  cards: [],
-  firstPick: null,
-  secondPick: null,
+  playerName: "",   
+  difficulty: null,
+  cards: [],        
+  firstPickId: null,
+  secondPickId: null,
   lockBoard: false,
   moves: 0,
   pairsFound: 0,
   totalPairs: 0,
-  seconds: 0,
-  timer: null
+  timerId: null,
+  secondsElapsed: 0
 };
 
 /* --------------------------------------------------
@@ -330,8 +309,7 @@ let state = {
    Outputs → A visible history of the last 5 games.
    Used by → endGame(), updateHistoryTable(), UI history panel.
 -------------------------------------------------- */
-let gameHistory = []; /* Creates an empty array that will store up to 5 past game results */
-
+let gameHistory = []; 
 
 
 /* --------------------------------------------------
@@ -414,22 +392,22 @@ let gameHistory = []; /* Creates an empty array that will store up to 5 past gam
    formatTime() → Converts seconds into readable time; used in updateStatus().
    setFeedback() → Displays messages to the player; used in validation, game start, and endGame().
 -------------------------------------------------- */
-function shuffle(array) { /* Randomizes the order of items in an array */
-  for (let i = array.length - 1; i > 0; i--) { /* Loops backward through array */
-    const j = Math.floor(Math.random() * (i + 1)); /* Picks random index for swapping */
-    [array[i], array[j]] = [array[j], array[i]]; /* Swaps current element with random element */
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
-  return array; /* Returns the shuffled array */
+  return array;
+}  
+
+function formatTime(seconds) {
+  const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const s = String(seconds % 60).padStart(2, "0");
+  return `${m}:${s}`;
 }
 
-function formatTime(seconds) { /* Converts raw seconds into "mm:ss" format */
-  const m = String(Math.floor(seconds / 60)).padStart(2, "0"); /* Calculates minutes and formats as 2 digits */
-  const s = String(seconds % 60).padStart(2, "0"); /* Calculates seconds and formats as 2 digits */
-  return `${m}:${s}`; /* Returns formatted time string */
-}
-
-function setFeedback(msg) { /* Updates the feedback message displayed to the player */
-  feedbackEl.textContent = msg; /* Writes message into the feedback DOM element */
+function setFeedback(msg) {
+  feedbackEl.textContent = msg;
 }
 
 /* --------------------------------------------------
@@ -527,32 +505,33 @@ function setFeedback(msg) { /* Updates the feedback message displayed to the pla
    Outputs → Fully rendered, interactive memory game board.
    Used by → startGame(), resetGame(), difficulty changes.
 -------------------------------------------------- */
-function buildBoardGrid(cols, rows) { /* Sets the number of columns in the board grid */
-  boardEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`; /* Creates equal-width columns based on difficulty */
+function buildBoardGrid(cols, rows) {
+  boardEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
 }
 
-function renderBoard() { /* Builds the visible game board from state.cards */
-  boardEl.innerHTML = ""; /* Clears previous board content */
+function renderBoard() {
+  boardEl.innerHTML = "";
 
-  state.cards.forEach(card => { /* Loops through each card object in the deck */
-    const btn = document.createElement("button"); /* Creates a button element for the card */
-    btn.className = "card"; /* Assigns base card styling */
-    btn.dataset.id = card.id; /* Stores card ID for tracking */
+  state.cards.forEach(card => {
+    const btn = document.createElement("button");
+    btn.className = "card";
+    btn.dataset.id = card.id;
 
-    const front = document.createElement("div"); /* Creates the front face of the card */
-    front.className = "card-inner front"; /* Assigns front face styling */
-    front.textContent = card.value; /* Sets the card's visible value */
+    const front = document.createElement("div");
+    front.className = "card-inner front";
+    front.textContent = card.value;
 
-    const back = document.createElement("div"); /* Creates the back face of the card */
-    back.className = "card-inner back"; /* Assigns back face styling */
-    back.textContent = "Card"; /* Placeholder text for hidden state */
+    const back = document.createElement("div");
+    back.className = "card-inner back";
+    back.textContent = "Card";
 
-    btn.append(front, back); /* Inserts both faces into the card button */
-    btn.addEventListener("click", onCardClick); /* Attaches click handler for flipping logic */
+    btn.append(front, back);
+    btn.addEventListener("click", onCardClick);
 
-    boardEl.appendChild(btn); /* Adds the card button to the board */
+    boardEl.appendChild(btn);
   });
 }
+
 
 
 
@@ -601,7 +580,7 @@ function renderBoard() { /* Builds the visible game board from state.cards */
 function updateStatus() {
   movesValueEl.textContent = state.moves;
   pairsValueEl.textContent = state.pairsFound;
-  timeValueEl.textContent = formatTime(state.seconds);
+  timeValueEl.textContent = formatTime(state.secondsElapsed);
 }
 
 /* --------------------------------------------------
@@ -661,14 +640,15 @@ function updateStatus() {
    Outputs → A fully randomized deck stored in state.cards.
    Used by → startGame(), resetGame(), difficulty changes.
 -------------------------------------------------- */
-function createDeck(totalCards) { /* Builds a full deck of card objects based on difficulty */
-  const values = SYMBOLS.slice(0, totalCards / 2); /* Selects the required number of unique symbols */
-  let id = 1; /* Counter used to assign unique IDs to each card */
-  const deck = values.flatMap(v => ([ /* Creates two card objects for each symbol */
-    { id: id++, value: v, matched: false }, /* First copy of the symbol */
-    { id: id++, value: v, matched: false }  /* Second copy of the symbol */
+function createDeck(totalCards) {
+  const values = SYMBOLS.slice(0, totalCards / 2);
+  let id = 1;
+
+  const deck = values.flatMap(v => ([
+    { id: id++, value: v, matched: false },
+    { id: id++, value: v, matched: false }
   ]));
-  return shuffle(deck); /* Randomizes the deck and returns it */
+  return shuffle(deck);
 }
 
 /* --------------------------------------------------
@@ -695,11 +675,11 @@ function createDeck(totalCards) { /* Builds a full deck of card objects based on
    Outputs → Updated timer display every second.
    Used by → startGame(), resume logic.
 -------------------------------------------------- */
-function startTimer() { /* Starts the game timer and updates UI every second */
-  state.timerId = setInterval(() => { /* Stores interval ID for later stopping */
-    state.secondsElapsed++; /* Increments elapsed time */
-    updateStatus(); /* Updates timer display in UI */
-  }, 1000); /* Runs every 1 second */
+function startTimer() {
+  state.timerId = setInterval(() => {
+    state.secondsElapsed++;
+    updateStatus();
+  }, 1000);
 }
 
 /* --------------------------------------------------
@@ -751,20 +731,22 @@ function startTimer() { /* Starts the game timer and updates UI every second */
    Outputs → Fresh board, running timer, updated UI.
    Used by → Form submission, restart logic.
 -------------------------------------------------- */
-function startGame(difficultyKey) { /* Initializes a new game based on selected difficulty */
-  const config = DIFFICULTTY[difficultyKey]; /* Retrieves grid configuration for difficulty */
-  const totalCards = config.cols * config.rows; /* Calculates total number of cards */
-  state.difficulty = difficultyKey; /* Saves selected difficulty */
-  state.cards = createDeck(totalCards); /* Generates and stores shuffled deck */
-  state.totalPairs = totalCards / 2; /* Calculates number of matching pairs */
-  state.isRunning = true; /* Marks game as active */
-  buildBoardGrid(config.cols, config.rows); /* Configures board grid layout */
-  renderBoard(); /* Builds visible card grid */
-  updateStatus(); /* Resets UI counters */
-  startTimer(); /* Starts the game timer */
-  restartBtn.disabled = false; /* Enables restart button */
-}
+function startGame(difficultyKey) {
+  const config = DIFFICULTY[difficultyKey];
+  const totalCards = config.cols * config.rows;
 
+  state.difficulty = difficultyKey;
+  state.cards = createDeck(totalCards);
+  state.totalPairs = totalCards / 2;
+  state.isRunning = true;
+
+  buildBoardGrid(config.cols, config.rows);
+  renderBoard();
+  updateStatus();
+  startTimer();
+
+  restartBtn.disabled = false;
+}
 
 
 /* --------------------------------------------------
@@ -875,57 +857,68 @@ function startGame(difficultyKey) { /* Initializes a new game based on selected 
    Outputs → Updated UI, updated state, match/mismatch resolution.
    Used by → renderBoard() (event listeners), updateStatus(), endGame().
 -------------------------------------------------- */
-function getCardById(id) { /* Returns the card object with the matching ID */
-  return state.cards.find(c => c.id === id); /* Searches state.cards for matching ID */
+function getCardById(id) {
+  return state.cards.find(c => c.id === id);
 }
 
-function getCardElementById(id) { /* Returns the DOM element for a card by ID */
-  return document.querySelector(`.card[data-id="${id}"]`); /* Selects card element using data-id */
+function getCardElementById(id) {
+  return document.querySelector(`.card[data-id="${id}"]`);
 }
 
-function onCardClick(e) { /* Handles card click interactions */
-  if (!state.isRunning || state.lockBoard) return; /* Prevents clicks when game inactive or board locked */
-  const id = Number(e.currentTarget.dataset.id); /* Reads numeric card ID from clicked element */
-  const card = getCardById(id); /* Retrieves card object from state */
-  if (card.matched || state.firstPickId === id) return; /* Prevents flipping matched or same card */
-  e.currentTarget.classList.add("is-flipped"); /* Visually flips the card */
-  if (!state.firstPickId) { /* If this is the first selected card */
-    state.firstPickId = id; /* Store first pick */
-    return; /* Wait for second pick */
+function onCardClick(e) {
+  if (!state.isRunning || state.lockBoard) return;
+
+  const id = Number(e.currentTarget.dataset.id);
+  const card = getCardById(id);
+
+  if (card.matched || state.firstPickId === id) return;
+
+  e.currentTarget.classList.add("is-flipped");
+
+  if (!state.firstPickId) {
+    state.firstPickId = id;
+    return;
   }
-  state.secondPickId = id; /* Store second pick */
-  state.moves++; /* Increment move counter */
-  updateStatus(); /* Update UI counters */
-  checkForMatch(); /* Compare selected cards */
+
+  state.secondPickId = id;
+  state.moves++;
+  updateStatus();
+  checkForMatch();
 }
 
-function checkForMatch() { /* Determines whether selected cards match */
-  const first = getCardById(state.firstPickId); /* Retrieves first selected card */
-  const second = getCardById(state.secondPickId); /* Retrieves second selected card */
-  if (first.value === second.value) { /* If card values match */
-    first.matched = true; /* Mark first card as matched */
-    second.matched = true; /* Mark second card as matched */
-    state.pairsFound++; /* Increase matched pair count */
-    clearPicks(); /* Reset selections */
-    if (state.pairsFound === state.totalPairs) { /* If all pairs matched */
-      endGame(); /* Trigger end-of-game logic */
+function checkForMatch() {
+  const first = getCardById(state.firstPickId);
+  const second = getCardById(state.secondPickId);
+
+  if (first.value === second.value) {
+    first.matched = true;
+    second.matched = true;
+
+    state.pairsFound++;
+    clearPicks();
+
+    if (state.pairsFound === state.totalPairs) {
+      endGame();
     }
-  } else { /* If cards do not match */
-    state.lockBoard = true; /* Prevent further clicks during animation */
-    setTimeout(() => { /* Delay before flipping cards back */
-      const firstEl = getCardElementById(state.firstPickId); /* DOM element for first card */
-      const secondEl = getCardElementById(state.secondPickId); /* DOM element for second card */
-      if (firstEl) firstEl.classList.remove("is-flipped"); /* Flip first card back */
-      if (secondEl) secondEl.classList.remove("is-flipped"); /* Flip second card back */
-      clearPicks(); /* Reset selections */
-      state.lockBoard = false; /* Unlock board */
-    }, 600); /* Delay duration */
+  } else {
+    state.lockBoard = true;
+
+    setTimeout(() => {
+      const firstEl = getCardElementById(state.firstPickId);
+      const secondEl = getCardElementById(state.secondPickId);
+
+      if (firstEl) firstEl.classList.remove("is-flipped");
+      if (secondEl) secondEl.classList.remove("is-flipped");
+
+      clearPicks();
+      state.lockBoard = false;
+    }, 600);
   }
 }
 
-function clearPicks() { /* Resets selected card IDs */
-  state.firstPickId = null; /* Clears first pick */
-  state.secondPickId = null; /* Clears second pick */
+function clearPicks() {
+  state.firstPickId = null;
+  state.secondPickId = null;
 }
 
 /* --------------------------------------------------
@@ -986,24 +979,24 @@ function clearPicks() { /* Resets selected card IDs */
    Outputs → Updated history table + final feedback message.
    Used by → checkForMatch() when all pairs are found.
 -------------------------------------------------- */
-function endGame() { /* Finalises the game and updates UI */
-  clearInterval(state.timerId); /* Stops the running timer */
-  state.isRunning = false; /* Prevents further card interactions */
+function endGame() {
+  clearInterval(state.timerId);
+  state.isRunning = false;
 
-  gameHistory.unshift({ /* Adds the latest game result to the top of history */
-    name: state.playerName, /* Stores player name */
-    difficulty: state.difficulty, /* Stores selected difficulty */
-    moves: state.moves, /* Stores total moves */
-    time: formatTime(state.secondsElapsed), /* Stores formatted time */
-    pairs: state.pairsFound /* Stores number of matched pairs */
+  gameHistory.unshift({
+    name: state.playerName,
+    difficulty: state.difficulty,
+    moves: state.moves,
+    time: formatTime(state.secondsElapsed),
+    pairs: state.pairsFound
   });
 
-  if (gameHistory.length > 5) { /* Ensures only last 5 games are kept */
-    gameHistory.pop(); /* Removes oldest entry */
+  if (gameHistory.length > 5) {
+    gameHistory.pop();
   }
 
-  renderHistory(); /* Updates the history table in the UI */
-  setFeedback(`Game complete. Well done, ${state.playerName}.`); /* Displays final message */
+  renderHistory();
+  setFeedback(`Game complete. Well done, ${state.playerName}.`);
 }
 
 /* --------------------------------------------------
@@ -1062,21 +1055,19 @@ function endGame() { /* Finalises the game and updates UI */
    Outputs → Updated history table visible to the player.
    Used by → endGame() after saving a new game result.
 -------------------------------------------------- */
-function renderHistory() { /* Updates the Last 5 Games table in the UI */
-  historyBodyEl.innerHTML = ""; /* Clears existing table rows */
+function renderHistory() {
+  historyBodyEl.innerHTML = "";
 
-  gameHistory.forEach(game => { /* Loops through each saved game result */
-    const row = document.createElement("tr"); /* Creates a new table row */
-
-    row.innerHTML = ` /* Inserts game data into table cells */
+  gameHistory.forEach(game => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
       <td>${game.name}</td>
       <td>${game.difficulty}</td>
       <td>${game.moves}</td>
       <td>${game.time}</td>
       <td>${game.pairs}</td>
     `;
-
-    historyBodyEl.appendChild(row); /* Adds the row to the table body */
+    historyBodyEl.appendChild(row);
   });
 }
 
@@ -1155,23 +1146,22 @@ function renderHistory() { /* Updates the Last 5 Games table in the UI */
    Outputs → Fully initialised game ready for play.
    Used by → User interaction (form submission), new game flow.
 -------------------------------------------------- */
-gameForm.addEventListener("submit", e => { /* Handles form submission to start a new game */
-  e.preventDefault(); /* Prevents page reload */
+gameForm.addEventListener("submit", e => {
+  e.preventDefault();
 
-  const name = playerNameEl.value.trim(); /* Reads and trims player name */
-  const difficulty = difficultyEl.value; /* Reads selected difficulty */
+  const name = playerNameEl.value.trim();
+  const difficulty = difficultyEl.value;
 
-  if (!name || !difficulty) { /* Validates both fields */
-    setFeedback("Please enter your name and select a difficulty."); /* Shows error message */
-    return; /* Stops game start */
+  if (!name || !difficulty) {
+    setFeedback("Please enter your name and select a difficulty.");
+    return;
   }
 
-  state.playerName = name; /* Saves player name into state */
-  resetGame(); /* Clears previous game state */
-  startGame(difficulty); /* Starts a new game with chosen difficulty */
-  setFeedback(`Good luck, ${name}.`); /* Displays start message */
+  state.playerName = name;
+  resetGame();
+  startGame(difficulty);
+  setFeedback(`Good luck, ${name}.`);
 });
-
 
 
 
@@ -1254,23 +1244,25 @@ gameForm.addEventListener("submit", e => { /* Handles form submission to start a
    Outputs → Clean, ready‑to‑start game environment.
    Used by → Form submit, restart button, new game flow.
 -------------------------------------------------- */
-function resetGame() { /* Fully resets game state and UI */
-  clearInterval(state.timerId); /* Stops the running timer */
-  state.isRunning = false; /* Disables gameplay */
-  state.cards = []; /* Clears deck */
-  state.firstPickId = null; /* Clears first pick */
-  state.secondPickId = null; /* Clears second pick */
-  state.moves = 0; /* Resets move counter */
-  state.pairsFound = 0; /* Resets matched pairs */
-  state.secondsElapsed = 0; /* Resets timer */
-  boardEl.innerHTML = ""; /* Clears board UI */
-  updateStatus(); /* Refreshes UI counters */
+function resetGame() {
+  clearInterval(state.timerId);
+
+  state.isRunning = false;
+  state.cards = [];
+  state.firstPickId = null;
+  state.secondPickId = null;
+  state.moves = 0;
+  state.pairsFound = 0;
+  state.secondsElapsed = 0;
+
+  boardEl.innerHTML = "";
+  updateStatus();
 }
 
-restartBtn.addEventListener("click", () => { /* Handles restart button click */
-  if (!difficultyEl.value) return; /* Prevents restart without difficulty */
-  resetGame(); /* Clears previous game state */
-  startGame(difficultyEl.value); /* Starts new game with selected difficulty */
+restartBtn.addEventListener("click", () => {
+  if (!difficultyEl.value) return;
+  resetGame();
+  startGame(difficultyEl.value);
 });
 
 
