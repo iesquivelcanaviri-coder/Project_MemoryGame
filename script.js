@@ -1,4 +1,4 @@
-"use strict";
+(function () { "use strict";
 /* --------------------------------------------------
    DOM (Document Object Model) ELEMENT REFERENCES — CONSTANT ASSIGNMENTS FOR SELECTING HTML ELEMENTS
    • These constants store references to specific HTML elements. 
@@ -1307,3 +1307,4 @@ restartBtn.addEventListener("click", () => {
 -------------------------------------------------- */
 updateStatus();
 setFeedback("Enter your name and select a difficulty to start.");
+})();
