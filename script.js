@@ -5,36 +5,7 @@
    • Type -> Constant variable declarations using `const`. 
    • Purpose -> Provide direct access to UI (User Interface) components so the game logic can update text, layout, and interactivity.
    • Pattern -> Standard JavaScript practice: gather all DOM references at the top for clarity, organisation, and reuse.
---------------------------------------------------
-   TECHNICAL BREAKDOWN OF THE STATEMENT:
-   const boardEl = document.getElementById("board");
-     const -> JavaScript keyword.
-            -> Declares a constant variable.
-            -> The variable name cannot be reassigned.
-            -> The referenced element’s properties CAN still change.
-     boardEl -> Developer‑chosen variable name.
-            -> “El” means “Element”.
-            -> Stores the returned HTML element.
-            -> Not taken from HTML — this is your own identifier.
-      = -> Assignment operator. Meaning: “Store the value on the right into the variable on the left.”
-     document -> Built‑in JavaScript object.
-            -> Represents the entire loaded HTML page.
-            -> Gives access to the DOM tree.
-     . ->Property/method access operator.
-            ->  Used here to access the DOM method getElementById.
-     getElementById-> DOM method belonging to `document`.
-            -> Searches the DOM for an element with a matching id.
-            -> Returns the element if found, otherwise null.
-     (  -> Opens the method’s argument list.
-     "board"  -> JavaScript STRING.
-            -> Passed as an argument to getElementById().
-            -> Must match exactly the HTML id:
-                  <div id="board">
-            -> Tells the browser which element to search for.
-     )  -> Closes the argument list.
-     ;  -> Ends the JavaScript statement.
-
---------------------------------------------------
+-------------------------------------------------
    DEEP LOGIC — WHAT ACTUALLY HAPPENS
    1) The browser loads your HTML and builds the DOM tree.
    2) JavaScript executes document -> getElementById("board").
@@ -55,11 +26,23 @@
    Example usage in renderBoard():
        1) boardEl -> innerHTML = ""   -> Clears the board before drawing new cards.
        2) JavaScript creates button elements for each card.
-       3) boardEl -> appendChild(btn)
-            -> Inserts each card into the board container.
-            -> This is when the card becomes visible to the player.
+       3) boardEl -> appendChild(btn) Inserts each card into the board container. This is when the card becomes visible to the player.
 -------------------------------------------------- */
 const boardEl = document.getElementById("board");
+/*const -> JavaScript keyword. Declares a constant variable.
+        -> The variable name cannot be reassigned. The referenced element’s properties CAN still change.
+boardEl -> Developer‑chosen variable name. “El” means “Element”. Stores the returned HTML element.
+        -> Not taken from HTML — this is your own identifier.
+= -> Assignment operator. Meaning: “Store the value on the right into the variable on the left.”
+document -> Built‑in JavaScript object. Represents the entire loaded HTML page. Gives access to the DOM tree.
+. ->Property/method access operator. Used here to access the DOM method getElementById.
+getElementById-> DOM method belonging to `document`. Searches the DOM for an element with a matching id.
+        -> Returns the element if found, otherwise null.
+(  -> Opens the method’s argument list.
+"board"  -> JavaScript STRING.  Passed as an argument to getElementById().
+         -> Must match exactly the HTML id:  <div id="board">
+         -> Tells the browser which element to search for.
+)  -> Closes the argument list. */
 const gameForm = document.getElementById("gameForm");
 const playerNameEl = document.getElementById("playerName");
 const difficultyEl = document.getElementById("difficulty"); 
@@ -80,52 +63,21 @@ const historyBodyEl = document.getElementById("historyBody");
    • Purpose -> Store preset board configurations for each difficulty level.
    • Pattern -> Structured data object used as a lookup table for game settings.
 --------------------------------------------------
-   TECHNICAL BREAKDOWN OF THE STATEMENT:
-   const DIFFICULTY = { ... };
-     const  -> JavaScript keyword. Declares a constant variable. The variable name cannot be reassigned.
-     DIFFICULTY  -> Developer‑chosen variable name. Represents a collection of difficulty presets. Used throughout the game to determine board size.
-     =   -> Assignment operator. “Store the value on the right into the variable on the left.”
-     { }  -> Object literal. Contains key–value pairs.
-         -> Each key represents a difficulty level.  Each value is another object describing board dimensions.
---------------------------------------------------
-   NESTED OBJECTS — KEY–VALUE PAIRS
-   easy: { cols: 2, rows: 3 }
-      easy   -> Key name representing the “easy” difficulty level.
-      :      -> Separates the key from its value.
-      { cols: 2, rows: 3 }   -> Nested object storing board layout.
-                  -> cols -> Number of columns (2).  rows -> Number of rows (3).
-   medium: { cols: 3, rows: 4 }
-      medium  -> Key name representing the “medium” difficulty level.
-      :         -> Separates key from value.
-      { cols: 3, rows: 4 }  -> Nested object storing board layout.
-            -> cols -> 3 columns.  rows -> 4 rows.
-   hard: { cols: 4, rows: 4 }
-      hard   -> Key name representing the “hard” difficulty level.
-      :      -> Separates key from value.
-      { cols: 4, rows: 4 }
-            -> Nested object storing board layout.
-            -> cols -> 4 columns.         -> rows -> 4 rows.
---------------------------------------------------
    DEEP LOGIC — WHAT ACTUALLY HAPPENS
    1) The user selects a difficulty level in the form.
    2) JavaScript reads that value (e.g., "easy", "medium", "hard").
    3) That string is used as a key to access DIFFICULTY[key].
-   4) The corresponding nested object is returned:
-         DIFFICULTY["easy"] -> { cols: 2, rows: 3 }
-   5) The game calculates:
-         totalCards -> cols * rows
+   4) The corresponding nested object is returned: DIFFICULTY["easy"] -> { cols: 2, rows: 3 }
+   5) The game calculates: totalCards -> cols * rows
    6) createDeck(totalCards) uses this number to build the deck.
-   7) The board layout is updated using:
-         boardEl -> style -> gridTemplateColumns
-   8) The game state uses:
-         state.totalPairs = totalCards / 2
+   7) The board layout is updated using:  boardEl -> style -> gridTemplateColumns
+   8) The game state uses: state.totalPairs = totalCards / 2
 -------------------------------------------------- */
-const DIFFICULTY = {
-  easy: { cols: 2, rows: 3 },  
-  medium: { cols: 3, rows: 4 }, 
-  hard: { cols: 4, rows: 4 }    
-};
-
+const DIFFICULTY = { /* const -> Declares a constant (cannot be reassigned, protects configuration); DIFFICULTY -> Lookup table storing difficulty presets; = -> Assigns the object to the constant; { } -> Object literal containing all difficulty levels */ 
+  easy: { cols: 2, rows: 3 }, /* easy -> Key identifying the easy difficulty; : -> Separates key from value; {cols:2, rows:3} -> Nested object defining board layout; cols -> number of columns; rows -> number of rows; total cards = 2×3 = 6 (3 pairs); Why -> smallest grid, beginner‑friendly */
+  medium: { cols: 3, rows: 4 }, /* medium -> Key for medium difficulty; {cols:3, rows:4} -> Layout object; cols -> 3 columns; rows -> 4 rows; total cards = 3×4 = 12 (6 pairs); Why -> moderate challenge, more symbols to remember */
+  hard: { cols: 4, rows: 4 } /* hard -> Key for hardest difficulty; {cols:4, rows:4} -> Layout object; cols -> 4 columns; rows -> 4 rows; total cards = 4×4 = 16 (8 pairs); Why -> largest grid, highest memory load */
+}; 
 
 /* --------------------------------------------------
    CONSTANT ARRAY CREATED FROM A STRING — SYMBOLS
@@ -134,25 +86,6 @@ const DIFFICULTY = {
    • Purpose -> Provide a reusable pool of card symbols for deck creation.
    • Pattern -> Convert a string into an array using split("") so each
                 character becomes an individual symbol.
---------------------------------------------------
-   TECHNICAL BREAKDOWN OF THE STATEMENT:
-   const SYMBOLS = "ABCDEFGHJKLMNPQRSTUVWXYZ".split("");
-     const    -> JavaScript keyword.
-       -> Declares a constant variable.
-       -> The variable name cannot be reassigned.
-       -> The array contents CAN still be read or used.
-     SYMBOLS   -> Developer‑chosen variable name.
-       -> Stores the array of card symbols.
-       -> Used by createDeck() to generate card values.
-     =    -> Assignment operator. Meaning: “Store the value on the right into the variable on the left.”
-     "ABCDEFGHJKLMNPQRSTUVWXYZ"    -> JavaScript STRING. Contains all available card symbols.
-         -> Each character will become one array element.
-     .   -> Property/method access operator.  -> Used here to access the split() method of the string.
-     split("")     -> Built‑in string method.  Splits the string into an array.
-         -> "" means “split between every character”. eg: "ABC".split("") -> ["A", "B", "C"]
-     RESULT  -> SYMBOLS becomes: ["A","B","C","D","E","F","G","H","J","K","L","M","N","P","Q","R","S","T","U","V","W","X","Y","Z"]
-         -> An array of single‑character strings.
-     ;   -> Ends the JavaScript statement.
 --------------------------------------------------
    DEEP LOGIC — WHAT ACTUALLY HAPPENS
    1) JavaScript reads the string of letters.
@@ -165,7 +98,13 @@ const DIFFICULTY = {
    8) renderBoard() uses state.cards to draw the visible cards.
 -------------------------------------------------- */
 const SYMBOLS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".split(""); 
-
+/*const    -> JavaScript keyword. Declares a constant variable. -> The variable name cannot be reassigned.  The array contents CAN still be read or used.
+  SYMBOLS   -> Developer‑chosen variable name. -> Stores the array of card symbols. -> Used by createDeck() to generate card values.
+  =    -> Assignment operator. Meaning: “Store the value on the right into the variable on the left.”
+  "ABCDEFGHJKLMNPQRSTUVWXYZ"    -> JavaScript STRING. Contains all available card symbols. -> Each character will become one array element.
+  .   -> Property/method access operator.  -> Used here to access the split() method of the string.
+  split("")   -> Built‑in string method.  Splits the string into an array. -> "" means “split between every character”. eg: "ABC".split("") -> ["A", "B", "C"]
+  RESULT  -> SYMBOLS becomes: ["A","B","C","D","E","F","G","H","J","K","L","M","N","P","Q","R","S","T","U","V","W","X","Y","Z"] -> An array of single‑character strings. */ 
 
 /* --------------------------------------------------
    MUTABLE GAME STATE OBJECT — state
@@ -174,100 +113,30 @@ const SYMBOLS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".split("");
    • Purpose -> Track gameplay progress, selections, timer, moves, and deck.
    • Pattern -> Centralised data container used by all game functions.
 --------------------------------------------------
-   TECHNICAL BREAKDOWN OF THE STATEMENT:
-   let state = { ... };
-     let   -> JavaScript keyword.
-       -> Declares a variable whose value CAN be reassigned.
-       -> Used here because the state object will be updated during gameplay.
-     state   -> Developer‑chosen variable name.
-       -> Stores all dynamic game data.
-       -> Accessible by all functions that need to read or update game status.
-     =    -> Assignment operator. Meaning: “Store the value on the right into the variable on the left.”
-     { }   -> Object literal. Contains key–value pairs representing different pieces of game data.
-
---------------------------------------------------
-   OBJECT PROPERTIES — KEY–VALUE PAIRS
-
-   isRunning: false
-       isRunning -> Boolean flag controlling whether gameplay is active.
-       :         -> Separates property name from its value.
-       false     -> Game is not running initially.
-   playerName: ""
-       playerName -> Stores the player’s name.
-       ""         -> Empty string until user enters a name.
-   cards: []
-       cards -> Will store all card objects created by createDeck().
-       []    -> Empty array placeholder.
-   firstPick: null
-       firstPick -> Stores the first selected card in a turn.
-       null      -> No card selected yet.
-   secondPick: null
-       secondPick -> Stores the second selected card.
-       null       -> No second card selected yet.
-   lockBoard: false
-       lockBoard -> Prevents clicks during animations or match checks.
-       false     -> Board is initially unlocked.
-   moves: 0
-       moves -> Counts how many turns the player has taken.
-       0     -> Starts at zero.
-   pairsFound: 0
-       pairsFound -> Increases when a matching pair is found.
-       0          -> No pairs found at the beginning.
-   totalPairs: 0
-       totalPairs -> Set at game start based on difficulty (totalCards / 2).
-       0          -> Placeholder until difficulty is chosen.
-   seconds: 0
-       seconds -> Tracks elapsed time.
-       0       -> Timer starts at zero.
-   timer: null
-       timer -> Will store the setInterval() ID.
-       null  -> No timer running yet.
---------------------------------------------------
-   DEEP LOGIC — WHAT ACTUALLY HAPPENS
-
-   1) User selects difficulty.
-   2) totalCards is calculated from cols * rows.
-   3) createDeck(totalCards) fills:
-         state.cards
-   4) state.totalPairs is set to:
-         totalCards / 2
-   5) Timer starts:
-         startTimer() updates state.seconds every second.
-   6) Player interacts with cards:
-         onCardClick() updates firstPick, secondPick, moves.
-   7) checkMatch() updates:
-         pairsFound, lockBoard, and resets picks.
-   8) updateStatus() reads:
-         moves, pairsFound, seconds
-      to update the UI.
---------------------------------------------------
-   FINAL SUMMARY
-   state    -> Central data object storing everything the game needs.
-   let state = { ... }       -> Mutable object whose properties change throughout gameplay.
-   state feeds into:   -> renderBoard() (reads cards)
-       -> updateStatus() (reads moves, pairsFound, seconds)
-       -> checkMatch() (reads firstPick, secondPick)
-       -> timer display (reads seconds)
-   Functions that feed into state:    -> createDeck() fills cards
-       -> difficulty selection sets totalPairs
-       -> startTimer() updates seconds
-       -> onCardClick() updates picks and moves
-       -> checkMatch() updates pairsFound
+1) User selects difficulty → this sets state.difficulty and determines board size (state is the central data object storing all game information).  
+2) totalCards is calculated from cols × rows → difficulty selection feeds into state.totalPairs and deck creation.  
+3) createDeck(totalCards) fills state.cards → createDeck() is one of the functions that writes into state.  
+4) state.totalPairs is set to totalCards / 2 → used later by checkMatch() and updateStatus().  
+5) Timer starts → startTimer() updates state.seconds every second → state feeds into the timer display.  
+6) Player interacts with cards → onCardClick() updates firstPickId, secondPickId, moves → onCardClick() is another function that modifies state.  
+7) checkMatch() updates pairsFound, lockBoard, and resets picks → checkMatch() both reads and writes state.  
+8) updateStatus() reads moves, pairsFound, secondsElapsed to update the UI → renderBoard(), updateStatus(), and the timer all read from state to keep the interface in sync.
 -------------------------------------------------- */
-let state = {
-  isRunning: false,
-  playerName: "",   
-  difficulty: null,
-  cards: [],        
-  firstPickId: null,
-  secondPickId: null,
-  lockBoard: false,
-  moves: 0,
-  pairsFound: 0,
-  totalPairs: 0,
-  timerId: null,
-  secondsElapsed: 0
+let state = { /* let -> Declares a mutable variable; state -> central game data object; = {} -> object literal storing all game state properties */
+  isRunning: false, /* isRunning -> Boolean flag for active gameplay; false -> game not started yet */
+  playerName: "", /* playerName -> Stores player's name; "" -> empty until user enters a name */
+  difficulty: null, /* difficulty -> Stores selected difficulty level; null -> none chosen yet */
+  cards: [], /* cards -> Array of card objects created by createDeck(); [] -> empty until game starts */
+  firstPickId: null, /* firstPickId -> ID of first selected card; null -> no selection yet */
+  secondPickId: null, /* secondPickId -> ID of second selected card; null -> no second selection yet */
+  lockBoard: false, /* lockBoard -> Prevents clicks during animations; false -> board initially unlocked */
+  moves: 0, /* moves -> Counts number of turns taken; 0 -> starts at zero */
+  pairsFound: 0, /* pairsFound -> Number of matched pairs; 0 -> none found at start */
+  totalPairs: 0, /* totalPairs -> Total number of pairs based on difficulty; 0 -> placeholder until game starts */
+  timerId: null, /* timerId -> Stores setInterval() ID for timer; null -> timer not running */
+  secondsElapsed: 0 /* secondsElapsed -> Tracks elapsed time in seconds; 0 -> timer starts at zero */
 };
+
 
 /* --------------------------------------------------
    GAME HISTORY (ARRAY OF OBJECTS)
@@ -275,99 +144,27 @@ let state = {
    • Purpose → Provide data for the “Last 5 Games” history table.
    • Pattern → A mutable array updated after each completed game.
 --------------------------------------------------
-   TECHNICAL BREAKDOWN OF THE STATEMENT:
-   let gameHistory = [];
-      let → Declares a block‑scoped variable.
-      gameHistory → Name of the array storing past game objects.
-      = [] → Initializes as an empty array literal.
-      ; → Ends the statement.
-      Each stored entry is an object:
-      {
-         player: "Irene",
-         difficulty: "medium",
-         moves: 14,
-         time: "01:12",
-         pairs: 6
-      }
-      Behaviour:
-         • New results added with push()
-         • Oldest removed with shift() when > 5 entries
-         • updateHistoryTable() reads this array to update the UI
---------------------------------------------------
    DEEP LOGIC — WHAT ACTUALLY HAPPENS
-   1) Script loads → gameHistory starts empty.
-   2) endGame() creates a result object.
-   3) JS pushes the result into gameHistory.
-   4) If length > 5 → JS removes the oldest entry.
-   5) updateHistoryTable() writes rows into <tbody id="historyBody">.
-   6) User sees the last 5 games displayed in the interface.
---------------------------------------------------
-   FINAL SUMMARY
-   Purpose → Store structured data about past games.
-   Inputs → Result objects created at endGame().
-   Internal steps → push → trim → update table.
-   Outputs → A visible history of the last 5 games.
-   Used by → endGame(), updateHistoryTable(), UI history panel.
--------------------------------------------------- */
-let gameHistory = []; 
+1) Script loads → gameHistory starts empty (Purpose → store structured data about past games).  
+2) endGame() creates a result object (Inputs → result objects created at endGame()).  
+3) JS pushes the result into gameHistory (Internal step → push new result).  
+4) If length > 5 → JS removes the oldest entry (Internal step → trim array to last 5).  
+5) updateHistoryTable() writes rows into <tbody id="historyBody"> (Internal step → update table).  
+6) User sees the last 5 games displayed in the interface (Output → visible history of recent games; Used by → endGame(), updateHistoryTable(), UI history panel).
 
+-------------------------------------------------- */
+let gameHistory = []; /* let -> Declares a mutable variable (value can change during gameplay);
+                         gameHistory -> Developer‑chosen name for an array storing past game results;
+                         = -> Assignment operator (“store the value on the right into the variable on the left”);
+                         [] -> Empty array literal; acts as a container that will hold history objects after each completed game;
+                         Why -> Used to display the “Last 5 Games” table by storing player, difficulty, moves, time, and pairs for each finished game */
 
 /* --------------------------------------------------
    UTILITY FUNCTIONS — SHUFFLING, TIME FORMATTING, FEEDBACK
    • These are function declarations (reusable named blocks of code).
    • shuffle() → Randomizes an array of items.
    • formatTime() → Converts raw seconds into a user‑friendly "mm:ss" string.
-   • setFeedback() → Updates the feedback area in the DOM.
---------------------------------------------------
-   TECHNICAL BREAKDOWN OF shuffle():
-   function shuffle(array) { ... }
-      function → JavaScript keyword declaring a reusable function.
-      shuffle → Developer‑chosen name; purpose: randomize array order.
-      (array) → Parameter representing the array to be shuffled.
-      { } → Function body containing the logic.
-   for (let i = array.length - 1; i > 0; i--)
-      for → Loop structure used to iterate backwards through the array.
-      let i → Loop variable; starts at last index.
-      array.length - 1 → Ensures loop begins at final element.
-      i > 0 → Stops before index 0.
-      i-- → Decrements index each iteration.
-   const j = Math.floor(Math.random() * (i + 1));
-      Math.random() → Generates a number between 0 and 1.
-      * (i + 1) → Scales randomness to valid index range.
-      Math.floor(...) → Converts to whole number index.
-      j → Random index used for swapping.
-   [array[i], array[j]] = [array[j], array[i]];
-      Array destructuring assignment.
-      Swaps the values at positions i and j.
-   return array;
-      return → Sends the shuffled array back to the caller.
---------------------------------------------------
-   TECHNICAL BREAKDOWN OF formatTime():
-   function formatTime(seconds) { ... }
-      function → Declares a reusable function.
-      formatTime → Developer‑chosen name; purpose: convert seconds to "mm:ss".
-      (seconds) → Parameter representing elapsed time.
-      { } → Function body.
-   const m = String(Math.floor(seconds / 60)).padStart(2, "0");
-      Math.floor(seconds / 60) → Converts total seconds into whole minutes.
-      String(...) → Converts number to string.
-      padStart(2, "0") → Ensures 2‑digit formatting (e.g., "3" → "03").
-   const s = String(seconds % 60).padStart(2, "0");
-      seconds % 60 → Remainder after removing full minutes; produces seconds.
-   return `${m}:${s}`;
-      Template literal combining minutes + seconds.
-      Example output: "04:27".
---------------------------------------------------
-   TECHNICAL BREAKDOWN OF setFeedback():
-   function setFeedback(msg) { ... }
-      function → Declares a reusable function.
-      setFeedback → Developer‑chosen name; purpose: update feedback text.
-      (msg) → Parameter containing the message to display.
-      { } → Function body.
-   feedbackEl.textContent = msg;
-      feedbackEl → DOM element where feedback messages appear.
-      .textContent → Sets the visible text inside the element.
-      msg → The string passed into the function.
+   • setFeedback() → Updates the feedback area in the DOM. → Displays messages to the player; used in validation, game start, and endGame().
 --------------------------------------------------
    DEEP LOGIC — WHAT ACTUALLY HAPPENS
    shuffle()
@@ -386,29 +183,25 @@ let gameHistory = [];
       1) Receives a message string.
       2) Writes it into the feedback DOM element.
       3) Used for validation errors, instructions, and end‑game messages.
---------------------------------------------------
-   FINAL SUMMARY
-   shuffle() → Randomizes card order; used in createDeck() and state.cards.
-   formatTime() → Converts seconds into readable time; used in updateStatus().
-   setFeedback() → Displays messages to the player; used in validation, game start, and endGame().
 -------------------------------------------------- */
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+function shuffle(array) { /* function -> declares a reusable block of code; shuffle -> function name; (array) -> parameter receiving the array to randomize; { } -> function body */
+  for (let i = array.length - 1; i > 0; i--) { /* for -> loop keyword; let i -> loop counter; array.length - 1 -> start at last index; i > 0 -> stop before index 0; i-- -> decrement each iteration */
+    const j = Math.floor(Math.random() * (i + 1)); /* const -> constant variable; j -> random index; Math.random() -> random number 0–1; * (i+1) -> scale to valid index; Math.floor -> convert to whole number */
+    [array[i], array[j]] = [array[j], array[i]]; /* [a,b]=[b,a] -> destructuring swap; array[i] <-> array[j] -> exchanges elements to shuffle order */
   }
-  return array;
-}  
-
-function formatTime(seconds) {
-  const m = String(Math.floor(seconds / 60)).padStart(2, "0");
-  const s = String(seconds % 60).padStart(2, "0");
-  return `${m}:${s}`;
+  return array; /* return -> outputs the shuffled array back to the caller */
 }
 
-function setFeedback(msg) {
-  feedbackEl.textContent = msg;
+function formatTime(seconds) { /* function -> declares reusable code; formatTime -> name; (seconds) -> input value representing elapsed seconds */
+  const m = String(Math.floor(seconds / 60)).padStart(2, "0"); /* const m -> minutes string; seconds/60 -> convert to minutes; Math.floor -> whole minutes; String() -> convert to text; padStart(2,"0") -> ensure 2 digits */
+  const s = String(seconds % 60).padStart(2, "0"); /* const s -> seconds string; seconds % 60 -> remainder after minutes; padStart -> ensures "00"–"59" format */
+  return `${m}:${s}`; /* return -> output formatted time; `${}` -> template literal combining minutes and seconds */
 }
+
+function setFeedback(msg) { /* function -> declares reusable code; setFeedback -> name; (msg) -> message string to display */
+  feedbackEl.textContent = msg; /* feedbackEl -> DOM element for feedback; .textContent -> sets visible text; = msg -> assign the message to the element */
+}
+
 
 /* --------------------------------------------------
    FUNCTION DECLARATION + BOARD RENDERING LOGIC — renderBoard()
