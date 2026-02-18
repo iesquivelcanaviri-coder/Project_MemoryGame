@@ -7,41 +7,27 @@
    • Pattern -> Standard JavaScript practice: gather all DOM references at the top for clarity, organisation, and reuse.
 -------------------------------------------------
    DEEP LOGIC — WHAT ACTUALLY HAPPENS
-   1) The browser loads your HTML and builds the DOM tree.
-   2) JavaScript executes document -> getElementById("board").
-   3) The browser searches the DOM for:
-          <div id="board"> ... </div>
-   4) If found, the method RETURNS that HTML element.
-   5) The assignment operator (=) stores the returned element in boardEl.
-   6) boardEl now becomes a REFERENCE to the real HTML element.
-        -> You can modify it later (innerHTML, styles, children, etc.).
-        -> It acts as the bridge between game logic and visible UI.
---------------------------------------------------
-   FINAL SUMMARY
-   "board"  -> JavaScript STRING passed to getElementById().
-   id="board"  -> HTML identifier used to locate the element.
-   boardEl -> Your JavaScript variable storing the DOM element.
-   document -> getElementById("board")  -> DOM lookup method that retrieves the element.
-   boardEl  -> Used throughout the game to update the board visually.
-   Example usage in renderBoard():
-       1) boardEl -> innerHTML = ""   -> Clears the board before drawing new cards.
-       2) JavaScript creates button elements for each card.
-       3) boardEl -> appendChild(btn) Inserts each card into the board container. This is when the card becomes visible to the player.
+DEEP LOGIC — WHAT ACTUALLY HAPPENS 
+1) The browser loads your HTML and builds the DOM tree → this is where id="board" becomes an identifiable HTML element the JavaScript can later retrieve.
+2) JavaScript executes document.getElementById("board") → "board" is the STRING used to look up the element with id="board".
+3) The browser searches the DOM for <div id="board">...</div> → this matches the HTML identifier id="board" used to locate the correct element.
+4) If found, the method RETURNS that HTML element → this returned element is the actual DOM node that will be stored in boardEl.
+5) The assignment operator (=) stores the returned element in boardEl → boardEl becomes your JavaScript variable holding the DOM element.
+6) boardEl now becomes a REFERENCE to the real HTML element → this reference lets you modify the board visually (innerHTML, styles, children), acting as the bridge between game logic and UI.
+     → Example in renderBoard():
+         - boardEl.innerHTML = "" clears the board before drawing new cards.
+         - JavaScript creates button elements for each card.
+         - boardEl.appendChild(btn) inserts each card into the board so it becomes visible to the player.
 -------------------------------------------------- */
 const boardEl = document.getElementById("board");
-/*const -> JavaScript keyword. Declares a constant variable.
-        -> The variable name cannot be reassigned. The referenced element’s properties CAN still change.
-boardEl -> Developer‑chosen variable name. “El” means “Element”. Stores the returned HTML element.
-        -> Not taken from HTML — this is your own identifier.
+/*const -> JavaScript keyword. Declares a constant variable.  -> The variable name cannot be reassigned. The referenced element’s properties CAN still change.
+boardEl -> Developer‑chosen variable name. “El” means “Element”. Stores the returned HTML element. -> Not taken from HTML — this is your own identifier.
 = -> Assignment operator. Meaning: “Store the value on the right into the variable on the left.”
 document -> Built‑in JavaScript object. Represents the entire loaded HTML page. Gives access to the DOM tree.
 . ->Property/method access operator. Used here to access the DOM method getElementById.
-getElementById-> DOM method belonging to `document`. Searches the DOM for an element with a matching id.
-        -> Returns the element if found, otherwise null.
+getElementById-> DOM method belonging to `document`. Searches the DOM for an element with a matching id.  -> Returns the element if found, otherwise null.
 (  -> Opens the method’s argument list.
-"board"  -> JavaScript STRING.  Passed as an argument to getElementById().
-         -> Must match exactly the HTML id:  <div id="board">
-         -> Tells the browser which element to search for.
+"board"  -> JavaScript STRING.  Passed as an argument to getElementById().  -> Must match exactly the HTML id:  <div id="board">     -> Tells the browser which element to search for.
 )  -> Closes the argument list. */
 const gameForm = document.getElementById("gameForm");
 const playerNameEl = document.getElementById("playerName");
@@ -113,6 +99,7 @@ const SYMBOLS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".split("");
    • Purpose -> Track gameplay progress, selections, timer, moves, and deck.
    • Pattern -> Centralised data container used by all game functions.
 --------------------------------------------------
+DEEP LOGIC — WHAT ACTUALLY HAPPENS
 1) User selects difficulty → this sets state.difficulty and determines board size (state is the central data object storing all game information).  
 2) totalCards is calculated from cols × rows → difficulty selection feeds into state.totalPairs and deck creation.  
 3) createDeck(totalCards) fills state.cards → createDeck() is one of the functions that writes into state.  
@@ -151,7 +138,6 @@ let state = { /* let -> Declares a mutable variable; state -> central game data 
 4) If length > 5 → JS removes the oldest entry (Internal step → trim array to last 5).  
 5) updateHistoryTable() writes rows into <tbody id="historyBody"> (Internal step → update table).  
 6) User sees the last 5 games displayed in the interface (Output → visible history of recent games; Used by → endGame(), updateHistoryTable(), UI history panel).
-
 -------------------------------------------------- */
 let gameHistory = []; /* let -> Declares a mutable variable (value can change during gameplay);
                          gameHistory -> Developer‑chosen name for an array storing past game results;
@@ -160,29 +146,29 @@ let gameHistory = []; /* let -> Declares a mutable variable (value can change du
                          Why -> Used to display the “Last 5 Games” table by storing player, difficulty, moves, time, and pairs for each finished game */
 
 /* --------------------------------------------------
-   UTILITY FUNCTIONS — SHUFFLING, TIME FORMATTING, FEEDBACK
-   • These are function declarations (reusable named blocks of code).
-   • shuffle() → Randomizes an array of items.
-   • formatTime() → Converts raw seconds into a user‑friendly "mm:ss" string.
-   • setFeedback() → Updates the feedback area in the DOM. → Displays messages to the player; used in validation, game start, and endGame().
---------------------------------------------------
-   DEEP LOGIC — WHAT ACTUALLY HAPPENS
-   shuffle()
-      1) Receives an array of card objects.
-      2) Iterates backward through the array.
-      3) Swaps each element with a random index.
-      4) Returns the randomized array.
-      5) Used by createDeck() to shuffle card pairs.
-   formatTime()
-      1) Receives total elapsed seconds.
-      2) Calculates minutes and seconds.
-      3) Formats both as two‑digit strings.
-      4) Returns a UI‑friendly "mm:ss" value.
-      5) Used by updateStatus() to update the timer display.
-   setFeedback()
-      1) Receives a message string.
-      2) Writes it into the feedback DOM element.
-      3) Used for validation errors, instructions, and end‑game messages.
+ UTILITY FUNCTIONS — SHUFFLING, TIME FORMATTING, FEEDBACK
+• These are function declarations (reusable named blocks of code) → each one performs a specific utility task used throughout the game.
+• shuffle() → randomizes an array of items → used by createDeck() to shuffle card pairs before rendering.
+• formatTime() → converts raw seconds into a user‑friendly "mm:ss" string → used by updateStatus() to update the timer display.
+• setFeedback() → updates the feedback area in the DOM → displays messages to the player during validation, game start, and endGame().
+
+DEEP LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE)
+shuffle()
+1) Receives an array of card objects → this is the deck produced by createDeck().
+2) Iterates backward through the array → standard Fisher‑Yates shuffle pattern.
+3) Swaps each element with a random index → ensures every card has an equal chance of any position.
+4) Returns the randomized array → this shuffled deck is what the player sees on the board.
+5) Used by createDeck() to shuffle card pairs → ensures each new game has a unique card order.
+formatTime()
+1) Receives total elapsed seconds → the value comes from state.secondsElapsed.
+2) Calculates minutes and seconds → converts raw time into readable units.
+3) Formats both as two‑digit strings → ensures consistent "mm:ss" formatting.
+4) Returns a UI‑friendly "mm:ss" value → this is the exact string shown in the timer.
+5) Used by updateStatus() to update the timer display → keeps the visible timer synced with the internal state.
+setFeedback()
+1) Receives a message string → text describing instructions, errors, or game results.
+2) Writes it into the feedback DOM element → feedbackEl.textContent = msg updates the UI.
+3) Used for validation errors, instructions, and end‑game messages → communicates game state and guidance to the player.
 -------------------------------------------------- */
 function shuffle(array) { /* function -> declares a reusable block of code; shuffle -> function name; (array) -> parameter receiving the array to randomize; { } -> function body */
   for (let i = array.length - 1; i > 0; i--) { /* for -> loop keyword; let i -> loop counter; array.length - 1 -> start at last index; i > 0 -> stop before index 0; i-- -> decrement each iteration */
@@ -205,514 +191,240 @@ function setFeedback(msg) { /* function -> declares reusable code; setFeedback -
 
 /* --------------------------------------------------
    FUNCTION DECLARATION + BOARD RENDERING LOGIC — renderBoard()
-   • buildBoardGrid() → Sets the CSS grid layout for the board.
-   • renderBoard() → Creates the visible card elements and inserts them into the DOM.
-   • Purpose → Build a fresh, interactive game board based on state.cards.
-   • Pattern → Clear board → loop cards → create elements → attach listeners → append to DOM.
 --------------------------------------------------
-   TECHNICAL BREAKDOWN OF buildBoardGrid():
-   function buildBoardGrid(cols, rows) { ... }
-      function → Declares a reusable function.
-      buildBoardGrid → Developer‑chosen name; purpose: configure board layout.
-      (cols, rows) → Parameters defining number of columns and rows.
-      { } → Function body.
-   boardEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-      boardEl → DOM element representing the game board.
-      .style.gridTemplateColumns → CSS property controlling column layout.
-      repeat(${cols}, 1fr) → Creates a grid with N equal‑width columns.
-      ; → Ends the statement.
---------------------------------------------------
-   TECHNICAL BREAKDOWN OF renderBoard():
-   function renderBoard() { ... }
-      function → Declares a reusable function.
-      renderBoard → Developer‑chosen name; purpose: build the visible card grid.
-      { } → Function body.
-   boardEl.innerHTML = "";
-      boardEl → DOM container for all cards.
-      .innerHTML = "" → Clears any existing cards from previous games.
-      ; → Ends the statement.
-   state.cards.forEach(card => { ... });
-      state → Global game state object.
-      .cards → Array of card objects created by createDeck().
-      .forEach(...) → Loops through each card.
-      (card) → Parameter representing the current card object.
-      => → Arrow function.
-      { } → Logic executed for each card.
-   const btn = document.createElement("button");
-      const → Declares a block‑scoped constant.
-      btn → Variable holding the new button element.
-      document.createElement("button") → Creates a <button> element.
-      ; → Ends the statement.
-   btn.className = "card";
-      .className → Assigns CSS class for styling.
-      "card" → Base class for all card buttons.
-      ; → Ends the statement.
-   btn.dataset.id = card.id;
-      .dataset → Stores custom data attributes.
-      .id → Custom attribute used to track card identity.
-      card.id → Unique ID from the card object.
-      ; → Ends the statement.
-   const front = document.createElement("div");
-      Creates the front face of the card (revealed value).
-   front.className = "card-inner front";
-      Assigns styling classes for the front face.
-   front.textContent = card.value;
-      Sets the visible letter/emoji/value for the card.
-   const back = document.createElement("div");
-      Creates the back face of the card (default hidden side).
-   back.className = "card-inner back";
-      Assigns styling classes for the back face.
-   back.textContent = "Card";
-      Placeholder text shown before flipping.
-   btn.append(front, back);
-      append() → Inserts both faces into the button element.
-   btn.addEventListener("click", onCardClick);
-      addEventListener → Attaches click handler.
-      "click" → Event type.
-      onCardClick → Function that processes card flipping logic.
-      ; → Ends the statement.
-   boardEl.appendChild(btn);
-      appendChild → Adds the card button to the board.
-      btn → The fully constructed card element.
-      ; → Ends the statement.
---------------------------------------------------
-   DEEP LOGIC — WHAT ACTUALLY HAPPENS
-   buildBoardGrid()
-      1) Receives number of columns and rows.
-      2) Updates CSS grid layout.
-      3) Ensures board visually matches difficulty level.
-   renderBoard()
-      1) Clears old board content.
-      2) Loops through state.cards.
-      3) Creates a button for each card.
-      4) Builds front + back faces.
-      5) Attaches click listener for flipping.
-      6) Appends card to boardEl.
-      7) Player sees a fresh, interactive grid.
---------------------------------------------------
-   FINAL SUMMARY
-   buildBoardGrid() → Configures board layout based on difficulty.
-   renderBoard() → Builds the visible card grid from state.cards.
-   Inputs → state.cards, boardEl, card values.
-   Internal steps → clear board → loop → create elements → attach listeners → append.
-   Outputs → Fully rendered, interactive memory game board.
-   Used by → startGame(), resetGame(), difficulty changes.
+FUNCTION DECLARATION + BOARD RENDERING LOGIC — renderBoard()
+• buildBoardGrid() and renderBoard() are function declarations → reusable named blocks of code used to construct the game board.
+• buildBoardGrid() → sets the CSS grid layout based on difficulty.
+• renderBoard() → creates the visible card elements and inserts them into the DOM.
+
+DEEP LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE)
+buildBoardGrid()
+1) Receives number of columns and rows → inputs: cols and rows come from the selected difficulty, which determines board size.
+2) Updates CSS grid layout using gridTemplateColumns → internal step: writes layout directly into boardEl.style to shape the grid.
+3) Ensures board visually matches difficulty level → output: correct grid structure on screen; used by startGame(), resetGame(), and difficulty changes.
+renderBoard()
+1) Clears old board content using innerHTML = "" → internal step: resets the DOM before drawing new cards so no old cards remain.
+2) Loops through state.cards → input: card objects stored in state, created earlier by createDeck().
+3) Creates a button element for each card → internal step: builds an interactive card container that can be clicked.
+4) Builds front + back faces as <div> elements → internal step: constructs the visible card structure (front shows symbol, back shows default text).
+5) Attaches click listener for flipping via onCardClick → internal step: enables interaction so the player can flip cards.
+6) Appends each card to boardEl → output: the fully built card appears on screen inside the board grid.
+7) Player sees a fresh, interactive grid → final summary: renderBoard() builds the full playable board; used by startGame(), resetGame(), and difficulty changes to visually update the UI.
 -------------------------------------------------- */
-function buildBoardGrid(cols, rows) {
-  boardEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+function buildBoardGrid(cols, rows) { /* function -> declares reusable code; buildBoardGrid -> function name; (cols, rows) -> parameters receiving number of columns and rows; { } -> function body */
+  boardEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`; /* boardEl -> DOM element for the game board; .style -> access CSS properties; .gridTemplateColumns -> sets number of grid columns; = -> assign new CSS value; `repeat(${cols}, 1fr)` -> template literal creating N equal-width columns; ${cols} -> inserts column count; 1fr -> each column takes equal space */
 }
 
-function renderBoard() {
-  boardEl.innerHTML = "";
+function renderBoard() { /* function -> declares reusable code; renderBoard -> builds the visible card grid; { } -> function body */
+  boardEl.innerHTML = ""; /* boardEl -> board container; .innerHTML -> sets HTML content; = "" -> clears previous cards before drawing new ones */
 
-  state.cards.forEach(card => {
-    const btn = document.createElement("button");
-    btn.className = "card";
-    btn.dataset.id = card.id;
+  state.cards.forEach(card => { /* state.cards -> array of card objects; .forEach -> loop through each card; card => { } -> arrow function receiving each card object */
+    const btn = document.createElement("button"); /* const -> constant variable; btn -> new button element; document.createElement("button") -> creates a <button> in memory */
+    btn.className = "card"; /* .className -> assigns CSS class; "card" -> styling for all card buttons */
+    btn.dataset.id = card.id; /* .dataset.id -> custom data attribute; stores card's unique ID; card.id -> ID from deck */
 
-    const front = document.createElement("div");
-    front.className = "card-inner front";
-    front.textContent = card.value;
+    const front = document.createElement("div"); /* front -> div for card front face; createElement("div") -> creates <div> */
+    front.className = "card-inner front"; /* .className -> assigns CSS classes; "card-inner front" -> styles for front face */
+    front.textContent = card.value; /* .textContent -> sets visible text; card.value -> symbol/letter for this card */
 
-    const back = document.createElement("div");
-    back.className = "card-inner back";
-    back.textContent = "Card";
+    const back = document.createElement("div"); /* back -> div for card back face */
+    back.className = "card-inner back"; /* "card-inner back" -> styling for back face */
+    back.textContent = "Card"; /* placeholder text shown before flipping */
 
-    btn.append(front, back);
-    btn.addEventListener("click", onCardClick);
+    btn.append(front, back); /* btn.append -> inserts both faces into the button; front, back -> children added in order */
+    btn.addEventListener("click", onCardClick); /* addEventListener -> attaches event; "click" -> event type; onCardClick -> function handling card flips */
 
-    boardEl.appendChild(btn);
+    boardEl.appendChild(btn); /* boardEl.appendChild -> adds the fully built card button to the board container */
   });
 }
 
+/* --------------------------------------------------
+FUNCTION DECLARATION + STATUS UPDATE LOGIC — updateStatus()
+• updateStatus() is a function declaration → a reusable named block of code that updates the UI.
+• Purpose → refresh the UI values for moves, pairs, and time so the interface always reflects the current game state.
+• Pattern → read state → format values → write to DOM → ensures the UI stays synchronised with gameplay.
 
-
+DEEP LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE)
+1) updateStatus() is called after moves, pairsFound, or secondsElapsed change → purpose: synchronises the UI with the current game state so the player always sees accurate information.
+2) It reads state.moves and writes it to movesValueEl → input: state.moves → output: updated move counter on screen, keeping the UI aligned with gameplay.
+3) It reads state.pairsFound and writes it to pairsValueEl → input: state.pairsFound → output: updated pairs counter on screen, showing the player their progress.
+4) It formats state.secondsElapsed using formatTime() → internal step: read raw seconds → convert into mm:ss for a readable timer.
+5) It writes the formatted time into timeValueEl → input: state.secondsElapsed → output: updated timer on screen, ensuring the displayed time matches the internal timer.
+6) The UI instantly reflects the current game progress → used by onCardClick(), checkMatch(), startTimer(), and resetGame() to keep the interface in sync with state.
+-------------------------------------------------- */
+function updateStatus() { /* function -> declares reusable code block; updateStatus -> function name describing its purpose; () -> no parameters; { } -> start of function body where the instructions live */
+  movesValueEl.textContent = state.moves; /* movesValueEl -> DOM element showing moves; .textContent -> sets its visible text; = -> assign; state.moves -> current number of moves stored in game state; why -> keeps the moves display in sync with gameplay */
+  pairsValueEl.textContent = state.pairsFound; /* pairsValueEl -> DOM element showing pairs found; .textContent -> updates its text; state.pairsFound -> how many pairs the player has matched; why -> shows progress to the player */
+  timeValueEl.textContent = formatTime(state.secondsElapsed); /* timeValueEl -> DOM element showing time; .textContent -> sets displayed text; formatTime(...) -> helper function converting raw seconds into mm:ss; state.secondsElapsed -> total time passed; why -> shows readable timer to the player */
+} 
 
 /* --------------------------------------------------
-   FUNCTION DECLARATION + STATUS UPDATE LOGIC — updateStatus()
-   • updateStatus() is a function declaration.
-   • Purpose -> Refresh the UI values for moves, pairs, and time.
-   • Pattern -> Read state → format values → write to DOM.
---------------------------------------------------
-   TECHNICAL BREAKDOWN OF THE STATEMENT:
-   function updateStatus() { ... }
-      function -> JavaScript keyword; declares a reusable function.
-      updateStatus -> Developer‑chosen name; updates visible game stats.
-      { } -> Function body containing all instructions.
-   movesValueEl.textContent = state.moves;
-      movesValueEl -> DOM element showing the number of moves.
-      .textContent -> Sets the visible text inside the element.
-      = state.moves -> Writes the current move count from state.
-      ; -> Ends the statement.
-   pairsValueEl.textContent = state.pairsFound;
-      pairsValueEl -> DOM element showing number of matched pairs.
-      .textContent -> Updates the displayed value.
-      = state.pairsFound -> Writes the number of pairs found.
-      ; -> Ends the statement.
-   timeValueEl.textContent = formatTime(state.seconds);
-      timeValueEl -> DOM element showing elapsed time.
-      .textContent -> Updates the displayed time.
-      formatTime(state.seconds) -> Converts raw seconds into "mm:ss".
-      ; -> Ends the statement.
---------------------------------------------------
-   DEEP LOGIC — WHAT ACTUALLY HAPPENS
-   1) updateStatus() is called after moves, pairs, or time changes.
-   2) It reads state.moves and writes it to movesValueEl.
-   3) It reads state.pairsFound and writes it to pairsValueEl.
-   4) It formats state.seconds using formatTime().
-   5) It writes the formatted time into timeValueEl.
-   6) The UI instantly reflects the current game progress.
---------------------------------------------------
-   FINAL SUMMARY
-   updateStatus() -> Synchronises the UI with the current game state.
-   Inputs -> state.moves, state.pairsFound, state.seconds.
-   Internal steps -> read state → format → write to DOM.
-   Outputs -> Updated moves, pairs, and timer on screen.
-   Used by -> onCardClick(), checkMatch(), startTimer(), resetGame().
+FUNCTION DECLARATION + DECK CREATION LOGIC — createDeck(totalCards)
+• createDeck() → builds a complete deck of card objects for the game → used by startGame() to prepare the board.
+• Purpose → select symbols → duplicate → assign IDs → shuffle → return → ensures the game always has a valid, randomized deck.
+• Pattern → slice symbols → duplicate → create objects → shuffle → return → standard memory‑game deck generation workflow.
+
+DEEP LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE
+1) totalCards is calculated from difficulty (cols × rows) → input: totalCards passed into createDeck() from difficulty settings, determining how many cards the deck must contain.
+2) SYMBOLS.slice(...) selects the correct number of unique symbols → internal step: choose only the symbols needed for this board size so each pair has a matching partner.
+3) Each symbol is duplicated to form a matching pair → internal step: create two copies of each symbol so the game has pairs for matching.
+4) Each card receives a unique ID → internal step: assign identifiers so each card can be tracked individually even if two cards share the same value.
+5) flatMap() builds the full deck of objects → internal step: convert each symbol into two structured card objects with id, value, and matched properties.
+6) shuffle(deck) randomizes the order → internal step: randomize card positions before rendering so the board is unpredictable.
+7) The shuffled deck is returned → output: fully randomized deck ready for gameplay and passed back to startGame().
+8) state.cards receives the final deck → output: deck stored in game state for rendering and interaction.
+9) renderBoard() uses state.cards to draw the grid → used by startGame(), resetGame(), and difficulty changes to visually build the board.
 -------------------------------------------------- */
-function updateStatus() {
-  movesValueEl.textContent = state.moves;
-  pairsValueEl.textContent = state.pairsFound;
-  timeValueEl.textContent = formatTime(state.secondsElapsed);
-}
+function createDeck(totalCards) { /* function -> declares reusable code; createDeck -> name meaning “build the card deck”; (totalCards) -> parameter holding how many cards the board needs; { } -> start of function body */
+  const values = SYMBOLS.slice(0, totalCards / 2); /* const -> constant variable; values -> selected symbols for this game; SYMBOLS -> master list of all possible symbols; .slice(0, totalCards / 2) -> takes the first totalCards/2 symbols; totalCards / 2 -> number of unique pairs needed; why -> each symbol will appear twice to form pairs */
+  let id = 1; /* let -> mutable variable; id -> numeric counter used to give each card a unique identifier; = 1 -> start counting from 1; why -> needed to distinguish cards even if they share the same value */
 
-/* --------------------------------------------------
-   FUNCTION DECLARATION + DECK CREATION LOGIC — createDeck(totalCards)
-   • createDeck() → Builds a complete deck of card objects for the game.
-   • Purpose → Select symbols → duplicate → assign IDs → shuffle → return.
-   • Pattern → Slice symbols → duplicate → create objects → shuffle → return.
---------------------------------------------------
-   TECHNICAL BREAKDOWN OF createDeck():
-   function createDeck(totalCards) { ... }
-      function → Declares a reusable function.
-      createDeck → Developer‑chosen name; builds the full deck.
-      (totalCards) → Parameter; number of cards required for the chosen difficulty.
-      { } → Function body.
-   const values = SYMBOLS.slice(0, totalCards / 2);
-      const → Declares a constant variable.
-      values → Array of unique symbols used for this game.
-      SYMBOLS → Master list of all possible card symbols.
-      .slice(0, totalCards / 2) → Extracts only the number of symbols needed.
-      ; → Ends the statement.
-   let id = 1;
-      let → Declares a mutable variable.
-      id → Unique numeric identifier assigned to each card.
-      1 → Starting ID value.
-      ; → Ends the statement.
-   const deck = values.flatMap(v => ([ ... ]));
-      values → Array of unique symbols.
-      .flatMap(...) → Maps each symbol to TWO card objects and flattens the result.
-      v → Current symbol.
-      => → Arrow function.
-      [ { ... }, { ... } ] → Creates a pair of card objects.
-      ; → Ends the statement.
-   { id: id++, value: v, matched: false }
-      id: id++ → Assigns unique ID, then increments id.
-      value: v → Stores the symbol.
-      matched: false → Initial state; card is not matched yet.
-   return shuffle(deck);
-      return → Sends the final deck back to the caller.
-      shuffle(deck) → Randomizes card order.
-      ; → Ends the statement.
---------------------------------------------------
-   DEEP LOGIC — WHAT ACTUALLY HAPPENS
-   1) totalCards is calculated from difficulty (cols × rows).
-   2) SYMBOLS.slice(...) selects the correct number of unique symbols.
-   3) Each symbol is duplicated to form a matching pair.
-   4) Each card receives a unique ID.
-   5) flatMap() builds the full deck of objects.
-   6) shuffle(deck) randomizes the order.
-   7) The shuffled deck is returned.
-   8) state.cards receives the final deck.
-   9) renderBoard() uses state.cards to draw the grid.
---------------------------------------------------
-   FINAL SUMMARY
-   createDeck(totalCards) → Builds the full deck for the game.
-   Inputs → totalCards (from difficulty), SYMBOLS (master symbol list).
-   Internal steps → slice symbols → duplicate → assign IDs → shuffle.
-   Outputs → A fully randomized deck stored in state.cards.
-   Used by → startGame(), resetGame(), difficulty changes.
--------------------------------------------------- */
-function createDeck(totalCards) {
-  const values = SYMBOLS.slice(0, totalCards / 2);
-  let id = 1;
-
-  const deck = values.flatMap(v => ([
-    { id: id++, value: v, matched: false },
-    { id: id++, value: v, matched: false }
-  ]));
-  return shuffle(deck);
-}
-
-/* --------------------------------------------------
-   TIMER LOGIC — startTimer()
-   • startTimer() → Begins the game timer.
-   • Purpose → Increment elapsed seconds and update UI every second.
-   • Pattern → setInterval → increment → updateStatus().
---------------------------------------------------
-   TECHNICAL BREAKDOWN:
-   state.timerId = setInterval(() => { ... }, 1000);
-      state.timerId → Stores interval ID so it can be stopped later.
-      setInterval → Repeats a function every X milliseconds.
-      () => { ... } → Arrow function executed every second.
-      1000 → Runs once per second.
-   state.secondsElapsed++;
-      Increments total elapsed seconds.
-   updateStatus();
-      Refreshes UI timer display.
---------------------------------------------------
-   FINAL SUMMARY
-   startTimer() → Begins the timer loop.
-   Inputs → None.
-   Internal steps → increment seconds → update UI.
-   Outputs → Updated timer display every second.
-   Used by → startGame(), resume logic.
--------------------------------------------------- */
-function startTimer() {
-  state.timerId = setInterval(() => {
-    state.secondsElapsed++;
-    updateStatus();
-  }, 1000);
-}
-
-/* --------------------------------------------------
-   GAME INITIALIZATION LOGIC — startGame(difficultyKey)
-   • startGame() → Prepares all game state and UI for a new game.
-   • Purpose → Configure difficulty → build deck → render board → start timer.
-   • Pattern → Read config → update state → build grid → render → start timer.
---------------------------------------------------
-   TECHNICAL BREAKDOWN:
-   const config = DIFFICULTY[difficultyKey];
-      DIFFICULTY → Lookup table containing cols/rows for each difficulty.
-      difficultyKey → "easy", "medium", or "hard".
-      config → Object containing { cols, rows }.
-   const totalCards = config.cols * config.rows;
-      Calculates total number of cards needed.
-   state.difficulty = difficultyKey;
-      Saves selected difficulty.
-   state.cards = createDeck(totalCards);
-      Generates full deck and stores it in state.
-   state.totalPairs = totalCards / 2;
-      Calculates number of matching pairs.
-   state.isRunning = true;
-      Marks game as active.
-   buildBoardGrid(config.cols, config.rows);
-      Configures CSS grid layout.
-   renderBoard();
-      Builds visible card buttons.
-   updateStatus();
-      Resets UI counters.
-   startTimer();
-      Begins timer.
-   restartBtn.disabled = false;
-      Enables restart button.
---------------------------------------------------
-   DEEP LOGIC — WHAT ACTUALLY HAPPENS
-   1) Difficulty is read from DIFFICULTY table.
-   2) Total cards are calculated.
-   3) Deck is created and shuffled.
-   4) State is updated (difficulty, cards, pairs, running flag).
-   5) Board grid is configured.
-   6) Cards are rendered.
-   7) Timer starts.
-   8) Restart button becomes active.
---------------------------------------------------
-   FINAL SUMMARY
-   startGame(difficultyKey) → Fully initializes a new game.
-   Inputs → difficultyKey ("easy", "medium", "hard").
-   Internal steps → configure → create deck → render → start timer.
-   Outputs → Fresh board, running timer, updated UI.
-   Used by → Form submission, restart logic.
--------------------------------------------------- */
-function startGame(difficultyKey) {
-  const config = DIFFICULTY[difficultyKey];
-  const totalCards = config.cols * config.rows;
-
-  state.difficulty = difficultyKey;
-  state.cards = createDeck(totalCards);
-  state.totalPairs = totalCards / 2;
-  state.isRunning = true;
-
-  buildBoardGrid(config.cols, config.rows);
-  renderBoard();
-  updateStatus();
-  startTimer();
-
-  restartBtn.disabled = false;
+  const deck = values.flatMap(v => ([ /* const deck -> final array of card objects; values.flatMap(...) -> loop over each symbol and return multiple items per symbol; v => ([ ... ]) -> arrow function taking one symbol v and returning an array of two card objects; [ ] -> array literal holding the two cards for that symbol */
+    { id: id++, value: v, matched: false }, /* { } -> object literal representing one card; id: id++ -> assign current id then increment for next card; value: v -> store the symbol for this card; matched: false -> card starts as not yet matched; why -> tracks game progress */
+    { id: id++, value: v, matched: false } /* second card object for the same symbol v; id++ -> next unique ID; value: v -> same symbol to form a pair; matched: false -> also starts unmatched */
+  ])); /* ]) -> closes the array of two cards; flatMap -> flattens all these small arrays into one big deck array; why -> builds full deck with two cards per symbol */
+  return shuffle(deck); /* return -> give result back to caller; shuffle(deck) -> call helper function to randomize card order; deck -> array of all card objects; why -> ensures cards appear in random positions each game */
 }
 
 
 /* --------------------------------------------------
-   FUNCTION DECLARATION + CLICK LOGIC — onCardClick(e)
-   • onCardClick() → Handles all card‑click interactions.
-   • Purpose → Validate click → flip card → store pick → update state → trigger match logic.
-   • Pattern → Guard clauses → flip → store pick → increment → update → check match.
---------------------------------------------------
-   TECHNICAL BREAKDOWN OF onCardClick():
-   function onCardClick(e) { ... }
-      function → Declares a reusable function.
-      onCardClick → Developer‑chosen name; handles card flipping logic.
-      (e) → Event object from the click event.
-      { } → Function body.
-   if (!state.isRunning || state.lockBoard) return;
-      state.isRunning → Ensures game has started.
-      state.lockBoard → Prevents clicks during mismatch animation.
-      return → Exits early if interaction is invalid.
-      ; → Ends the statement.
-   const id = Number(e.currentTarget.dataset.id);
-      e.currentTarget → The clicked button element.
-      .dataset.id → Reads the card’s ID stored in HTML.
-      Number(...) → Converts string to number.
-      id → Numeric card identifier.
-      ; → Ends the statement.
-   const card = getCardById(id);
-      getCardById(id) → Retrieves the card object from state.cards.
-      card → The card object associated with this button.
-      ; → Ends the statement.
-   if (card.matched || state.firstPickId === id) return;
-      card.matched → Prevents flipping already matched cards.
-      state.firstPickId === id → Prevents clicking the same card twice.
-      return → Exits early.
-      ; → Ends the statement.
-   e.currentTarget.classList.add("is-flipped");
-      .classList.add → Applies flipped styling.
-      "is-flipped" → CSS class that reveals the card.
-      ; → Ends the statement.
-   if (!state.firstPickId) { ... }
-      !state.firstPickId → True when no card has been selected yet.
-      { } → First‑pick logic block.
-      state.firstPickId = id;
-         Stores ID of the first selected card.
-         ; → Ends the statement.
-      return;
-         Ends function; waits for second card.
-         ; → Ends the statement.
-   state.secondPickId = id;
-      Stores ID of the second selected card.
-      ; → Ends the statement.
-   state.moves++;
-      Increments move counter.
-      ; → Ends the statement.
-   updateStatus();
-      Refreshes UI counters (moves, pairs, time).
-      ; → Ends the statement.
-   checkForMatch();
-      Compares firstPickId and secondPickId.
-      ; → Ends the statement.
---------------------------------------------------
-   TECHNICAL BREAKDOWN OF checkForMatch():
-   function checkForMatch() { ... }
-      function → Declares a reusable function.
-      checkForMatch → Compares selected cards.
-      { } → Function body.
-   const first = getCardById(state.firstPickId);
-      Retrieves first selected card object.
-   const second = getCardById(state.secondPickId);
-      Retrieves second selected card object.
-   if (first.value === second.value) { ... }
-      Compares card values.
-      Match → Mark both as matched.
-      state.pairsFound++ → Increase matched pair count.
-      clearPicks() → Reset selection.
-      endGame() → Triggered when all pairs found.
-   else { ... }
-      Mismatch → lock board → wait → flip back → unlock.
---------------------------------------------------
-   TECHNICAL BREAKDOWN OF clearPicks():
-   function clearPicks() { ... }
-      Resets firstPickId and secondPickId to null.
---------------------------------------------------
-   DEEP LOGIC — WHAT ACTUALLY HAPPENS
-   1) Player clicks a card.
-   2) Guard clauses ensure:
-        → Game is running
-        → Board is not locked
-        → Card is not matched
-        → Card is not the same as firstPick
-   3) Card is visually flipped.
-   4) If no firstPick:
-        → Store firstPickId and exit.
-   5) If secondPick:
-        → Store secondPickId
-        → Increment moves
-        → updateStatus()
-        → checkForMatch()
-   6) checkForMatch():
-        → If match → mark matched → increment pairs → clear picks → maybe endGame()
-        → If mismatch → lock board → flip back after delay → unlock → clear picks
---------------------------------------------------
-   FINAL SUMMARY
-   onCardClick(e) → Core interaction handler for flipping cards.
-   checkForMatch() → Determines match/mismatch and updates state.
-   clearPicks() → Resets selection after each turn.
-   Inputs → Click event, card IDs, state.cards.
-   Internal steps → validate → flip → store → update → compare.
-   Outputs → Updated UI, updated state, match/mismatch resolution.
-   Used by → renderBoard() (event listeners), updateStatus(), endGame().
+TIMER LOGIC — startTimer()
+• startTimer() → begins the game timer loop → used by startGame() and any resume logic.
+• Purpose → increment elapsed seconds and update the UI every second so the timer display stays accurate.
+• Pattern → setInterval → increment → updateStatus() → continuous UI synchronisation.
+
+DEEP LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE)
+
+1) startTimer() is called to begin the timer loop → inputs: none; purpose: initialise the repeating time‑update cycle.
+2) setInterval(...) creates a repeating callback every 1000ms → internal step: JavaScript schedules a function to run once per second.
+3) Inside the interval, state.secondsElapsed++ increments the timer → internal step: raw seconds increase by 1 each tick.
+4) updateStatus() is called to refresh the UI → output: the visible timer updates every second using the new state value.
+5) The interval ID is stored in state.timerId → internal step: allows stopTimer() or resetGame() to cancel the timer later.
+6) The result is a continuously updating timer display → used by startGame() and any resume logic to keep the UI in sync with elapsed time.
 -------------------------------------------------- */
-function getCardById(id) {
-  return state.cards.find(c => c.id === id);
+function startTimer() { /* function -> declares reusable code; startTimer -> name meaning “begin counting time”; () -> no parameters; { } -> start of function body */
+  state.timerId = setInterval(() => { /* state.timerId -> stores interval ID so it can be stopped later; = -> assign; setInterval -> built‑in JS function that repeats code on a schedule; () => { } -> arrow function executed every interval */
+    state.secondsElapsed++; /* state.secondsElapsed -> number of seconds passed; ++ -> increment by 1; why -> tracks game time increasing each second */
+    updateStatus(); /* updateStatus() -> refreshes UI so timer display updates; why -> keeps visible time in sync with state */
+  }, 1000); /* 1000 -> interval delay in milliseconds (1 second); why -> run the timer update once per second */
+} 
+
+
+/* --------------------------------------------------
+GAME INITIALIZATION LOGIC — startGame(difficultyKey)
+• startGame() → prepares all game state and UI for a new game → used by form submission and restart logic.
+• Purpose → configure difficulty → build deck → render board → start timer → fully initialise a new game session.
+• Pattern → read config → update state → build grid → render → start timer → produce a fresh playable board.
+
+DEEP LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE)
+1) Difficulty is read from the DIFFICULTY table → input: difficultyKey ("easy", "medium", "hard") selects the correct config for board size.
+2) Total cards are calculated → internal step: cols × rows determines how many cards the deck must contain.
+3) Deck is created and shuffled → internal step: createDeck(totalCards) builds and randomizes the full deck for gameplay.
+4) State is updated (difficulty, cards, totalPairs, running flag) → output: state now holds all data needed for a fresh game.
+5) Board grid is configured → internal step: buildBoardGrid(cols, rows) sets the CSS grid layout for the chosen difficulty.
+6) Cards are rendered → internal step: renderBoard() draws the full deck onto the screen.
+7) Timer starts → internal step: startTimer() begins counting elapsed seconds and updating the UI.
+8) Restart button becomes active → output: restartBtn.disabled = false enables restart functionality for the player.
+startGame(difficultyKey) → fully initializes a new game by configuring difficulty, creating the deck, rendering the board, and starting the timer → outputs a fresh board, running timer, and updated UI → used by form submission and restart logic.
+-------------------------------------------------- */
+function startGame(difficultyKey) { /* function -> declares reusable code; startGame -> name meaning “begin a new game”; (difficultyKey) -> input telling which difficulty was chosen; { } -> start of function body */
+  const config = DIFFICULTY[difficultyKey]; /* const -> constant variable; config -> settings for this difficulty; DIFFICULTY[...] -> lookup table; [difficultyKey] -> access the chosen difficulty; why -> get rows/cols for board */
+  const totalCards = config.cols * config.rows; /* const -> fixed value; totalCards -> number of cards needed; config.cols * config.rows -> multiply columns by rows; why -> board size determines deck size */
+
+  state.difficulty = difficultyKey; /* state.difficulty -> store chosen difficulty; = -> assign; difficultyKey -> selected difficulty; why -> keep track of current mode */
+  state.cards = createDeck(totalCards); /* state.cards -> where deck is stored; = -> assign; createDeck(totalCards) -> build full deck; why -> prepare cards for rendering */
+  state.totalPairs = totalCards / 2; /* state.totalPairs -> number of matching pairs; totalCards / 2 -> each pair has 2 cards; why -> used for win detection */
+  state.isRunning = true; /* state.isRunning -> game active flag; = true -> mark game as running; why -> prevent actions before game starts */
+
+  buildBoardGrid(config.cols, config.rows); /* buildBoardGrid -> sets CSS grid layout; (cols, rows) -> board dimensions; why -> prepare visual grid */
+  renderBoard(); /* renderBoard() -> draws all cards on screen; why -> show the deck to the player */
+  updateStatus(); /* updateStatus() -> refresh UI values (moves, pairs, time); why -> ensure UI starts at 0 */
+  startTimer(); /* startTimer() -> begin counting seconds; why -> track game duration */
+
+  restartBtn.disabled = false; /* restartBtn.disabled -> button interactivity; = false -> enable restart button; why -> allow player to restart now that game has begun */
+} 
+
+
+/* --------------------------------------------------
+FUNCTION DECLARATION + CLICK LOGIC — onCardClick(e)
+• onCardClick() → handles all card‑click interactions → core interaction handler for flipping cards.
+• Purpose → validate click → flip card → store pick → update state → trigger match logic → produces updated UI and updated state.
+• Pattern → guard clauses → flip → store pick → increment → update → compare → used by renderBoard() (event listeners), updateStatus(), endGame().
+--------------------------------------------------
+DEEP LOGIC — WHAT ACTUALLY HAPPENS 
+1) Player clicks a card → input: click event, card ID, and state.cards → onCardClick(e) begins the core interaction flow.
+2) Guard clauses ensure the click is valid → game is running, board not locked, card not matched, and not the same as firstPick → validates before processing, as described in the final summary.
+3) Card is visually flipped → internal step: add "is-flipped" class to show the card face → part of onCardClick(e)’s flip + update behaviour.
+4) If no firstPick → store firstPickId and exit → internal step: wait for second card before comparing → matches the “store selections” step in the final summary.
+5) If secondPick → store secondPickId → increment moves → updateStatus() → checkForMatch() → internal steps: store → update → compare → exactly the sequence described in the final summary.
+6) checkForMatch():
+   → If match → mark both cards matched → increment pairs → clear picks → maybe endGame() → output: updated state + possible win → matches the final summary’s “resolves match and updates state”.
+   → If mismatch → lock board → flip both back after delay → unlock → clear picks → output: mismatch resolution and restored board state → matches the final summary’s “correct mismatch behaviour”.
+-------------------------------------------------- */
+function getCardById(id) { /* function -> reusable block of code; getCardById -> name meaning “find a card using its ID”; (id) -> input parameter; { } -> start of function body */
+  return state.cards.find(c => c.id === id); /* return -> give result back; state.cards -> array of all card objects; .find(...) -> search for one item; c => c.id === id -> arrow function checking each card c; c.id === id -> compare card’s id to the given id; why -> retrieve the exact card object */
+} 
+
+function getCardElementById(id) { /* function -> reusable code; getCardElementById -> name meaning “find the DOM element for a card”; (id) -> input; { } -> start of body */
+  return document.querySelector(`.card[data-id="${id}"]`); /* document -> webpage; .querySelector -> find first matching element; `.card[data-id="${id}"]` -> CSS selector string; .card -> class; [data-id="..."] -> match card with this id; why -> get the actual button element on screen */
 }
 
-function getCardElementById(id) {
-  return document.querySelector(`.card[data-id="${id}"]`);
-}
+function onCardClick(e) { /* function -> handles card clicks; onCardClick -> name; (e) -> event object from browser; { } -> start of body */
+  if (!state.isRunning || state.lockBoard) return; /* if -> condition; !state.isRunning -> game not active; || -> OR; state.lockBoard -> board temporarily locked; return -> stop function; why -> prevent clicks when game shouldn't accept input */
 
-function onCardClick(e) {
-  if (!state.isRunning || state.lockBoard) return;
+  const id = Number(e.currentTarget.dataset.id); /* const -> constant variable; id -> store clicked card ID; Number(...) -> convert text to number; e.currentTarget -> element clicked; .dataset.id -> read data-id attribute; why -> know which card was clicked */
+  const card = getCardById(id); /* const card -> store card object; getCardById(id) -> fetch card data; why -> access card properties */
 
-  const id = Number(e.currentTarget.dataset.id);
-  const card = getCardById(id);
+  if (card.matched || state.firstPickId === id) return; /* if -> check; card.matched -> already matched; || -> OR; state.firstPickId === id -> same card clicked twice; return -> stop; why -> ignore invalid clicks */
 
-  if (card.matched || state.firstPickId === id) return;
+  e.currentTarget.classList.add("is-flipped"); /* e.currentTarget -> clicked element; .classList.add -> add CSS class; "is-flipped" -> triggers flip animation; why -> visually flip card */
 
-  e.currentTarget.classList.add("is-flipped");
-
-  if (!state.firstPickId) {
-    state.firstPickId = id;
-    return;
+  if (!state.firstPickId) { /* if -> check; !state.firstPickId -> no first card chosen yet */
+    state.firstPickId = id; /* store this card as first pick */
+    return; /* stop here until second card is clicked */
   }
 
-  state.secondPickId = id;
-  state.moves++;
-  updateStatus();
-  checkForMatch();
+  state.secondPickId = id; /* store second selected card */
+  state.moves++; /* increase move counter by 1 */
+  updateStatus(); /* refresh UI to show new move count */
+  checkForMatch(); /* check if the two selected cards match */
 }
 
-function checkForMatch() {
-  const first = getCardById(state.firstPickId);
-  const second = getCardById(state.secondPickId);
+function checkForMatch() { /* function -> checks if two cards match; { } -> start */
+  const first = getCardById(state.firstPickId); /* first -> card object for first pick; getCardById(...) -> fetch card */
+  const second = getCardById(state.secondPickId); /* second -> card object for second pick */
 
-  if (first.value === second.value) {
-    first.matched = true;
-    second.matched = true;
+  if (first.value === second.value) { /* if -> check; first.value === second.value -> same symbol; why -> match found */
+    first.matched = true; /* mark first card as matched */
+    second.matched = true; /* mark second card as matched */
 
-    state.pairsFound++;
-    clearPicks();
+    state.pairsFound++; /* increase matched pair count */
+    clearPicks(); /* reset selected cards */
 
-    if (state.pairsFound === state.totalPairs) {
-      endGame();
+    if (state.pairsFound === state.totalPairs) { /* if -> check win; pairsFound === totalPairs -> all matched */
+      endGame(); /* call endGame() to finish game */
     }
-  } else {
-    state.lockBoard = true;
+  } else { /* else -> cards do NOT match */
+    state.lockBoard = true; /* lock board to prevent clicking during flip-back */
 
-    setTimeout(() => {
-      const firstEl = getCardElementById(state.firstPickId);
-      const secondEl = getCardElementById(state.secondPickId);
+    setTimeout(() => { /* setTimeout -> delay code; () => { } -> arrow function; 600 -> run after 600ms */
+      const firstEl = getCardElementById(state.firstPickId); /* firstEl -> DOM element for first card */
+      const secondEl = getCardElementById(state.secondPickId); /* secondEl -> DOM element for second card */
 
-      if (firstEl) firstEl.classList.remove("is-flipped");
-      if (secondEl) secondEl.classList.remove("is-flipped");
+      if (firstEl) firstEl.classList.remove("is-flipped"); /* if -> check exists; remove flip class */
+      if (secondEl) secondEl.classList.remove("is-flipped"); /* remove flip class from second */
 
-      clearPicks();
-      state.lockBoard = false;
-    }, 600);
+      clearPicks(); /* reset selected card IDs */
+      state.lockBoard = false; /* unlock board so player can click again */
+    }, 600); /* 600ms delay to show mismatch before flipping back */
   }
-}
+} 
 
-function clearPicks() {
-  state.firstPickId = null;
-  state.secondPickId = null;
-}
+function clearPicks() { /* function -> resets selected cards; { } -> start */
+  state.firstPickId = null; /* clear first pick */
+  state.secondPickId = null; /* clear second pick */
+} 
+
 
 /* --------------------------------------------------
    FUNCTION DECLARATION + INTERNAL ACTIONS — endGame()
@@ -720,77 +432,35 @@ function clearPicks() {
    • Purpose → Stop gameplay, stop the timer, save history, update UI with final message.
    • Pattern → Stop timer → update state → save history → update UI.
 --------------------------------------------------
-   TECHNICAL BREAKDOWN OF endGame():
-   function endGame() { ... }
-      function → Declares a reusable function.
-      endGame → Developer‑chosen name; handles game completion.
-      { } → Function body.
-   clearInterval(state.timerId);
-      clearInterval → Built‑in function that stops a running interval.
-      state.timerId → ID returned by setInterval() in startTimer().
-      Stops the timer immediately.
-      ; → Ends the statement.
-   state.isRunning = false;
-      state.isRunning → Boolean controlling whether gameplay is active.
-      = false → Prevents further card clicks.
-      ; → Ends the statement.
-   gameHistory.unshift({ ... });
-      gameHistory → Array storing last 5 completed games.
-      .unshift(...) → Inserts new result at the beginning of the array.
-      { ... } → Game result object containing:
-         name → Player name
-         difficulty → Difficulty level
-         moves → Total moves taken
-         time → Formatted time string
-         pairs → Total matched pairs
-      ; → Ends the statement.
-   if (gameHistory.length > 5) { gameHistory.pop(); }
-      Ensures history stores only the last 5 games.
-      .pop() → Removes the oldest entry.
-      ; → Ends the statement.
-   renderHistory();
-      renderHistory → Updates the history table in the UI.
-      ; → Ends the statement.
-   setFeedback(`Game complete. Well done, ${state.playerName}.`);
-      setFeedback → Updates feedback message area.
-      Template literal → Allows embedding player name.
-      ; → Ends the statement.
---------------------------------------------------
    DEEP LOGIC — WHAT ACTUALLY HAPPENS
-   1) endGame() is triggered when all pairs are matched.
-   2) Timer is stopped using clearInterval().
-   3) state.isRunning is set to false to disable further clicks.
-   4) A new game result object is created and added to gameHistory.
-   5) History is trimmed to the last 5 games.
-   6) renderHistory() updates the UI table.
-   7) setFeedback() displays a personalised completion message.
---------------------------------------------------
-   FINAL SUMMARY
-   endGame() → Finalises the game, saves results, and updates UI.
-   Inputs → state.playerName, state.difficulty, state.moves, state.secondsElapsed, state.pairsFound.
-   Internal steps → stop timer → update state → save history → update UI.
-   Outputs → Updated history table + final feedback message.
-   Used by → checkForMatch() when all pairs are found.
+1) endGame() is triggered when all pairs are matched → endGame() finalises the game once checkForMatch() confirms all pairs are found.
+2) Timer is stopped using clearInterval() → internal step: stop timer → matches final summary “stop timer”.
+3) state.isRunning is set to false to disable further clicks → internal step: update state → matches final summary “update state”.
+4) A new game result object is created and added to gameHistory → internal step: save history → matches final summary “save results”.
+5) History is trimmed to the last 5 games → internal step: maintain recent history → matches final summary “save history”.
+6) renderHistory() updates the UI table → output: updated history table → matches final summary “updated history table”.
+7) setFeedback() displays a personalised completion message → output: final feedback message → matches final summary “final feedback message”.
 -------------------------------------------------- */
-function endGame() {
-  clearInterval(state.timerId);
-  state.isRunning = false;
+function endGame() { /* function -> reusable block of code; endGame -> name meaning “finish the game”; () -> no inputs; { } -> start of function body */
+  clearInterval(state.timerId); /* clearInterval -> stops a running timer; (state.timerId) -> ID of the timer created earlier; why -> stop counting time when game ends */
+  state.isRunning = false; /* state.isRunning -> game active flag; = false -> mark game as no longer running; why -> prevent further clicks */
 
-  gameHistory.unshift({
-    name: state.playerName,
-    difficulty: state.difficulty,
-    moves: state.moves,
-    time: formatTime(state.secondsElapsed),
-    pairs: state.pairsFound
-  });
+  gameHistory.unshift({ /* gameHistory -> array storing past games; .unshift -> add item to the START of the array; { } -> object representing one completed game */
+    name: state.playerName, /* name -> player's name; state.playerName -> stored name; why -> save who played */
+    difficulty: state.difficulty, /* difficulty -> difficulty used; state.difficulty -> current difficulty; why -> record settings */
+    moves: state.moves, /* moves -> number of moves taken; state.moves -> final move count */
+    time: formatTime(state.secondsElapsed), /* time -> formatted time string; formatTime(...) -> convert seconds to mm:ss; state.secondsElapsed -> total time played */
+    pairs: state.pairsFound /* pairs -> number of pairs matched; state.pairsFound -> final pair count */
+  }); /* } -> end of game record object; ) -> end of unshift call */
 
-  if (gameHistory.length > 5) {
-    gameHistory.pop();
+  if (gameHistory.length > 5) { /* if -> condition; gameHistory.length -> number of saved games; > 5 -> more than 5 entries; why -> keep only last 5 games */
+    gameHistory.pop(); /* .pop() -> remove last item in array; why -> maintain max history size */
   }
 
-  renderHistory();
-  setFeedback(`Game complete. Well done, ${state.playerName}.`);
-}
+  renderHistory(); /* renderHistory() -> update the on‑screen history list; why -> show latest results */
+  setFeedback(`Game complete. Well done, ${state.playerName}.`); /* setFeedback -> show message to player; template string -> insert player name; why -> give end‑of‑game feedback */
+} /* } -> end of function body; endGame can now be called when all pairs are matched */
+
 
 /* --------------------------------------------------
    FUNCTION DECLARATION + HISTORY TABLE RENDERING — renderHistory()
@@ -798,72 +468,33 @@ function endGame() {
    • Purpose → Clear existing rows → loop through gameHistory → insert new rows.
    • Pattern → Clear table → iterate history → build <tr> → append to <tbody>.
 --------------------------------------------------
-   TECHNICAL BREAKDOWN OF renderHistory():
-   function renderHistory() { ... }
-      function → Declares a reusable function.
-      renderHistory → Developer‑chosen name; updates the history table.
-      { } → Function body.
-   historyBodyEl.innerHTML = "";
-      historyBodyEl → <tbody> element where history rows are displayed.
-      .innerHTML = "" → Clears all existing rows before inserting new ones.
-      ; → Ends the statement.
-   gameHistory.forEach(game => { ... });
-      gameHistory → Array storing last 5 completed games.
-      .forEach(...) → Loops through each stored game object.
-      game → Current game object in the loop.
-      => → Arrow function.
-      { } → Logic executed for each game.
-   const row = document.createElement("tr");
-      document.createElement("tr") → Creates a new table row element.
-      row → Variable holding the <tr>.
-      ; → Ends the statement.
-   row.innerHTML = ` ... `;
-      .innerHTML → Inserts HTML markup inside the row.
-      Template literal → Allows embedding game properties.
-      <td>${game.name}</td> → Player name.
-      <td>${game.difficulty}</td> → Difficulty level.
-      <td>${game.moves}</td> → Total moves.
-      <td>${game.time}</td> → Formatted time.
-      <td>${game.pairs}</td> → Number of matched pairs.
-      ; → Ends the statement.
-   historyBodyEl.appendChild(row);
-      appendChild → Adds the completed row to the table body.
-      row → The <tr> created above.
-      ; → Ends the statement.
---------------------------------------------------
    DEEP LOGIC — WHAT ACTUALLY HAPPENS
-   1) renderHistory() is called after endGame().
-   2) The table body is cleared to avoid duplicate rows.
-   3) gameHistory is looped through (max 5 entries).
-   4) For each game:
-        → A <tr> is created
-        → Game data is inserted into <td> cells
-        → The row is appended to the table
-   5) The UI updates instantly with the latest results.
---------------------------------------------------
-   FINAL SUMMARY
-   renderHistory() → Rebuilds the “Last 5 Games” table.
-   Inputs → gameHistory array.
-   Internal steps → clear table → loop → create rows → append.
-   Outputs → Updated history table visible to the player.
-   Used by → endGame() after saving a new game result.
+1) renderHistory() is called after endGame() → renderHistory() rebuilds the “Last 5 Games” table after a new result is saved.
+2) The table body is cleared to avoid duplicate rows → internal step: clear table → matches final summary “clear table”.
+3) gameHistory is looped through (max 5 entries) → internal step: loop through gameHistory array → matches final summary “loop”.
+4) For each game:
+     → A <tr> is created → internal step: create rows → matches final summary “create rows”.
+     → Game data is inserted into <td> cells → internal step: insert data → matches final summary “create rows”.
+     → The row is appended to the table → internal step: append → matches final summary “append”.
+5) The UI updates instantly with the latest results → output: updated history table visible to the player → matches final summary “updated history table”.
 -------------------------------------------------- */
-function renderHistory() {
-  historyBodyEl.innerHTML = "";
+function renderHistory() { /* function -> reusable code block; renderHistory -> name meaning “draw the game history table”; () -> no inputs; { } -> start of function body */
+  historyBodyEl.innerHTML = ""; /* historyBodyEl -> table body element in the DOM; .innerHTML -> sets its HTML content; = "" -> clear previous rows; why -> start with an empty history table before adding new rows */
 
-  gameHistory.forEach(game => {
-    const row = document.createElement("tr");
-   row.innerHTML = `
+  gameHistory.forEach(game => { /* gameHistory -> array of past game records; .forEach -> loop through each record; game => { } -> arrow function receiving one game object at a time */
+    const row = document.createElement("tr"); /* const -> constant variable; row -> new table row; document.createElement("tr") -> create a <tr> element; why -> each game becomes one row */
+    /* row.innerHTML -> set the inside HTML of the row; = -> assign; backticks `` -> template literal allowing multi-line HTML */
+    /* <td> -> table cell; data-label -> attribute for responsive tables; ${game.name} -> insert player's name; why -> show who played */
+    row.innerHTML = ` 
   <td data-label="Player">${game.name}</td>
   <td data-label="Difficulty">${game.difficulty}</td>
   <td data-label="Moves">${game.moves}</td>
   <td data-label="Time">${game.time}</td>
   <td data-label="Pairs">${game.pairs}</td>
-`;
-    historyBodyEl.appendChild(row);
-  });
-}
-
+   `;
+    historyBodyEl.appendChild(row); /* historyBodyEl -> table body; .appendChild(row) -> add the row to the table; why -> display this game in the history list */
+  }); 
+} 
 
 /* --------------------------------------------------
    EVENT LISTENER + GAME INITIALISATION LOGIC — form submit
@@ -871,92 +502,38 @@ function renderHistory() {
    • Purpose → Validate input, reset game, load difficulty, create deck, update UI, start timer.
    • Pattern → preventDefault → validate → reset → configure → build deck → update state → render → start timer.
 --------------------------------------------------
-   TECHNICAL BREAKDOWN OF THE STATEMENT:
-   gameForm.addEventListener("submit", e => { ... })
-      gameForm → <form> element containing name + difficulty.
-      .addEventListener → Registers a listener for a specific event.
-      "submit" → Event fired when the form is submitted.
-      e → Event object representing the submission.
-      => → Arrow function handling the event.
-      { } → Function body.
-   e.preventDefault();
-      preventDefault → Stops the browser from reloading the page.
-      Allows full control using JavaScript.
-      ; → Ends the statement.
-   const name = playerNameEl.value.trim();
-      const → Declares a constant variable.
-      name → Stores the player's name.
-      playerNameEl → Input field for the player's name.
-      .value → Reads user input.
-      .trim() → Removes leading/trailing spaces.
-      ; → Ends the statement.
-   const difficulty = difficultyEl.value;
-      difficultyEl → <select> element for difficulty.
-      .value → The chosen difficulty option.
-      ; → Ends the statement.
-   if (!name || !difficulty) { ... }
-      !name || !difficulty → Guard clause ensuring both fields are filled.
-      setFeedback("Please enter your name and select a difficulty.");
-         setFeedback → Displays error message.
-         ; → Ends the statement.
-      return;
-         return → Stops execution; prevents game start.
-         ; → Ends the statement.
-   state.playerName = name;
-      Stores validated player name in game state.
-      ; → Ends the statement.
-   resetGame();
-      resetGame → Clears previous game state for a clean start.
-      ; → Ends the statement.
-   startGame(difficulty);
-      startGame → Handles full game setup based on difficulty.
-      ; → Ends the statement.
-   setFeedback(`Good luck, ${name}.`);
-      setFeedback → Displays a friendly start message.
-      Template literal → Embeds player name.
-      ; → Ends the statement.
---------------------------------------------------
    DEEP LOGIC — WHAT ACTUALLY HAPPENS
-   1) User submits the form.
-   2) preventDefault() stops page reload.
-   3) Name + difficulty are validated.
-   4) If invalid → show error → stop.
-   5) If valid:
-        → Save player name
-        → resetGame() clears previous state
-        → startGame() handles:
-             - difficulty config
-             - deck creation
-             - board rendering
-             - timer start
-             - UI updates
-   6) Feedback message confirms game start.
---------------------------------------------------
-   FINAL SUMMARY
-   Form submit event → Entry point for starting a new game.
-   Inputs → player name, difficulty selection.
-   Internal steps → validate → reset → configure → build deck → update state → render → start timer.
-   Outputs → Fully initialised game ready for play.
-   Used by → User interaction (form submission), new game flow.
+1) User submits the form → form submit event is the entry point for starting a new game.
+2) preventDefault() stops page reload → internal step: preventDefault → matches final summary “validate”.
+3) Name + difficulty are validated → internal step: validate → matches final summary “validate”.
+4) If invalid → show error → stop → output: no game initialised → matches final summary “stop if invalid”.
+5) If valid:
+     → Save player name → internal step: update state → matches final summary “update state”.
+     → resetGame() clears previous state → internal step: reset → matches final summary “reset”.
+     → startGame() handles:
+          - difficulty config → internal step: configure → matches final summary “configure”.
+          - deck creation → internal step: build deck → matches final summary “build deck”.
+          - board rendering → internal step: render → matches final summary “render”.
+          - timer start → internal step: start timer → matches final summary “start timer”.
+          - UI updates → internal step: update state/UI → matches final summary “update state”.
+6) Feedback message confirms game start → output: fully initialised game ready for play → matches final summary “fully initialised game”.
 -------------------------------------------------- */
-gameForm.addEventListener("submit", e => {
-  e.preventDefault();
+gameForm.addEventListener("submit", e => { /* gameForm -> form element in DOM; .addEventListener -> attach event; "submit" -> event type when form is submitted; e => { } -> arrow function receiving event object e; { } -> start of handler code */
+  e.preventDefault(); /* e.preventDefault() -> stop default form behaviour; default = page reload; why -> handle form with JavaScript instead */
 
-  const name = playerNameEl.value.trim();
-  const difficulty = difficultyEl.value;
+  const name = playerNameEl.value.trim(); /* const -> constant variable; name -> store player name; playerNameEl -> input field; .value -> text typed by user; .trim() -> remove spaces; why -> clean input */
+  const difficulty = difficultyEl.value; /* const difficulty -> store selected difficulty; difficultyEl -> dropdown element; .value -> chosen option; why -> know which difficulty to start */
 
-  if (!name || !difficulty) {
-    setFeedback("Please enter your name and select a difficulty.");
-    return;
+  if (!name || !difficulty) { /* if -> condition; !name -> empty name; || -> OR; !difficulty -> no difficulty chosen; why -> validate form */
+    setFeedback("Please enter your name and select a difficulty."); /* setFeedback -> show message to user; string -> message text */
+    return; /* return -> stop function so game does not start */
   }
 
-  state.playerName = name;
-  resetGame();
-  startGame(difficulty);
-  setFeedback(`Good luck, ${name}.`);
-});
-
-
+  state.playerName = name; /* state.playerName -> store player's name in game state; = -> assign; why -> used in history + messages */
+  resetGame(); /* resetGame() -> clear previous game state; why -> start fresh */
+  startGame(difficulty); /* startGame(difficulty) -> begin new game using selected difficulty */
+  setFeedback(`Good luck, ${name}.`); /* setFeedback -> show message; template string -> insert player name; why -> give friendly start message */
+}); 
 
 /* --------------------------------------------------
    FUNCTION DECLARATION + GAME RESET LOGIC — resetGame()
@@ -964,100 +541,38 @@ gameForm.addEventListener("submit", e => {
    • Purpose → Stop timer, reset state variables, clear board, refresh UI.
    • Pattern → stop timer → reset state → clear board → update UI.
 --------------------------------------------------
-   TECHNICAL BREAKDOWN OF resetGame():
-   function resetGame() { ... }
-      function → Declares a reusable function.
-      resetGame → Developer‑chosen name; resets all game data.
-      { } → Function body.
-   clearInterval(state.timerId);
-      clearInterval → Stops the running timer.
-      state.timerId → ID created by startTimer().
-      ; → Ends the statement.
-   state.isRunning = false;
-      Disables gameplay; prevents card clicks.
-      ; → Ends the statement.
-   state.cards = [];
-      Clears the deck.
-      ; → Ends the statement.
-   state.firstPickId = null;
-      Removes stored first card selection.
-      ; → Ends the statement.
-   state.secondPickId = null;
-      Removes stored second card selection.
-      ; → Ends the statement.
-   state.moves = 0;
-      Resets move counter.
-      ; → Ends the statement.
-   state.pairsFound = 0;
-      Resets matched pair counter.
-      ; → Ends the statement.
-   state.secondsElapsed = 0;
-      Resets timer value.
-      ; → Ends the statement.
-   boardEl.innerHTML = "";
-      Clears all card elements from the board.
-      ; → Ends the statement.
-   updateStatus();
-      Refreshes UI counters (moves, pairs, time).
-      ; → Ends the statement.
---------------------------------------------------
-   TECHNICAL BREAKDOWN OF restart button listener:
-   restartBtn.addEventListener("click", () => { ... })
-      restartBtn → Restart button element.
-      .addEventListener → Registers click handler.
-      "click" → Event type.
-      () => { ... } → Arrow function executed on click.
-   if (!difficultyEl.value) return;
-      Prevents restart if no difficulty is selected.
-      ; → Ends the statement.
-   resetGame();
-      Clears previous game state.
-      ; → Ends the statement.
-   startGame(difficultyEl.value);
-      Starts a new game using the selected difficulty.
-      ; → Ends the statement.
---------------------------------------------------
    DEEP LOGIC — WHAT ACTUALLY HAPPENS
-   resetGame()
-      1) Stops timer.
-      2) Clears all state variables.
-      3) Clears board UI.
-      4) Resets counters.
-      5) Prepares system for a fresh game.
-   restart button
-      1) Ensures difficulty is selected.
-      2) Calls resetGame() to wipe old state.
-      3) Calls startGame() to begin a new game immediately.
---------------------------------------------------
-   FINAL SUMMARY
-   resetGame() → Fully resets game state and UI.
-   restart button → Provides quick restart using current difficulty.
-   Inputs → None (reset), difficultyEl.value (restart).
-   Internal steps → stop timer → clear state → clear board → update UI.
-   Outputs → Clean, ready‑to‑start game environment.
-   Used by → Form submit, restart button, new game flow.
+resetGame()
+1) Stops timer → internal step: stop timer → matches final summary “stop timer”.
+2) Clears all state variables → internal step: clear state → matches final summary “clear state”.
+3) Clears board UI → internal step: clear board → matches final summary “clear board”.
+4) Resets counters → internal step: update UI → matches final summary “update UI”.
+5) Prepares system for a fresh game → output: clean, ready‑to‑start environment → matches final summary “clean environment”.
+restart button
+1) Ensures difficulty is selected → input: difficultyEl.value → matches final summary “difficulty input”.
+2) Calls resetGame() to wipe old state → internal step: clear state → matches final summary “clear state”.
+3) Calls startGame() to begin a new game immediately → output: fully initialised game → matches final summary “ready for play”.
 -------------------------------------------------- */
-function resetGame() {
-  clearInterval(state.timerId);
+function resetGame() { /* function -> reusable code block; resetGame -> name meaning “reset all game data”; () -> no inputs; { } -> start of function body */
+  clearInterval(state.timerId); /* clearInterval -> stop running timer; (state.timerId) -> ID of active timer; why -> timer must stop when game resets */
 
-  state.isRunning = false;
-  state.cards = [];
-  state.firstPickId = null;
-  state.secondPickId = null;
-  state.moves = 0;
-  state.pairsFound = 0;
-  state.secondsElapsed = 0;
+  state.isRunning = false; /* state.isRunning -> game active flag; = false -> mark game as not running; why -> prevent clicks before new game starts */
+  state.cards = []; /* state.cards -> array holding deck; = [] -> empty array; why -> remove old deck */
+  state.firstPickId = null; /* firstPickId -> ID of first selected card; = null -> clear selection */
+  state.secondPickId = null; /* secondPickId -> ID of second selected card; = null -> clear selection */
+  state.moves = 0; /* moves -> number of moves taken; = 0 -> reset counter */
+  state.pairsFound = 0; /* pairsFound -> number of matched pairs; = 0 -> reset progress */
+  state.secondsElapsed = 0; /* secondsElapsed -> timer value; = 0 -> reset time */
 
-  boardEl.innerHTML = "";
-  updateStatus();
-}
+  boardEl.innerHTML = ""; /* boardEl -> game board container; .innerHTML -> sets HTML; = "" -> remove all card elements from screen */
+  updateStatus(); /* updateStatus() -> refresh UI to show zeros; why -> keep UI consistent with reset state */
+} /* } -> end of function; resetGame prepares everything for a new game */
 
-restartBtn.addEventListener("click", () => {
-  if (!difficultyEl.value) return;
-  resetGame();
-  startGame(difficultyEl.value);
-});
-
+restartBtn.addEventListener("click", () => { /* restartBtn -> restart button element; .addEventListener -> attach event; "click" -> event type; () => { } -> arrow function to run when clicked */
+  if (!difficultyEl.value) return; /* if -> condition; !difficultyEl.value -> no difficulty selected; return -> stop; why -> cannot restart without difficulty */
+  resetGame(); /* resetGame() -> clear old game state */
+  startGame(difficultyEl.value); /* startGame(...) -> begin new game using selected difficulty */
+}); 
 
 /* --------------------------------------------------
    FUNCTION INVOCATIONS + INITIAL UI STATE — updateStatus() & setFeedback()
@@ -1065,39 +580,12 @@ restartBtn.addEventListener("click", () => {
    • Purpose -> Prepare the UI before the game starts.
    • Pattern -> Call expression statements that update counters + show instructions.
 --------------------------------------------------
-   TECHNICAL BREAKDOWN OF THE STATEMENTS:
-   updateStatus();
-      updateStatus -> Function call; refreshes all UI counters.
-      () -> Executes the function immediately.
-      ; -> Ends the statement.
-      Effects:
-         • moves -> Displays 0
-         • pairs found -> Displays 0
-         • time -> Displays "00:00"
-      Ensures the interface shows a clean, neutral state.
-   setFeedback("Enter your name and select a difficulty to start.");
-      setFeedback -> Function call; updates the feedback message area.
-      "Enter your name and select a difficulty to start." -> Instruction shown on page load.
-      Guides the player on what to do next.
-      ; -> Ends the statement.
---------------------------------------------------
    DEEP LOGIC — WHAT ACTUALLY HAPPENS
-   1) Page loads and script runs.
-   2) updateStatus() reads default state values:
-        -> moves = 0
-        -> pairsFound = 0
-        -> seconds = 0
-      and writes them to the UI.
-   3) setFeedback() displays the initial instruction message.
-   4) The player sees a clean, ready‑to‑start interface.
---------------------------------------------------
-   FINAL SUMMARY
-   Initial UI state -> Prepares the screen before gameplay.
-   Inputs -> Default state values.
-   Internal steps -> update counters → show instructions.
-   Outputs -> Clean UI with clear guidance.
-   Used by -> Page load, before any game begins.
+1) Page loads and script runs → initial UI state begins before any gameplay → matches final summary “prepares the screen before gameplay”.
+2) updateStatus() reads default state values (moves = 0, pairsFound = 0, seconds = 0) and writes them to the UI → internal step: update counters → matches final summary “update counters”.
+3) setFeedback() displays the initial instruction message → internal step: show instructions → matches final summary “show instructions”.
+4) The player sees a clean, ready‑to‑start interface → output: clean UI with clear guidance → matches final summary “clean UI with guidance”.
 -------------------------------------------------- */
-updateStatus();
-setFeedback("Enter your name and select a difficulty to start.");
-})();
+updateStatus(); /* updateStatus() -> call the function that refreshes the UI; () -> run it now; why -> show correct moves, pairs, and time when page loads */
+setFeedback("Enter your name and select a difficulty to start."); /* setFeedback -> show a message to the user; "..." -> text string; why -> guide player before starting */
+})(); /* }) -> closes the arrow function; () -> immediately invoke it; ; -> end of statement; why -> this is an IIFE (Immediately Invoked Function Expression) that runs setup code as soon as the script loads */
