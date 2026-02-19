@@ -249,7 +249,7 @@ Project_MemoryGame
 │   |── memorygame-wireframe_v1.png  
 │   |── lighthouse/
 │   |   └── lighthouse-100-desktop.png  
-│   |    └── lighthouse-report-100-mobile .png
+│   |   └── lighthouse-report-100-mobile .png
 │   └── validation/ 
 │        └── css validation.png   
 │        └── html validation.png  
