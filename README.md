@@ -246,11 +246,14 @@ Project_MemoryGame
 ├── styles.css  
 ├── script.js  
 ├── assets/  
-│   └── memorygame-wireframe_v1.png  
-├── validation/  
-│   ├── css validation.png  
-│   ├── html validation.png  
-│   └── javascript validation.png  
+│   |── memorygame-wireframe_v1.png  
+│   |── lighthouse/
+│   |   └── lighthouse-100-desktop.png  
+│   |    └── lighthouse-report-100-mobile .png
+│   └── validation/ 
+│        └── css validation.png   
+│        └── html validation.png  
+│        └── javascript validation.png  
 └── README.md  
 
 ---
