@@ -43,16 +43,19 @@
         <!-- JS selects this: difficultyEl JS reads difficultyEl.value inside: - startGame() - restart button handler - play again handler --> <!-- Explanation of difficulty selection usage -->
 
         <!-- Player name input (graphical form element) --> <!-- Comment identifying player name input -->
-        <label for="playerName">Player Name</label> <!-- Label linked to player name input for accessibility -->
+        <div class="field">
+        <label for="playerName">Player Name (REQUIRED FIELD)</label> <!-- Label linked to player name input for accessibility -->
         <input type="text" id="playerName" name="playerName" placeholder="Enter your name" maxlength="20" > <!-- Text input for player name with character limit -->
-
-        <label for="difficulty">Difficulty</label> <!-- Label for difficulty selection dropdown -->
-        <select id="difficulty" name="difficulty" required> <!-- Dropdown menu read by JS to configure game grid -->
-          <option value="" selected disabled>Select difficulty</option> <!-- Placeholder option forcing user selection -->
-          <option value="easy">Easy (2x3)</option> <!-- Easy difficulty option -->
-          <option value="medium">Medium (3x4)</option> <!-- Medium difficulty option -->
-          <option value="hard">Hard (4x4)</option> <!-- Hard difficulty option -->
-        </select> <!-- End difficulty dropdown -->
+        </div>
+        <div class="field">
+          <label for="difficulty">Difficulty</label> <!-- Label for difficulty selection dropdown -->
+          <select id="difficulty" name="difficulty" required> <!-- Dropdown menu read by JS to configure game grid -->
+            <option value="" selected disabled>Select difficulty</option> <!-- Placeholder option forcing user selection -->
+            <option value="easy">Easy (2x3)</option> <!-- Easy difficulty option -->
+            <option value="medium">Medium (3x4)</option> <!-- Medium difficulty option -->
+            <option value="hard">Hard (4x4)</option> <!-- Hard difficulty option -->
+          </select> <!-- End difficulty dropdown -->
+        </div>
 
         <button type="submit" id="startBtn">Start Game</button> <!-- Submit button that triggers form submit event -->
         <button type="button" id="restartBtn" disabled>Restart</button> <!-- Restart button enabled and handled by JS -->
@@ -60,9 +63,10 @@
       </form> <!-- End game form -->
     </section> <!-- End controls section -->
 
-    <section class="panel"> <!-- Panel displaying live game status -->
-      <h2>Game Status</h2> <!-- Section heading for status information -->
+    <section class="panel" id="gameStatus"> <!-- Panel displaying live game status -->
+      <h2></h2> <!-- Section heading for status information -->
       <div class="status"> <!-- Container grouping status values -->
+         <h2>Game Status</h2> 
         <div><strong>Moves:</strong> <span id="movesValue">0</span></div> <!-- Displays move count updated by JS -->
         <div><strong>Time:</strong> <span id="timeValue">00:00</span></div> <!-- Displays elapsed time updated every second -->
         <div><strong>Pairs:</strong> <span id="pairsValue">0</span></div> <!-- Displays number of matched pairs -->

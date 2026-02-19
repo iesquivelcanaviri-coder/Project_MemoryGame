@@ -21,7 +21,7 @@ The purpose of the project is to demonstrate core web development principles inc
 
 The game challenges players to match all card pairs using the fewest possible moves and in the shortest time.
 
-This final version (Version 10) represents the complete, polished submission version of the project.
+This final version (Version 10) represents the complete, fully aligned submission version of the project.
 
 ---
 
@@ -44,14 +44,21 @@ Users must:
 
 The game validates inputs before starting and displays a message if fields are incomplete.
 
+Difficulty levels dynamically change the board size:
+
+- Easy → 2 × 3 grid (3 pairs)
+- Medium → 3 × 4 grid (6 pairs)
+- Hard → 4 × 4 grid (8 pairs)
+
 ---
 
 ### Feature 3 — Timer & Move Counter
 
 - The timer starts when the game begins.
-- The timer stops when all pairs are matched.
+- The timer updates every second using `setInterval()`.
+- The timer stops using `clearInterval()` when the game ends.
 - Moves increase only after two cards are flipped.
-- Final message displays player name, total moves, and completion time.
+- A completion message displays player name and final results.
 
 ---
 
@@ -62,10 +69,10 @@ The game validates inputs before starting and displays a message if fields are i
 - Dynamic board generation based on difficulty
 - Visual states:
   - Default
-  - Flipped
-  - Matched
+  - Flipped (`is-flipped`)
+  - Matched (`is-matched`)
+- Last 5 Games history table
 - Responsive layout for mobile screens
-- Keyboard focus styling for accessibility
 - Clear user feedback messaging
 
 ---
@@ -88,130 +95,102 @@ The game validates inputs before starting and displays a message if fields are i
 
 ### Colors
 
-I selected a dark-mode color palette because:
+A dark-mode palette was selected to:
 
-- It provides strong contrast for accessibility.
-- It reduces visual strain.
-- It creates a modern interface style.
-- Highlight yellow improves visibility of flipped cards.
+- Provide strong contrast
+- Improve accessibility
+- Reduce visual strain
+- Create a modern interface
 
-Color variables are defined using CSS custom properties for consistency and maintainability.
+Color values are defined using CSS custom properties (`:root`) to ensure maintainability and consistency.
 
 ---
 
-### Fonts / Typography
+### Typography
 
-I used system UI fonts because:
+System UI fonts are used because they:
 
-- They are readable and accessible.
-- They ensure cross-device compatibility.
-- They load quickly without external dependencies.
-
-Typography was kept clean and simple to maintain focus on gameplay.
+- Are accessible and readable
+- Ensure cross-device compatibility
+- Load quickly without external dependencies
 
 ---
 
 ### Layout & Structure
 
-- CSS Grid is used for:
-  - The card board layout
-  - The form layout
-  - The status panel layout
+CSS Grid is used for:
 
-- Panels are visually separated for clarity.
-- Consistent spacing and rounded corners create a clean interface.
-- Responsive media queries ensure usability on smaller screens.
+- The game board layout
+- The form layout
+- The status panel layout
+
+The layout is organised into structured panels:
+
+1. Header
+2. Rules panel
+3. Game controls
+4. Status panel
+5. Game board
+6. History table
+7. Footer
+
+Responsive media queries ensure usability on smaller screens.
 
 ---
 
 ## Development Process
 
-### Project Planning
-
-Initial scope included:
+### Initial Scope
 
 - Memory game logic
-- Dynamic board rendering
+- Deck generation
 - Match detection
 - Timer
 - Move counter
 - Restart functionality
 
-Later enhancements included:
+### Enhancements Added
 
-- Lock mechanism to prevent invalid clicks
+- Lock mechanism (`lockBoard`)
+- Clean state management inside a single object
+- History tracking (last 5 games)
 - Improved validation logic
-- Accessibility focus styles
-- Detailed commenting for learning documentation
-- Clean separation between HTML, CSS, and JavaScript
-
----
-
-### Wireframes
-
-The project layout was planned using a simple structural wireframe:
-
-- Header (title + subtitle)
-- Rules panel
-- Game controls (form)
-- Status panel
-- Game board
-- Footer
-
-![Memory Game Wireframe](./assets/memorygame-wireframe_v1.png)
-
----
-
-### Challenges Faced
-
-1. Preventing rapid clicking  
-   → Solved using `lockBoard` boolean state.
-
-2. Preventing duplicate card selection  
-   → Compared selected index with `firstPick.index`.
-
-3. Avoiding multiple timers  
-   → Used `clearInterval()` before starting new timers.
-
-4. Managing clean state resets  
-   → Centralised all values inside a single `state` object.
-
-5. Keeping logic readable  
-   → Separated concerns into dedicated functions.
+- Structured function separation
+- Extensive inline commenting for learning documentation
 
 ---
 
 ## Interactivity (JavaScript Implementation)
 
-JavaScript makes the project fully interactive through:
+JavaScript enables full interactivity using:
 
-- DOM element selection using `document.getElementById()`
-- Event listeners for:
-  - `submit`
-  - `click`
-- Dynamic element creation using `createElement()`
-- Class manipulation with `classList.add()` / `remove()`
-- Timer management with:
-  - `setInterval()`
-  - `clearInterval()`
-- State management using a structured `state` object
+- `document.getElementById()`
+- `querySelector()`
+- `addEventListener()`
+- `createElement()`
+- `classList.add()` / `remove()`
+- `setInterval()` / `clearInterval()`
+- Template literals
+- Structured state management
 
 ---
 
 ## Technical Architecture
 
-### Core JavaScript Modules
+### Core JavaScript Functions
 
-- `createDeck()` → Generates paired cards
-- `shuffle()` → Randomises deck
-- `renderBoard()` → Draws the game board
-- `onCardClick()` → Handles flipping
-- `checkMatch()` → Match detection logic
-- `resetPicks()` → Clears selections
-- `updateStatus()` → Updates UI counters
-- `startTimer()` / `stopTimer()` → Controls timer
-- `endGame()` → Displays completion message
-- `resetGame()` → Clears all state
+- `createDeck(totalCards)` → Generates paired card objects
+- `shuffle(array)` → Randomises deck order
+- `renderBoard()` → Draws the board dynamically
+- `buildBoardGrid(cols, rows)` → Configures grid layout
+- `onCardClick(e)` → Handles card interaction
+- `checkForMatch()` → Match detection logic
+- `clearPicks()` → Resets selected cards
+- `updateStatus()` → Updates move/time/pairs display
+- `startTimer()` → Starts interval timer
+- `endGame()` → Stops timer and saves result
+- `resetGame()` → Clears all state and UI
+- `renderHistory()` → Updates history table
 
 ---
 
@@ -219,17 +198,18 @@ JavaScript makes the project fully interactive through:
 
 All dynamic values are stored inside a single `state` object:
 
+- `isRunning`
+- `playerName`
+- `difficulty`
 - `cards`
-- `firstPick`
-- `secondPick`
+- `firstPickId`
+- `secondPickId`
+- `lockBoard`
 - `moves`
 - `pairsFound`
 - `totalPairs`
-- `seconds`
-- `lockBoard`
-- `isRunning`
-- `timer`
-- `playerName`
+- `timerId`
+- `secondsElapsed`
 
 This ensures predictable data flow and maintainable logic.
 
@@ -241,17 +221,18 @@ This ensures predictable data flow and maintainable logic.
 2. Form validation runs  
 3. `resetGame()` clears previous state  
 4. `createDeck()` builds and shuffles deck  
-5. `renderBoard()` draws cards  
-6. `startTimer()` begins timer  
-7. Player interacts with cards  
-8. `checkMatch()` processes logic  
-9. `endGame()` stops timer and displays final message  
+5. `buildBoardGrid()` configures layout  
+6. `renderBoard()` draws cards  
+7. `startTimer()` begins timer  
+8. Player interacts with cards  
+9. `checkForMatch()` processes logic  
+10. `endGame()` stops timer and saves history  
 
 ---
 
 ## Hosting
 
-This site has been deployed to GitHub Pages:
+This site is deployed using GitHub Pages:
 
 **Live URL:**  
 https://iesquivelcanaviri-coder.github.io/Project_MemoryGame/
@@ -267,9 +248,9 @@ Project_MemoryGame
 ├── assets/  
 │   └── memorygame-wireframe_v1.png  
 ├── validation/  
-│   └── css validation.png  
-│   └── html validation.png  
-│   └── javascript validation.png 
+│   ├── css validation.png  
+│   ├── html validation.png  
+│   └── javascript validation.png  
 └── README.md  
 
 ---

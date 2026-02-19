@@ -39,6 +39,7 @@ const feedbackEl = document.getElementById("formFeedback");
 const movesValueEl = document.getElementById("movesValue");
 const timeValueEl = document.getElementById("timeValue");
 const pairsValueEl = document.getElementById("pairsValue");
+const gameStatusEl = document.getElementById("gameStatus");
 
 const historyBodyEl = document.getElementById("historyBody");
 
@@ -338,12 +339,8 @@ function startGame(difficultyKey) { /* function -> declares reusable code; start
 
   buildBoardGrid(config.cols, config.rows); /* buildBoardGrid -> sets CSS grid layout; (cols, rows) -> board dimensions; why -> prepare visual grid */
   renderBoard(); /* renderBoard() -> draws all cards on screen; why -> show the deck to the player */
-  updateStatus(); /* updateStatus() -> refresh UI values (moves, pairs, time); why -> ensure UI starts at 0 */
-  startTimer(); /* startTimer() -> begin counting seconds; why -> track game duration */
-
-  restartBtn.disabled = false; /* restartBtn.disabled -> button interactivity; = false -> enable restart button; why -> allow player to restart now that game has begun */
-} 
-
+  boardEl.className = "board " + difficultyKey; updateStatus(); startTimer(); restartBtn.disabled = false; 
+}
 
 /* --------------------------------------------------
 FUNCTION DECLARATION + CLICK LOGIC — onCardClick(e)
@@ -486,11 +483,11 @@ function renderHistory() { /* function -> reusable code block; renderHistory -> 
     /* row.innerHTML -> set the inside HTML of the row; = -> assign; backticks `` -> template literal allowing multi-line HTML */
     /* <td> -> table cell; data-label -> attribute for responsive tables; ${game.name} -> insert player's name; why -> show who played */
     row.innerHTML = ` 
-  <td data-label="Player">${game.name}</td>
-  <td data-label="Difficulty">${game.difficulty}</td>
-  <td data-label="Moves">${game.moves}</td>
-  <td data-label="Time">${game.time}</td>
-  <td data-label="Pairs">${game.pairs}</td>
+      <td data-label="Player">${game.name}</td>
+      <td data-label="Difficulty">${game.difficulty}</td>
+      <td data-label="Moves">${game.moves}</td>
+      <td data-label="Time">${game.time}</td>
+      <td data-label="Pairs">${game.pairs}</td>
    `;
     historyBodyEl.appendChild(row); /* historyBodyEl -> table body; .appendChild(row) -> add the row to the table; why -> display this game in the history list */
   }); 
@@ -498,42 +495,48 @@ function renderHistory() { /* function -> reusable code block; renderHistory -> 
 
 /* --------------------------------------------------
    EVENT LISTENER + GAME INITIALISATION LOGIC — form submit
-   • This event listener starts a new game based on user input.
-   • Purpose → Validate input, reset game, load difficulty, create deck, update UI, start timer.
-   • Pattern → preventDefault → validate → reset → configure → build deck → update state → render → start timer.
+   • This listener runs when the user submits the form.
+   • Purpose → Validate input → reset previous game → configure difficulty → build deck → render board → start timer.
+   • Execution pattern → preventDefault → validate → update state → reset → startGame → UI feedback.
 --------------------------------------------------
-   DEEP LOGIC — WHAT ACTUALLY HAPPENS
-1) User submits the form → form submit event is the entry point for starting a new game.
-2) preventDefault() stops page reload → internal step: preventDefault → matches final summary “validate”.
-3) Name + difficulty are validated → internal step: validate → matches final summary “validate”.
-4) If invalid → show error → stop → output: no game initialised → matches final summary “stop if invalid”.
-5) If valid:
-     → Save player name → internal step: update state → matches final summary “update state”.
-     → resetGame() clears previous state → internal step: reset → matches final summary “reset”.
-     → startGame() handles:
-          - difficulty config → internal step: configure → matches final summary “configure”.
-          - deck creation → internal step: build deck → matches final summary “build deck”.
-          - board rendering → internal step: render → matches final summary “render”.
-          - timer start → internal step: start timer → matches final summary “start timer”.
-          - UI updates → internal step: update state/UI → matches final summary “update state”.
-6) Feedback message confirms game start → output: fully initialised game ready for play → matches final summary “fully initialised game”.
+   DETAILED FLOW — WHAT ACTUALLY HAPPENS
+1) User submits the form → this "submit" event is the entry point for starting a new game.
+2) e.preventDefault() stops the browser from reloading the page → allows full JS control.
+3) Name + difficulty are read and validated → if either is missing → show feedback → stop.
+4) If valid:
+     • Save player name into state → used for messages + history.
+     • resetGame() clears previous board, timer, moves, pairs.
+     • startGame(difficulty) performs:
+          - difficulty setup (grid size + card size)
+          - deck creation (shuffled pairs)
+          - board rendering (cards added to DOM)
+          - timer start (counting seconds)
+          - UI state updates (moves=0, pairs=0)
+5) Smooth scroll moves the user to the Game Status panel.
+6) setFeedback() displays a friendly “Good luck” message
 -------------------------------------------------- */
-gameForm.addEventListener("submit", e => { /* gameForm -> form element in DOM; .addEventListener -> attach event; "submit" -> event type when form is submitted; e => { } -> arrow function receiving event object e; { } -> start of handler code */
-  e.preventDefault(); /* e.preventDefault() -> stop default form behaviour; default = page reload; why -> handle form with JavaScript instead */
+gameForm.addEventListener("submit", e => { /* Attach submit handler to form; runs when user clicks Start Game */
+  e.preventDefault(); /* Prevent page reload so game can be handled entirely with JavaScript */
 
-  const name = playerNameEl.value.trim(); /* const -> constant variable; name -> store player name; playerNameEl -> input field; .value -> text typed by user; .trim() -> remove spaces; why -> clean input */
-  const difficulty = difficultyEl.value; /* const difficulty -> store selected difficulty; difficultyEl -> dropdown element; .value -> chosen option; why -> know which difficulty to start */
+  const name = playerNameEl.value.trim(); /* Read player name from input; trim() removes extra spaces */
+  const difficulty = difficultyEl.value;  /* Read selected difficulty from dropdown */
 
-  if (!name || !difficulty) { /* if -> condition; !name -> empty name; || -> OR; !difficulty -> no difficulty chosen; why -> validate form */
-    setFeedback("Please enter your name and select a difficulty."); /* setFeedback -> show message to user; string -> message text */
-    return; /* return -> stop function so game does not start */
+  if (!name || !difficulty) { /* If name is empty OR difficulty not chosen → invalid form */
+    setFeedback("Please enter your name and select a difficulty."); /* Show error message */
+    return; /* Stop here → do not start game */
   }
 
-  state.playerName = name; /* state.playerName -> store player's name in game state; = -> assign; why -> used in history + messages */
-  resetGame(); /* resetGame() -> clear previous game state; why -> start fresh */
-  startGame(difficulty); /* startGame(difficulty) -> begin new game using selected difficulty */
-  setFeedback(`Good luck, ${name}.`); /* setFeedback -> show message; template string -> insert player name; why -> give friendly start message */
-}); 
+  state.playerName = name; /* Save player name into global game state */
+  resetGame(); /* Clear previous game data (board, timer, moves, pairs) */
+  startGame(difficulty); /* Start a new game using the selected difficulty */
+
+  gameStatusEl.scrollIntoView({       /* Scroll smoothly to the Game Status panel */
+    behavior: "smooth",               /* Smooth scrolling animation */
+    block: "start"                    /* Align panel to top of viewport */
+  });
+
+  setFeedback(`Good luck, ${name}.`); /* Show friendly start message with player's name */
+});
 
 /* --------------------------------------------------
    FUNCTION DECLARATION + GAME RESET LOGIC — resetGame()
@@ -566,7 +569,7 @@ function resetGame() { /* function -> reusable code block; resetGame -> name mea
 
   boardEl.innerHTML = ""; /* boardEl -> game board container; .innerHTML -> sets HTML; = "" -> remove all card elements from screen */
   updateStatus(); /* updateStatus() -> refresh UI to show zeros; why -> keep UI consistent with reset state */
-} /* } -> end of function; resetGame prepares everything for a new game */
+} 
 
 restartBtn.addEventListener("click", () => { /* restartBtn -> restart button element; .addEventListener -> attach event; "click" -> event type; () => { } -> arrow function to run when clicked */
   if (!difficultyEl.value) return; /* if -> condition; !difficultyEl.value -> no difficulty selected; return -> stop; why -> cannot restart without difficulty */
