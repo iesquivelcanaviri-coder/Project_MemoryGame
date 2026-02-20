@@ -40,21 +40,23 @@ body {
 }
 
 /* -------------------------------------------------- */
-/* HEADER + FOOTER                                     */
+/* FOOTER — clean, compact, centered                   */
 /* -------------------------------------------------- */
-.site-header .container,
-.site-footer .container {
-  padding: 0.2rem 0;                   /* compact spacing */
-}
-
 .site-footer {
-  margin-top: 0.8rem;                  /* space above footer */
+  margin-top: 1rem;              /* small space above footer */
+  padding: 0.5rem 0;             /* minimal vertical padding */
+  background: rgba(255,255,255,0.03); /* subtle background tint */
+  border-top: 1px solid var(--border); /* soft top border */
+  text-align: center;            /* center all text */
+  font-size: 0.75rem;            /* small, tidy text */
+  color: var(--muted);           /* softer color so it doesn't dominate */
 }
 
-.subtitle {
-  margin-top: 0.2rem;                  /* small spacing */
-  line-height: 0.5;                    /* tight subtitle */
+.site-footer p {
+  margin: 0.15rem 0;             /* tiny spacing between lines */
+  line-height: 1.2;              /* compact line height */
 }
+
 
 /* -------------------------------------------------- */
 /* PANELS (controls, status, board, history)           */

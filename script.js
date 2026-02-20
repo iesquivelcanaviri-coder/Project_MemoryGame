@@ -287,7 +287,6 @@ function createDeck(totalCards) { /* function -> declares reusable code; createD
   return shuffle(deck); /* return -> give result back to caller; shuffle(deck) -> call helper function to randomize card order; deck -> array of all card objects; why -> ensures cards appear in random positions each game */
 }
 
-
 /* --------------------------------------------------
 TIMER LOGIC — startTimer()
 • startTimer() → begins the game timer loop → used by startGame() and any resume logic.
@@ -309,7 +308,6 @@ function startTimer() { /* function -> declares reusable code; startTimer -> nam
     updateStatus(); /* updateStatus() -> refreshes UI so timer display updates; why -> keeps visible time in sync with state */
   }, 1000); /* 1000 -> interval delay in milliseconds (1 second); why -> run the timer update once per second */
 } 
-
 
 /* --------------------------------------------------
 GAME INITIALIZATION LOGIC — startGame(difficultyKey)
