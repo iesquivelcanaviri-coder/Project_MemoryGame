@@ -14,88 +14,73 @@
       <h1>JavaScript Memory Game</h1> <!-- Main heading displayed at the top of the page -->
       <p class="subtitle"> <!-- Subtitle paragraph describing the game objective -->
         Match all pairs with the fewest moves and lowest time. Use the controls below to start. <!-- Instructional game description text -->
-      </p> <!-- End subtitle paragraph -->
-    </div> <!-- End header container -->
-  </header> <!-- End header section -->
+      </p> 
+    </div> 
+  </header>
 
   <main class="container"> <!-- Main content area wrapping all game sections -->
 
-    <section class="panel rules"> <!-- Rules panel explaining how the game works -->
-      <h2>How to Play</h2> <!-- Section heading for game rules -->
-      <ul> <!-- Unordered list of gameplay rules -->
-        <li>You may flip <strong>two cards per turn</strong>.</li> 
-        <li>A card that is already face-up cannot be flipped again in the same turn.</li> 
-        <li>If the two cards match, they remain visible.</li> 
-        <li>If they do not match, they flip back automatically after a short delay.</li> 
-        <li>Unmatched cards may be flipped again in future turns.</li> 
-        <li>Matched cards cannot be flipped again.</li> 
-        <li>Each pair of flips counts as <strong>one move</strong>.</li> 
-        <li>Rapid clicking is disabled while cards reset.</li> 
-        <li>The timer starts when the game begins and stops when all pairs are matched.</li>
-      </ul> 
-    </section> 
+  <section class="panel"> <!-- Main container grouping all game‑control elements; JS relies on this structured panel to locate user inputs before starting the game -->
+  <h2>Game Controls</h2> <!-- Heading identifying this section; JS does not interact with it directly but it improves UI clarity and accessibility -->
 
-    <section class="panel"> <!-- Panel containing game control elements -->
-      <h2>Game Controls</h2> <!-- Section heading for control panel -->
-
-      <form id="gameForm" class="controls" novalidate> <!-- Form used by JS to start and manage the game; validation handled manually -->
-        <!--JS selects this form: gameForm JS attaches submit listener: gameForm.addEventListener("submit", ...) Used to start the game  Explanation of JS form interaction -->
-        <!-- JS selects this: difficultyEl JS reads difficultyEl.value inside: - startGame() - restart button handler - play again handler.  Explanation of difficulty selection usage -->
-
-        <!-- Player name input (graphical form element) --> 
-        <div class="field">
-        <label for="playerName">Player Name (REQUIRED FIELD)</label> <!-- Label linked to player name input for accessibility -->
-        <input type="text" id="playerName" name="playerName" placeholder="Enter your name" maxlength="20" > <!-- Text input for player name with character limit -->
-        </div>
-        <div class="field">
-          <label for="difficulty">Difficulty</label> <!-- Label for difficulty selection dropdown -->
-          <select id="difficulty" name="difficulty" required> <!-- Dropdown menu read by JS to configure game grid -->
-            <option value="" selected disabled>Select difficulty</option> <!-- Placeholder option forcing user selection -->
-            <option value="easy">Easy (2x3)</option> <!-- Easy difficulty option -->
-            <option value="medium">Medium (3x4)</option> <!-- Medium difficulty option -->
-            <option value="hard">Hard (4x4)</option> <!-- Hard difficulty option -->
-          </select> <!-- End difficulty dropdown -->
-        </div>
-
-        <button type="submit" id="startBtn">Start Game</button> <!-- Submit button that triggers form submit event -->
-        <button type="button" id="restartBtn" disabled>Restart</button> <!-- Restart button enabled and handled by JS -->
-        <p id="formFeedback" class="feedback"></p> <!-- Paragraph used by JS to display validation and game messages -->
-      </form> 
-    </section> 
-
-    <section class="panel" id="gameStatus"> <!-- Panel displaying live game status -->
-      <div class="status"> <!-- Container grouping status values -->
-         <h2>Game Status</h2> 
-        <div><strong>Moves:</strong> <span id="movesValue">0</span></div> <!-- Displays move count updated by JS -->
-        <div><strong>Time:</strong> <span id="timeValue">00:00</span></div> <!-- Displays elapsed time updated every second -->
-        <div><strong>Pairs:</strong> <span id="pairsValue">0</span></div> <!-- Displays number of matched pairs -->
-      </div> 
-    </section> 
-
-    <section class="panel"> <!-- Panel containing the game board -->
-      <h2>Game Board</h2> <!-- Section heading for card grid -->
-      <div id="board" class="board"></div> <!-- Empty container populated dynamically with card buttons by JS -->
-    </section> <!-- End game board section -->
-
-    <section class="panel"> <!-- Panel showing game history -->
-      <h2>Last 5 Games</h2> <!-- Section heading for history table -->
-      <table class="history-table"> <!-- Table used to display previous game results -->
-        <thead> <!-- Table header section -->
-          <tr> <!-- Header row -->
-            <th>Player</th> <!-- Column heading for player name -->
-            <th>Difficulty</th> <!-- Column heading for difficulty level -->
-            <th>Moves</th> <!-- Column heading for number of moves -->
-            <th>Time</th> <!-- Column heading for completion time -->
-            <th>Pairs</th> <!-- Column heading for matched pairs -->
-          </tr> <!-- End header row -->
-        </thead> <!-- End table header -->
-        <tbody id="historyBody"> <!-- Table body populated dynamically by JavaScript -->
-          <!-- JS inserts rows here --> <!-- Placeholder comment for dynamic content -->
-        </tbody> <!-- End table body -->
-      </table> <!-- End history table -->
-    </section> <!-- End history section -->
+  <form id="gameForm" class="controls" novalidate> <!-- Form selected in JS using document.getElementById('gameForm'); JS attaches a submit event listener to trigger startGame(); 'novalidate' disables browser validation so JS can run custom validation -->
     
-  </main> <!-- End main content area -->
+    <div class="field"> <!-- Wrapper for the player name input; used for layout and styling, not directly accessed by JS -->
+      <label for="playerName">Player Name (REQUIRED FIELD)</label> <!-- Label linked to input via 'for'; improves accessibility; JS reads playerName.value to validate and store the player's name -->
+      <input type="text" id="playerName" name="playerName" placeholder="Enter your name" maxlength="20"> <!-- JS accesses this input using document.getElementById('playerName'); value is required to start the game and is saved into game history -->
+    </div>
+
+    <div class="field"> <!-- Wrapper for difficulty dropdown; helps layout but JS interacts with the select element inside -->
+      <label for="difficulty">Difficulty</label> <!-- Label describing the dropdown; JS reads difficulty.value to determine grid size and number of card pairs -->
+      <select id="difficulty" name="difficulty" required> <!-- JS selects this element using document.getElementById('difficulty'); required for validation; difficulty determines how many cards JS generates -->
+        <option value="" selected disabled>Select difficulty</option> <!-- Placeholder option; JS checks if difficulty.value is empty and prevents game start if not selected -->
+        <option value="easy">Easy (2x3)</option> <!-- JS interprets this as a 2x3 grid and generates 6 cards -->
+        <option value="medium">Medium (3x4)</option> <!-- JS interprets this as a 3x4 grid and generates 12 cards -->
+        <option value="hard">Hard (4x4)</option> <!-- JS interprets this as a 4x4 grid and generates 16 cards -->
+      </select>
+    </div>
+
+    <button type="submit" id="startBtn">Start Game</button> <!-- Clicking this triggers the form submit event; JS intercepts it to run startGame(), validate inputs, and generate the board -->
+    <button type="button" id="restartBtn" disabled>Restart</button> <!-- JS enables this button only after a game starts; clicking it triggers restartGame() in JS -->
+    
+    <p id="formFeedback" class="feedback"></p> <!-- JS writes validation messages or instructions here using textContent; used for user feedback -->
+  </form>
+</section>
+
+<section class="panel" id="gameStatus"> <!-- Panel displaying live game statistics; JS updates these values dynamically during gameplay -->
+  <div class="status"> <!-- Container grouping status indicators; JS updates the spans inside this div -->
+    <h2>Game Status</h2> <!-- Heading for clarity; not directly used by JS -->
+
+    <div><strong>Moves:</strong> <span id="movesValue">0</span></div> <!-- JS increments movesValue.textContent every time two cards are flipped -->
+    <div><strong>Time:</strong> <span id="timeValue">00:00</span></div> <!-- JS updates this every second using setInterval to track elapsed time -->
+    <div><strong>Pairs:</strong> <span id="pairsValue">0</span></div> <!-- JS increments this when a matching pair is found; used to detect game completion -->
+  </div>
+</section>
+
+<section class="panel"> <!-- Panel containing the interactive game board where cards appear -->
+  <h2>Game Board</h2> <!-- Heading for the card grid section; not directly used by JS -->
+  <div id="board" class="board"></div> <!-- JS selects this using document.getElementById('board'); JS dynamically generates card elements and appends them here using appendChild() -->
+</section>
+
+<section class="panel"> <!-- Panel displaying the last 5 completed games; JS updates this after each game -->
+  <h2>Last 5 Games</h2> <!-- Heading for the history table; improves readability -->
+
+  <table class="history-table"> <!-- Table structure used to present previous game results; JS inserts rows dynamically -->
+    <thead> <!-- Table header defining column titles; static content -->
+      <tr>
+        <th>Player</th> <!-- JS inserts player name into this column for each history entry -->
+        <th>Difficulty</th> <!-- JS inserts difficulty level selected by the user -->
+        <th>Moves</th> <!-- JS inserts number of moves taken -->
+        <th>Time</th> <!-- JS inserts formatted completion time -->
+        <th>Pairs</th> <!-- JS inserts number of matched pairs -->
+      </tr>
+    </thead>
+
+    <tbody id="historyBody"></tbody> <!-- JS selects this using document.getElementById('historyBody'); JS inserts up to 5 rows using innerHTML; data is stored and retrieved from localStorage -->
+  </table>
+</section>
+
+  </main> 
 
 <footer class="site-footer">
   <div class="container">
@@ -108,5 +93,5 @@
 </footer>
 
   <script src="script.js"></script> <!-- Loads external JavaScript file containing all game logic -->
-</body> <!-- End body -->
-</html> <!-- End HTML document -->
+</body> 
+</html> 
