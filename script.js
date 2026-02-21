@@ -6,8 +6,7 @@
    • Purpose -> Provide direct access to UI (User Interface) components so the game logic can update text, layout, and interactivity.
    • Pattern -> Standard JavaScript practice: gather all DOM references at the top for clarity, organisation, and reuse.
 -------------------------------------------------
-   DEEP LOGIC — WHAT ACTUALLY HAPPENS
-DEEP LOGIC — WHAT ACTUALLY HAPPENS 
+LOGIC — WHAT ACTUALLY HAPPENS
 1) The browser loads your HTML and builds the DOM tree → this is where id="board" becomes an identifiable HTML element the JavaScript can later retrieve.
 2) JavaScript executes document.getElementById("board") → "board" is the STRING used to look up the element with id="board".
 3) The browser searches the DOM for <div id="board">...</div> → this matches the HTML identifier id="board" used to locate the correct element.
@@ -45,12 +44,8 @@ const historyBodyEl = document.getElementById("historyBody");
 
 /* --------------------------------------------------
    CONSTANT OBJECT WITH NESTED SETTINGS — DIFFICULTY
-   • DIFFICULTY is a constant object containing three nested objects.
-   • Type -> Constant variable declaration using `const`.
-   • Purpose -> Store preset board configurations for each difficulty level.
-   • Pattern -> Structured data object used as a lookup table for game settings.
 --------------------------------------------------
-   DEEP LOGIC — WHAT ACTUALLY HAPPENS
+  LOGIC — WHAT ACTUALLY HAPPENS
    1) The user selects a difficulty level in the form.
    2) JavaScript reads that value (e.g., "easy", "medium", "hard").
    3) That string is used as a key to access DIFFICULTY[key].
@@ -68,13 +63,8 @@ const DIFFICULTY = { /* const -> Declares a constant (cannot be reassigned, prot
 
 /* --------------------------------------------------
    CONSTANT ARRAY CREATED FROM A STRING — SYMBOLS
-   • SYMBOLS is a constant array created by splitting a string of letters.
-   • Type -> Constant variable declaration using `const`.
-   • Purpose -> Provide a reusable pool of card symbols for deck creation.
-   • Pattern -> Convert a string into an array using split("") so each
-                character becomes an individual symbol.
 --------------------------------------------------
-   DEEP LOGIC — WHAT ACTUALLY HAPPENS
+  LOGIC — WHAT ACTUALLY HAPPENS
    1) JavaScript reads the string of letters.
    2) split("") breaks it into individual characters.
    3) The resulting array is stored in SYMBOLS.
@@ -91,16 +81,16 @@ const SYMBOLS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".split("");
   "ABCDEFGHJKLMNPQRSTUVWXYZ"    -> JavaScript STRING. Contains all available card symbols. -> Each character will become one array element.
   .   -> Property/method access operator.  -> Used here to access the split() method of the string.
   split("")   -> Built‑in string method.  Splits the string into an array. -> "" means “split between every character”. eg: "ABC".split("") -> ["A", "B", "C"]
-  RESULT  -> SYMBOLS becomes: ["A","B","C","D","E","F","G","H","J","K","L","M","N","P","Q","R","S","T","U","V","W","X","Y","Z"] -> An array of single‑character strings. */ 
+  RESULT  -> SYMBOLS becomes: ["A","B","C",...] -> An array of single‑character strings. */ 
 
 /* --------------------------------------------------
-   MUTABLE GAME STATE OBJECT — state
+MUTABLE GAME STATE OBJECT — state
    • state is a mutable object that stores all live game data.
    • Type -> Variable declaration using `let` (value CAN change).
    • Purpose -> Track gameplay progress, selections, timer, moves, and deck.
    • Pattern -> Centralised data container used by all game functions.
 --------------------------------------------------
-DEEP LOGIC — WHAT ACTUALLY HAPPENS
+LOGIC — WHAT ACTUALLY HAPPENS
 1) User selects difficulty → this sets state.difficulty and determines board size (state is the central data object storing all game information).  
 2) totalCards is calculated from cols × rows → difficulty selection feeds into state.totalPairs and deck creation.  
 3) createDeck(totalCards) fills state.cards → createDeck() is one of the functions that writes into state.  
@@ -127,12 +117,12 @@ let state = { /* let -> Declares a mutable variable; state -> central game data 
 
 
 /* --------------------------------------------------
-   GAME HISTORY (ARRAY OF OBJECTS)
+GAME HISTORY (ARRAY OF OBJECTS)
    • Stores the last 5 completed games.
    • Purpose → Provide data for the “Last 5 Games” history table.
    • Pattern → A mutable array updated after each completed game.
 --------------------------------------------------
-   DEEP LOGIC — WHAT ACTUALLY HAPPENS
+LOGIC — WHAT ACTUALLY HAPPENS
 1) Script loads → gameHistory starts empty (Purpose → store structured data about past games).  
 2) endGame() creates a result object (Inputs → result objects created at endGame()).  
 3) JS pushes the result into gameHistory (Internal step → push new result).  
@@ -148,12 +138,12 @@ let gameHistory = []; /* let -> Declares a mutable variable (value can change du
 
 /* --------------------------------------------------
  UTILITY FUNCTIONS — SHUFFLING, TIME FORMATTING, FEEDBACK
-• These are function declarations (reusable named blocks of code) → each one performs a specific utility task used throughout the game.
-• shuffle() → randomizes an array of items → used by createDeck() to shuffle card pairs before rendering.
-• formatTime() → converts raw seconds into a user‑friendly "mm:ss" string → used by updateStatus() to update the timer display.
-• setFeedback() → updates the feedback area in the DOM → displays messages to the player during validation, game start, and endGame().
-
-DEEP LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE)
+  • These are function declarations (reusable named blocks of code) → each one performs a specific utility task used throughout the game.
+  • shuffle() → randomizes an array of items → used by createDeck() to shuffle card pairs before rendering.
+  • formatTime() → converts raw seconds into a user‑friendly "mm:ss" string → used by updateStatus() to update the timer display.
+  • setFeedback() → updates the feedback area in the DOM → displays messages to the player during validation, game start, and endGame().
+--------------------------------------------------
+LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE)
 shuffle()
 1) Receives an array of card objects → this is the deck produced by createDeck().
 2) Iterates backward through the array → standard Fisher‑Yates shuffle pattern.
@@ -178,27 +168,22 @@ function shuffle(array) { /* function -> declares a reusable block of code; shuf
   }
   return array; /* return -> outputs the shuffled array back to the caller */
 }
-
 function formatTime(seconds) { /* function -> declares reusable code; formatTime -> name; (seconds) -> input value representing elapsed seconds */
   const m = String(Math.floor(seconds / 60)).padStart(2, "0"); /* const m -> minutes string; seconds/60 -> convert to minutes; Math.floor -> whole minutes; String() -> convert to text; padStart(2,"0") -> ensure 2 digits */
   const s = String(seconds % 60).padStart(2, "0"); /* const s -> seconds string; seconds % 60 -> remainder after minutes; padStart -> ensures "00"–"59" format */
   return `${m}:${s}`; /* return -> output formatted time; `${}` -> template literal combining minutes and seconds */
 }
-
 function setFeedback(msg) { /* function -> declares reusable code; setFeedback -> name; (msg) -> message string to display */
   feedbackEl.textContent = msg; /* feedbackEl -> DOM element for feedback; .textContent -> sets visible text; = msg -> assign the message to the element */
 }
 
-
 /* --------------------------------------------------
-   FUNCTION DECLARATION + BOARD RENDERING LOGIC — renderBoard()
---------------------------------------------------
 FUNCTION DECLARATION + BOARD RENDERING LOGIC — renderBoard()
 • buildBoardGrid() and renderBoard() are function declarations → reusable named blocks of code used to construct the game board.
 • buildBoardGrid() → sets the CSS grid layout based on difficulty.
 • renderBoard() → creates the visible card elements and inserts them into the DOM.
-
-DEEP LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE)
+--------------------------------------------------
+LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE)
 buildBoardGrid()
 1) Receives number of columns and rows → inputs: cols and rows come from the selected difficulty, which determines board size.
 2) Updates CSS grid layout using gridTemplateColumns → internal step: writes layout directly into boardEl.style to shape the grid.
@@ -244,8 +229,8 @@ FUNCTION DECLARATION + STATUS UPDATE LOGIC — updateStatus()
 • updateStatus() is a function declaration → a reusable named block of code that updates the UI.
 • Purpose → refresh the UI values for moves, pairs, and time so the interface always reflects the current game state.
 • Pattern → read state → format values → write to DOM → ensures the UI stays synchronised with gameplay.
-
-DEEP LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE)
+--------------------------------------------------
+LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE)
 1) updateStatus() is called after moves, pairsFound, or secondsElapsed change → purpose: synchronises the UI with the current game state so the player always sees accurate information.
 2) It reads state.moves and writes it to movesValueEl → input: state.moves → output: updated move counter on screen, keeping the UI aligned with gameplay.
 3) It reads state.pairsFound and writes it to pairsValueEl → input: state.pairsFound → output: updated pairs counter on screen, showing the player their progress.
@@ -264,8 +249,8 @@ FUNCTION DECLARATION + DECK CREATION LOGIC — createDeck(totalCards)
 • createDeck() → builds a complete deck of card objects for the game → used by startGame() to prepare the board.
 • Purpose → select symbols → duplicate → assign IDs → shuffle → return → ensures the game always has a valid, randomized deck.
 • Pattern → slice symbols → duplicate → create objects → shuffle → return → standard memory‑game deck generation workflow.
-
-DEEP LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE
+--------------------------------------------------
+LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE
 1) totalCards is calculated from difficulty (cols × rows) → input: totalCards passed into createDeck() from difficulty settings, determining how many cards the deck must contain.
 2) SYMBOLS.slice(...) selects the correct number of unique symbols → internal step: choose only the symbols needed for this board size so each pair has a matching partner.
 3) Each symbol is duplicated to form a matching pair → internal step: create two copies of each symbol so the game has pairs for matching.
@@ -292,9 +277,8 @@ TIMER LOGIC — startTimer()
 • startTimer() → begins the game timer loop → used by startGame() and any resume logic.
 • Purpose → increment elapsed seconds and update the UI every second so the timer display stays accurate.
 • Pattern → setInterval → increment → updateStatus() → continuous UI synchronisation.
-
-DEEP LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE)
-
+ --------------------------------------------------
+LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE)
 1) startTimer() is called to begin the timer loop → inputs: none; purpose: initialise the repeating time‑update cycle.
 2) setInterval(...) creates a repeating callback every 1000ms → internal step: JavaScript schedules a function to run once per second.
 3) Inside the interval, state.secondsElapsed++ increments the timer → internal step: raw seconds increase by 1 each tick.
@@ -314,8 +298,8 @@ GAME INITIALIZATION LOGIC — startGame(difficultyKey)
 • startGame() → prepares all game state and UI for a new game → used by form submission and restart logic.
 • Purpose → configure difficulty → build deck → render board → start timer → fully initialise a new game session.
 • Pattern → read config → update state → build grid → render → start timer → produce a fresh playable board.
-
-DEEP LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE)
+--------------------------------------------------
+LOGIC — WHAT ACTUALLY HAPPENS (WITH FINAL SUMMARY MERGED INTO EACH LINE)
 1) Difficulty is read from the DIFFICULTY table → input: difficultyKey ("easy", "medium", "hard") selects the correct config for board size.
 2) Total cards are calculated → internal step: cols × rows determines how many cards the deck must contain.
 3) Deck is created and shuffled → internal step: createDeck(totalCards) builds and randomizes the full deck for gameplay.
@@ -346,7 +330,7 @@ FUNCTION DECLARATION + CLICK LOGIC — onCardClick(e)
 • Purpose → validate click → flip card → store pick → update state → trigger match logic → produces updated UI and updated state.
 • Pattern → guard clauses → flip → store pick → increment → update → compare → used by renderBoard() (event listeners), updateStatus(), endGame().
 --------------------------------------------------
-DEEP LOGIC — WHAT ACTUALLY HAPPENS 
+LOGIC — WHAT ACTUALLY HAPPENS 
 1) Player clicks a card → input: click event, card ID, and state.cards → onCardClick(e) begins the core interaction flow.
 2) Guard clauses ensure the click is valid → game is running, board not locked, card not matched, and not the same as firstPick → validates before processing, as described in the final summary.
 3) Card is visually flipped → internal step: add "is-flipped" class to show the card face → part of onCardClick(e)’s flip + update behaviour.
@@ -422,12 +406,12 @@ function clearPicks() { /* function -> resets selected cards; { } -> start */
 
 
 /* --------------------------------------------------
-   FUNCTION DECLARATION + INTERNAL ACTIONS — endGame()
+FUNCTION DECLARATION + INTERNAL ACTIONS — endGame()
    • endGame() → Cleanly finishes the game and updates the UI.
    • Purpose → Stop gameplay, stop the timer, save history, update UI with final message.
    • Pattern → Stop timer → update state → save history → update UI.
 --------------------------------------------------
-   DEEP LOGIC — WHAT ACTUALLY HAPPENS
+LOGIC — WHAT ACTUALLY HAPPENS
 1) endGame() is triggered when all pairs are matched → endGame() finalises the game once checkForMatch() confirms all pairs are found.
 2) Timer is stopped using clearInterval() → internal step: stop timer → matches final summary “stop timer”.
 3) state.isRunning is set to false to disable further clicks → internal step: update state → matches final summary “update state”.
@@ -458,12 +442,12 @@ function endGame() { /* function -> reusable block of code; endGame -> name mean
 
 
 /* --------------------------------------------------
-   FUNCTION DECLARATION + HISTORY TABLE RENDERING — renderHistory()
+FUNCTION DECLARATION + HISTORY TABLE RENDERING — renderHistory()
    • renderHistory() → Updates the “Last 5 Games” table in the UI.
    • Purpose → Clear existing rows → loop through gameHistory → insert new rows.
    • Pattern → Clear table → iterate history → build <tr> → append to <tbody>.
 --------------------------------------------------
-   DEEP LOGIC — WHAT ACTUALLY HAPPENS
+LOGIC — WHAT ACTUALLY HAPPENS
 1) renderHistory() is called after endGame() → renderHistory() rebuilds the “Last 5 Games” table after a new result is saved.
 2) The table body is cleared to avoid duplicate rows → internal step: clear table → matches final summary “clear table”.
 3) gameHistory is looped through (max 5 entries) → internal step: loop through gameHistory array → matches final summary “loop”.
@@ -492,12 +476,12 @@ function renderHistory() { /* function -> reusable code block; renderHistory -> 
 } 
 
 /* --------------------------------------------------
-   EVENT LISTENER + GAME INITIALISATION LOGIC — form submit
+EVENT LISTENER + GAME INITIALISATION LOGIC — form submit
    • This listener runs when the user submits the form.
    • Purpose → Validate input → reset previous game → configure difficulty → build deck → render board → start timer.
    • Execution pattern → preventDefault → validate → update state → reset → startGame → UI feedback.
 --------------------------------------------------
-   DETAILED FLOW — WHAT ACTUALLY HAPPENS
+DETAILED FLOW — WHAT ACTUALLY HAPPENS
 1) User submits the form → this "submit" event is the entry point for starting a new game.
 2) e.preventDefault() stops the browser from reloading the page → allows full JS control.
 3) Name + difficulty are read and validated → if either is missing → show feedback → stop.
@@ -542,7 +526,7 @@ gameForm.addEventListener("submit", e => { /* Attach submit handler to form; run
    • Purpose → Stop timer, reset state variables, clear board, refresh UI.
    • Pattern → stop timer → reset state → clear board → update UI.
 --------------------------------------------------
-   DEEP LOGIC — WHAT ACTUALLY HAPPENS
+LOGIC — WHAT ACTUALLY HAPPENS
 resetGame()
 1) Stops timer → internal step: stop timer → matches final summary “stop timer”.
 2) Clears all state variables → internal step: clear state → matches final summary “clear state”.
@@ -576,12 +560,12 @@ restartBtn.addEventListener("click", () => { /* restartBtn -> restart button ele
 }); 
 
 /* --------------------------------------------------
-   FUNCTION INVOCATIONS + INITIAL UI STATE — updateStatus() & setFeedback()
+FUNCTION INVOCATIONS + INITIAL UI STATE — updateStatus() & setFeedback()
    • These are function invocation statements — they EXECUTE previously defined functions.
    • Purpose -> Prepare the UI before the game starts.
    • Pattern -> Call expression statements that update counters + show instructions.
 --------------------------------------------------
-   DEEP LOGIC — WHAT ACTUALLY HAPPENS
+LOGIC — WHAT ACTUALLY HAPPENS
 1) Page loads and script runs → initial UI state begins before any gameplay → matches final summary “prepares the screen before gameplay”.
 2) updateStatus() reads default state values (moves = 0, pairsFound = 0, seconds = 0) and writes them to the UI → internal step: update counters → matches final summary “update counters”.
 3) setFeedback() displays the initial instruction message → internal step: show instructions → matches final summary “show instructions”.
