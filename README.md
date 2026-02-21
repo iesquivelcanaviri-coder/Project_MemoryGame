@@ -21,7 +21,7 @@ The purpose of the project is to demonstrate core web development principles inc
 
 The game challenges players to match all card pairs using the fewest possible moves and in the shortest time.
 
-This final version (Version 10) represents the complete, fully aligned submission version of the project.
+This final version represents the complete, fully aligned submission version of the project.
 
 ---
 
@@ -125,7 +125,6 @@ CSS Grid is used for:
 - The status panel layout
 
 The layout is organised into structured panels:
-
 1. Header
 2. Rules panel
 3. Game controls
@@ -232,9 +231,7 @@ This ensures predictable data flow and maintainable logic.
 
 ## Hosting
 
-This site is deployed using GitHub Pages:
-
-**Live URL:**  
+This site is deployed using GitHub Pages: **Live URL:** 
 https://iesquivelcanaviri-coder.github.io/Project_MemoryGame/
 
 ---

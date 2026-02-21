@@ -20,30 +20,29 @@
 
   <main class="container"> <!-- Main content area wrapping all game sections -->
 
-    <!-- FORM (required by assessment) --> <!-- Section comment identifying assessment-required content block -->
     <section class="panel rules"> <!-- Rules panel explaining how the game works -->
       <h2>How to Play</h2> <!-- Section heading for game rules -->
       <ul> <!-- Unordered list of gameplay rules -->
-        <li>You may flip <strong>two cards per turn</strong>.</li> <!-- Rule: player may flip two cards per move -->
-        <li>A card that is already face-up cannot be flipped again in the same turn.</li> <!-- Prevents selecting the same card twice -->
-        <li>If the two cards match, they remain visible.</li> <!-- Matching cards stay face-up -->
-        <li>If they do not match, they flip back automatically after a short delay.</li> <!-- Non-matching cards reset after delay -->
-        <li>Unmatched cards may be flipped again in future turns.</li> <!-- Allows retrying previously unmatched cards -->
-        <li>Matched cards cannot be flipped again.</li> <!-- Disables interaction with matched cards -->
-        <li>Each pair of flips counts as <strong>one move</strong>.</li> <!-- Defines how moves are counted -->
-        <li>Rapid clicking is disabled while cards reset.</li> <!-- JavaScript locks board during reset -->
-        <li>The timer starts when the game begins and stops when all pairs are matched.</li> <!-- Describes timer behaviour -->
-      </ul> <!-- End rules list -->
-    </section> <!-- End rules section -->
+        <li>You may flip <strong>two cards per turn</strong>.</li> 
+        <li>A card that is already face-up cannot be flipped again in the same turn.</li> 
+        <li>If the two cards match, they remain visible.</li> 
+        <li>If they do not match, they flip back automatically after a short delay.</li> 
+        <li>Unmatched cards may be flipped again in future turns.</li> 
+        <li>Matched cards cannot be flipped again.</li> 
+        <li>Each pair of flips counts as <strong>one move</strong>.</li> 
+        <li>Rapid clicking is disabled while cards reset.</li> 
+        <li>The timer starts when the game begins and stops when all pairs are matched.</li>
+      </ul> 
+    </section> 
 
     <section class="panel"> <!-- Panel containing game control elements -->
       <h2>Game Controls</h2> <!-- Section heading for control panel -->
 
       <form id="gameForm" class="controls" novalidate> <!-- Form used by JS to start and manage the game; validation handled manually -->
-        <!--JS selects this form: gameForm JS attaches submit listener: gameForm.addEventListener("submit", ...) Used to start the game --> <!-- Explanation of JS form interaction -->
-        <!-- JS selects this: difficultyEl JS reads difficultyEl.value inside: - startGame() - restart button handler - play again handler --> <!-- Explanation of difficulty selection usage -->
+        <!--JS selects this form: gameForm JS attaches submit listener: gameForm.addEventListener("submit", ...) Used to start the game  Explanation of JS form interaction -->
+        <!-- JS selects this: difficultyEl JS reads difficultyEl.value inside: - startGame() - restart button handler - play again handler.  Explanation of difficulty selection usage -->
 
-        <!-- Player name input (graphical form element) --> <!-- Comment identifying player name input -->
+        <!-- Player name input (graphical form element) --> 
         <div class="field">
         <label for="playerName">Player Name (REQUIRED FIELD)</label> <!-- Label linked to player name input for accessibility -->
         <input type="text" id="playerName" name="playerName" placeholder="Enter your name" maxlength="20" > <!-- Text input for player name with character limit -->
@@ -61,8 +60,8 @@
         <button type="submit" id="startBtn">Start Game</button> <!-- Submit button that triggers form submit event -->
         <button type="button" id="restartBtn" disabled>Restart</button> <!-- Restart button enabled and handled by JS -->
         <p id="formFeedback" class="feedback"></p> <!-- Paragraph used by JS to display validation and game messages -->
-      </form> <!-- End game form -->
-    </section> <!-- End controls section -->
+      </form> 
+    </section> 
 
     <section class="panel" id="gameStatus"> <!-- Panel displaying live game status -->
       <div class="status"> <!-- Container grouping status values -->
@@ -70,8 +69,8 @@
         <div><strong>Moves:</strong> <span id="movesValue">0</span></div> <!-- Displays move count updated by JS -->
         <div><strong>Time:</strong> <span id="timeValue">00:00</span></div> <!-- Displays elapsed time updated every second -->
         <div><strong>Pairs:</strong> <span id="pairsValue">0</span></div> <!-- Displays number of matched pairs -->
-      </div> <!-- End status container -->
-    </section> <!-- End status section -->
+      </div> 
+    </section> 
 
     <section class="panel"> <!-- Panel containing the game board -->
       <h2>Game Board</h2> <!-- Section heading for card grid -->
